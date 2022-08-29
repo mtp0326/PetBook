@@ -1,0 +1,18 @@
+{
+  "name": "HW0",
+  "version": "0.1.0",
+  "description": "HW0",
+  "main": "hello-world.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
+  },
+  "repository": "",
+  "keywords": [
+    "Node.js",
+    "Eclipse",
+    "Nodeclipse"
+  ],
+  "author": "Andreas Haeberlen",
+  "license": "BSD",
+  "readmeFilename": "README"
+}
