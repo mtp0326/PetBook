@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>NETS 212 Homework 1 Milestone 2 - TED Search!</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<h1 align="center">NETS 212 Homework 1 Milestone 2</h1>
+<div align="center">
+  <h2 align="center">TED Search</h2>
+  <image src="/bear.jpg"/>
+  </div>
+  <p>&nbsp;</p>
+  <form align="center" name="searchForm" action="/talks"  onsubmit="return validate(document.searchForm.keyword)">
+ <label for="keyword">Search for TED talks with the following words:</label><br/>
+ <input type="text" id="keyword" name="keyword" />
+  <input type="submit" value="Search">
+</form>
+<script>
+  function validate(term) {
+    var searchString = term.value;
+
+    // TODO implement this function; return true below if the search string looks good
+
+    return false; 
+  }
+</script>
+</body>
+</html>
