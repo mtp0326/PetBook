@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>NETS 2120 Homework 2 Milestone 2 - TED Navigator</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<h1 align="center">NETS 2120 Homework 2 Milestone 2</h1>
+<div align="center">
+<h2 align="center">TED Navigator</h2>
+<image src="https://derangedgifts.com/wp-content/uploads/2017/09/Vercart-11-Foot-133-Light-Brown-Giant-Gigantic-Large-Teddy-Bear-Stuffed-Plush-Animal-Toy-Gift-for-Kids-Friends-0.jpg"/>
+</div>
+<p>&nbsp;</p>
+<form align="center" name="searchForm" action="/talks"  onsubmit="validate(document.searchForm.keyword)">
+ <label for="keyword">Search for TED talks with the following words:</label><br/>
+ <input type="text" id="keyword" name="keyword" />
+  <input type="submit" value="Search">
+</form>
+<script>
+  function validate(term) {
+    var searchString = term.value;
+    if (searchString.length > 0 && searchString.match(/^[A-Za-z ]+$/)) {
+      return true;
+    } else {
+      alert("Words must be purely alphabetic");
+      var event = window.event;
+      event.stopPropagation();
+      event.preventDefault();
+
+      document.searchForm.keyword.focus();
+      return false;
+    }
+  }
+</script>
+</body>
+</html>
