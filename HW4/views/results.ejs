@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<!-- This is a simple page template that displays two values, with a simple 
+		   JavaScript conditional. You'll need something slightly fancier for HW4,
+		   probably with a loop for generating the rows of the table. -->
+  <h1>Lookup results</h1>
+  You searched for: <%= theInput %><p>
+  <%if (result != null) { %>
+  Translation: <%= result %><p>
+  <% } %>
+  <%if (message != null) { %>
+  <font color="red"><%= message %><p>
+  <% } %>
+  <a href="/">Back to search</a>
+</body>
+</html>
