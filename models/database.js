@@ -116,6 +116,69 @@ var myDB_allPosts = (userID, function(callback) {
   });
 });
 
+// Update user email
+var myDB_updateEmail = function(username, newEmail, callback) {
+	var params = {
+		TableName: "users",
+  		Item: {
+			'username': {S: username},
+			'email': {S: newEmail},
+		}
+	};
+	
+	db.putItem(params, function(err, data) {
+	    if (err) {
+	      callback(err, null);
+	    } else if (username.length == 0 || newEmail.length == 0) {
+		  callback("Field cannot be left blank", null);
+		} else {
+	      callback(err, "Updated");
+	    }
+    });
+}
+
+// Update user password
+var myDB_updatepw = function(username, newPw, callback) {
+	var params = {
+		TableName: "users",
+  		Item: {
+			'username': {S: username},
+			'password': {S: newPw},
+		}
+	};
+	
+	db.putItem(params, function(err, data) {
+	    if (err) {
+	      callback(err, null);
+	    } else if (username.length == 0 || newPw.length == 0) {
+		  callback("Field cannot be left blank", null);
+		} else {
+	      callback(err, "Updated");
+	    }
+    });
+}
+
+// Update user interest. Minimum 2???
+//client side has the list of interests => newInterests is final interests
+var myDB_updateInterest = function(username, newInterests, callback) {
+	var params = {
+		TableName: "users",
+  		Item: {
+			'username': {S: username},
+			'interest': {S: newInterests},
+		}
+	};
+	
+	db.putItem(params, function(err, data) {
+	    if (err) {
+	      callback(err, null);
+	    } else if (username.length == 0 || newPw.length == 0) {
+		  callback("Field cannot be left blank", null);
+		} else {
+	      callback(err, "Updated");
+	    }
+    });
+}
 
 
 
@@ -228,6 +291,10 @@ var database = {
   //NEW
   getAllPosts : myDB_allPosts,
   getFriends : myDB_getFriends,
+
+  updateEmail : myDB_updateEmail,
+  updatePw : myDB_updatepw,
+  updateInterest : myDB_updateInterest,
   
   createRestaurant : myDB_createRestaurant,
   getAllRestaurants : myDB_allRestaurants,
