@@ -1,0 +1,16 @@
+{
+   "name": "HW4",
+   "description": "Restaurant database",
+   "version": "0.0.1",
+   "scripts": {
+      "start": "node app.js"
+   },
+   "dependencies": {
+      "async": "*",
+      "aws-sdk": "*",
+      "ejs": "*",
+      "express": "*",
+      "express-session": "^1.17.3",
+      "lru-cache": "*"
+   }
+}
