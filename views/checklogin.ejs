@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<!-- Check for logging in goes to restaurants if verified and back if not-->
+  <h1>Logging in...</h1>
+  
+  <% if(verify) { %>
+  	<meta http-equiv="refresh" content="0; url='/restaurants'">
+  <% } else { %>
+  	<script>
+  		alert("Login Failed");
+  	</script>
+  <meta http-equiv="refresh" content="0; url='/'">
+  <% } %>
+</body>
+</html>

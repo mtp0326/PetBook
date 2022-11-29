@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<!-- Check for creating account goes to restaurants if verified and back to signup if not-->
+
+	<h1>Creating Account...</h1>
+	
+	<% if(created) { %>
+  	<meta http-equiv="refresh" content="0; url='/restaurants'">
+  <% } else { %>
+  	<script>
+  		alert("Username Exists");
+  	</script>
+  <meta http-equiv="refresh" content="0; url='/signup'">
+  <% } %>
+  
+</body>
+</html>

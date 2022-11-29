@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+	      #map {
+	        height: 450px;
+	        width: 100%;
+	       }
+	    </style>
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		
+		<script>
+			var markers = [];
+			var markerIcons = [];
+			var sessionCreator = "";
+			var map;
+			window.onload = function () {
+				readyMarkers();
+			}
+			//calls ajax with /getList that retreives restaraut data from db
+			function readyMarkers() {
+				$(document).ready(function () {
+					$.getJSON('/getList', function(elementsArr) {
+						for(let i = 0; i < elementsArr.length; i++) {
+							var nameN = elementsArr[i].name;
+							var latN = elementsArr[i].latitude;
+							var lngN = elementsArr[i].longitude;
+							var desN = elementsArr[i].description;
+							var creN = elementsArr[i].creator;
+
+							var Item = 
+							{
+								"name": nameN,
+								"latm": latN,
+								"lngm": lngN,
+								"description" : desN,
+								"creator" : creN
+							};
+							markers.push(Item);
+						}
+						initMap();
+					});
+				});
+			}
+
+			//initializes map
+			function initMap() {
+	    		var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+				var markerNameArr = markers.map(obj => obj.name.S);
+				var markerLatArr = markers.map(obj => parseFloat(obj.latm.S));
+				var markerLngArr = markers.map(obj => parseFloat(obj.lngm.S));
+				var markerDescriptionArr = markers.map(obj => obj.description.S);
+				var markerCreatorArr = markers.map(obj => obj.creator.S);
+
+	        	map = new google.maps.Map(document.getElementById('map'), {
+		          	zoom: 10,
+		          	center: {lat: markerLatArr[0], lng: markerLngArr[0]}
+	        	});
+	        	
+	        	for(let i = 0; i < markers.length; i++) {
+		        	var pointer =  {
+						"name": markerNameArr[i],
+						"latm": markerLatArr[i],
+						"lngm": markerLngArr[i],
+						"description" : markerDescriptionArr[i],
+						"creator" : markerCreatorArr[i]
+					};
+	        		setMarkers(pointer);
+	        	}
+	        	
+	        	(function (map) {
+		        	google.maps.event.addListener(map, 'click', function(e) {
+		        		var coord = "Latitude: " + e.latLng.lat()
+						+ ", Longtitude: " + e.latLng.lng();
+						$("#latLngRClick").html(coord);
+		        	});
+		        })(map);
+	      	}
+
+			//set the markers and their listener functions
+			function setMarkers(object) {
+				var marker = new google.maps.Marker({
+					position: {lat: object.latm, lng: object.lngm},
+					map: map,
+					icon: findColor(object.creator),
+				});
+				markerIcons.push(marker);
+
+
+				var infowindow = new google.maps.InfoWindow();
+
+				(function (marker, object) {
+					google.maps.event.addListener(marker, 'click', function(e) {
+						const contentString = 
+							'<div id="content">' +
+							'<div id="siteNotice">' +
+							"</div>" +
+							'<h2 id="firstHeading" class="firstHeading">' + object.name +'</h2>' +
+							'<div id="bodyContent">' +
+							"<p>" + object.description + "</p>" +
+							'<p><em>Added by ' + object.creator + "</em></p>" +
+							"</div>" +
+							"</div>";
+						infowindow.setContent(contentString);
+						infowindow.open(map,marker);
+						map.panTo(this.getPosition());
+						map.setZoom(15);
+					});
+				})(marker, object);
+
+				(function (marker, object) {
+					google.maps.event.addListener(marker, 'rightclick', function(e) {
+						if(object.creator === sessionCreator) {
+							$.ajax({
+								type: "POST",
+								url: "/deleteList",
+								data: {
+									name: object.name,
+								},
+								success: function(result) {
+									marker.setMap(null);
+									markers.splice(markers.indexOf(object), 1);
+									markerIcons.splice(markerIcons.indexOf(marker), 1);
+									// markers = [];
+									//resetMarkers(); ???
+
+								},
+								error: function(result) {
+									alert("error: " + result);
+								}
+							});
+						} else {
+							alert("Cannot delete another user's restaurant review")
+						}
+					});
+				})(marker, object);
+			};
+
+			//assigns the color to the makers. Yellow if the creator of the marker matches the current user and red if not
+			function findColor(creatorName) {
+				const svgMarkerYellow = {
+				    path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+				    fillColor: "yellow",
+				    fillOpacity: 1,
+				    strokeWeight: 0,
+				    rotation: 0,
+				    scale: 2,
+				    anchor: new google.maps.Point(15, 30),
+				  };
+				  
+				const svgMarkerRed = {
+				    path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+				    fillColor: "red",
+				    fillOpacity: 1,
+				    strokeWeight: 0,
+				    rotation: 0,
+				    scale: 2,
+				    anchor: new google.maps.Point(15, 30),
+				  };
+				  
+				if(creatorName === sessionCreator) {
+					return svgMarkerYellow;
+				}
+				return svgMarkerRed;
+			}
+
+			//ajax for button click that posts /addList to store the new restaurant data in the db and callback the new data to the marker
+			$(document).ready(function () {
+				$("button").click(function(e) {
+					var latNew = document.getElementsByName("latitude")[0].value;
+					var lngNew = document.getElementsByName("longitude")[0].value;
+					var nmeNew = document.getElementsByName("restaurantName")[0].value;
+					var desNew = document.getElementsByName("description")[0].value;
+					e.preventDefault();
+					if(latNew.length != 0 && lngNew.length != 0 && nmeNew.length != 0 && desNew.length != 0) {
+						$.ajax({
+							type: "POST",
+							url: "/addList",
+							data: {
+								latitude: latNew,
+								longitude: lngNew,
+								name: nmeNew,
+								description: desNew
+							},
+							success: function(result) {
+								var latN = parseFloat(document.getElementsByName("latitude")[0].value);
+								var lngN = parseFloat(document.getElementsByName("longitude")[0].value);
+								var nameN = document.getElementsByName("restaurantName")[0].value;
+								var desN = document.getElementsByName("description")[0].value;
+								var creN = sessionCreator;
+
+								var Item = {
+									"name": nameN,
+									"latm": latN,
+									"lngm": lngN,
+									"description" : desN,
+									"creator" : creN
+								};
+								markers.push(Item);
+
+								setMarkers(Item);
+							},
+							error: function(result) {
+								alert("error");
+							}
+						});
+					} else {
+						alert("Did not fill all fields");
+					}
+				});
+			});
+
+			//refreshes time every 5 seconds, while refreshing it renews all data and markers by calling ajax /getList and
+			//retrieving all restaurant data from db and assigning new markers
+			var refreshTime = function() {
+				$("#clock").html((new Date()).toString());
+				
+				markers = [];
+				for(let i = 0; i < markerIcons.length; i++) {
+					markerIcons[i].setMap(null);
+				}
+				markerIcons = [];
+				$(document).ready(function () {
+					$.getJSON('/getList', function(elementsArr) {
+						var tempMarkers = [];
+						var markerNameArr = elementsArr.map(obj => obj.name.S);
+						var markerLatArr = elementsArr.map(obj => parseFloat(obj.latitude.S));
+						var markerLngArr = elementsArr.map(obj => parseFloat(obj.longitude.S));
+						var markerDescriptionArr = elementsArr.map(obj => obj.description.S);
+						var markerCreatorArr = elementsArr.map(obj => obj.creator.S);
+						
+						for(let i = 0; i < elementsArr.length; i++) {
+							var nameN = markerNameArr[i];
+							var latN = markerLatArr[i];
+							var lngN = markerLngArr[i];
+							var desN = markerDescriptionArr[i];
+							var creN = markerCreatorArr[i];
+
+							var Item = 
+							{
+								"name": nameN,
+								"latm": latN,
+								"lngm": lngN,
+								"description" : desN,
+								"creator" : creN
+							};
+							tempMarkers.push(Item);
+						}
+
+						for(let i = 0; i < tempMarkers.length; i++) {
+						var pointer =  {
+							"name": tempMarkers[i].name,
+							"latm": tempMarkers[i].latm,
+							"lngm": tempMarkers[i].lngm,
+							"description" :tempMarkers[i].description,
+							"creator" : tempMarkers[i].creator
+						};
+						setMarkers(pointer);
+						}
+						markers = tempMarkers;
+					});
+
+					for(let i = 0; i < markerIcons.length; i++) {
+						markerIcons[i].setMap(map);
+					}
+				});
+				setTimeout(refreshTime, 5000);
+			};
+
+
+			$(document).ready(function() {
+				// $(document).ready(function () {
+					$.getJSON('/getCreator', function(creator) {
+						sessionCreator = creator;
+					});
+				// });
+				setTimeout(refreshTime, 5000);
+			});
+
+			//for any asynchronous needs to get all restaurant database
+			$(document).ready(function () {
+					$.getJSON('/getList', function(elementsArr) {
+						for(let i = 0; i < elementsArr.length; i++) {
+							var nameN = elementsArr[i].name;
+							var latN = elementsArr[i].latitude;
+							var lngN = elementsArr[i].longitude;
+							var desN = elementsArr[i].description;
+							var creN = elementsArr[i].creator;
+
+							var Item = 
+							{
+								"name": nameN,
+								"latm": latN,
+								"lngm": lngN,
+								"description" : desN,
+								"creator" : creN
+							};
+							markers.push(Item);
+						}
+					});
+				});
+		</script>
+		
+	</head>
+	<body>
+		<!-- Restaurants check if verified and take back to homepage if logged out
+		also it prints out a table of all of the data from restaurants.
+		You can also write your own table that is stored to the db.
+		Option to logout is also below -->
+		<h1>Restaurants</h1>
+		
+		<div id=map></div>
+	    <script async defer
+	    	src=
+	    		"https://maps.googleapis.com/maps/api/js?key=
+				AIzaSyB0_D88nXYjgV-9nXzZZ1bdK1SeHXAW6ys&callback=initMap">
+	    </script>
+	    
+	    <div id="latLngRClick">Click map for latitude, longtitude</div>
+	  
+	  	<h3>Write your restaurant review</h3>
+		  <form action="/addList" method="post">
+		  		<p>Latitude
+		    	<p><input type="text" name="latitude">
+		    	
+		  		<p>Longitude
+		    	<p><input type="text" name="longitude"></p>
+		    	
+		    	<p>Restaurant name
+		    	<p><input type="text" name="restaurantName"></p>
+		    	
+		    	<p>Description
+		    	<p><input type="text" name="description"></p>
+		    	<button id= "btn">Add</button>
+		  </form>
+		  	
+		<% if(!isVerified) { %>
+	  		<script>
+	  			alert("You need to login");
+	  		</script>
+	  		<meta http-equiv="refresh" content="0; url='/'">
+		<% } %>
+	  
+	  
+	
+		<a href="/logout">Logout</a>
+	</body>
+	</html>

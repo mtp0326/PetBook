@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<!-- Place to signup for account -->
+
+	<h1>Sign Up</h1>
+	
+  	<form action="/createaccount" method="post">
+  		<p>New username
+    	<p><input type="text" name="newUsername">
+    	
+  		<p>New password
+    	<p><input type="password" name="newPassword"></p>
+    	
+    	<p>Full name (first and last name)
+    	<p><input type="text" name="newFullname"></p>
+    	<input type="submit" value="Sign Up">
+  	</form>
+  	
+  	<%if (!isCreated) { %>
+  	<font color="red"><%= "Sign Up Failed" %><p>
+  	<% isCreated = true; %>
+  	<% isVerified = true; %>
+  <% } %>
+  <a href="/">Back to Login</a>
+</body>
+</html>
