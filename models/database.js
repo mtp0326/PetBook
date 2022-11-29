@@ -10,7 +10,6 @@ var db = new AWS.DynamoDB();
 
 //gets username input and returns the password
 var myDB_getPassword = function(searchTerm, language, callback) {
-
   var params = {
       KeyConditions: {
         username: {
@@ -33,7 +32,6 @@ var myDB_getPassword = function(searchTerm, language, callback) {
 
 //gets username input and returns the username if existing
 var myDB_getUsername = function(searchTerm, language, callback) {
-
   var params = {
       KeyConditions: {
         username: {
@@ -54,22 +52,26 @@ var myDB_getUsername = function(searchTerm, language, callback) {
   });
 }
 
+//NEW
 //create a new account with the right db parameters
-var myDB_createAccount = function(newUsername, newPassword, newFullname, callback) {
+var myDB_createAccount =
+  function(newUsername, newPassword, newFullname, newAffiliation,
+    newBirthday, newEmail, newChatID, newFriends, newInterest, newPfpURL, callback) {
   	var params = {
-	TableName: "users",
-		Item : {
-			"username": {
-				S: newUsername
-			},
-			"password": {
-				S: newPassword
-			},
-			"fullname": {
-				S: newFullname
-			}
-  		}
-  	};
+      TableName: "users",
+      Item : {
+        "username": { S: newUsername },
+        "password": { S: newPassword },
+        "fullname": { S: newFullname },
+        "affiliation": { S: newAffiliation },
+        "birthday": { S: newBirthday },
+        "email": { S: newEmail },
+        "chatID": { L: newChatID },
+        "friends": { SS: newFriends },
+        "interest": { L: newInterest },
+        "pfpURL": { S: newPfpURL }
+      }
+    };
 
   db.putItem(params, function(err, data) {
     if (err) {
@@ -79,21 +81,43 @@ var myDB_createAccount = function(newUsername, newPassword, newFullname, callbac
 }
 
 //NEW
-//outputs all restaurants from db into an array
-var myDB_allPosts = function(callback) {
+//outputs friends
+var myDB_getFriends = (username, function(callback) {
   var params = {
-  TableName: "posts",
-  Select: "ALL_ATTRIBUTES"
+  TableName: "users",
+    Key: {"username" : {S: username}},
+    ExpressionAttributeValues: "friends"
   };
 
-  db.scan(params, function(err, data) {
+  db.query(params, function(err, data) {
     if(err) {
       console.log(err);
     } else {
       callback(err, data.Items);
     }
   });
-}
+});
+
+//NEW
+//outputs all restaurants from db into an array
+var myDB_allPosts = (userID, function(callback) {
+  var params = {
+  TableName: "posts",
+    Key: {"userID" : {S: userID}}
+  };
+
+  db.query(params, function(err, data) {
+    if(err) {
+      console.log(err);
+    } else { //not sure if data.Items is all the items that has the key of userID???
+      data.Items.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
+      callback(err, data.Items);
+    }
+  });
+});
+
+
+
 
 
 //creates restaurant with the right db parameters
@@ -125,6 +149,9 @@ var myDB_createRestaurant = function(name, latitude, longitude, description, cre
     }
   });
 }
+
+
+
 
 //deletes restaurant using key and tablename
 var myDB_deleteRestaurant = function(name, callback) {
@@ -197,12 +224,16 @@ var database = {
   passwordLookup: myDB_getPassword,
   usernameLookup: myDB_getUsername,
   createAccount: myDB_createAccount,
-  createRestaurant : myDB_createRestaurant,
-  getAllRestaurants : myDB_allRestaurants,
-  deleteRestaurant : myDB_deleteRestaurant,
 
   //NEW
-  getAllPosts : myDB_allPosts
+  getAllPosts : myDB_allPosts,
+  getFriends : myDB_getFriends,
+  
+  createRestaurant : myDB_createRestaurant,
+  getAllRestaurants : myDB_allRestaurants,
+  deleteRestaurant : myDB_deleteRestaurant
+
+  
 };
 
 module.exports = database;

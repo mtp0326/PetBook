@@ -69,10 +69,22 @@ var getHomepage = function(req, res) {
 //Also renders comments if exists
 //NEW: getHomepagePostList, getAllPosts
 var getHomepagePostListAjax = function(req, res) {
-	db.getAllPosts(function(err, data){
-	  res.send(JSON.stringify(data))
+  var friendsList = [];
+  var postsList = [];
+  db.getFriends(req.session.username, function(err, data){
+    friendsList.push(data);
   });
+  for(const friend of friendsList) {
+    db.getAllPosts(friend, function(err, data){
+      postsList.push(data);
+    });
+  }
+  postsList.sort((a, b) => a.timestamp.S.localeCompare(b.timestamp.S)).reverse();
+	res.send(JSON.stringify(postsList))
 };
+
+
+
 
 
 
