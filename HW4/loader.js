@@ -10,8 +10,8 @@ var async = require('async');
 
 /* We begin by defining the name of the table and the data we want to upload */
 
-var wordDBname = "words";
-var words = [ ["apple","Apfel"], ["pear","Birne"], ["pineapple", "Ananas"] ];
+var wordDBname = "users";
+var users = [ ["mickey", "mouse", "Mickey Mouse"]];
 
 /* The function below checks whether a table with the above name exists, and if not,
    it creates such a table with a hashkey called 'keyword', which is a string. 
@@ -35,14 +35,14 @@ var initTable = function(tableName, callback) {
             AttributeDefinitions: 
               [ 
                 {
-                  AttributeName: 'keyword',
+                  AttributeName: 'username',
                   AttributeType: 'S'
                 }
               ],
             KeySchema: 
               [ 
                 {
-                  AttributeName: 'keyword',
+                  AttributeName: 'username',
                   KeyType: 'HASH'
                 }
               ],
@@ -78,25 +78,30 @@ var initTable = function(tableName, callback) {
    hence the unusual [column] syntax. This function might be a good template for other
    API calls, if you need them during the project. */
 
-var putIntoTable = function(tableName, keyword, column, value, callback) {
+var putIntoTable = function(tableName, keyword, password, fullname, callback) {
   var params = {
       Item: {
-        "keyword": {
+        "username": {
           S: keyword
         },
-        [column]: { 
-          S: value
-        }
+        "password": { 
+          S: password
+        },
+        "fullname": { 
+          S: fullname
+        },
+       
       },
       TableName: tableName,
       ReturnValues: 'NONE'
   };
 
   db.putItem(params, function(err, data){
+	console.log(data);
     if (err)
       callback(err)
     else
-      callback(null, 'Success')
+      callback(null)
   });
 }
 
@@ -104,15 +109,15 @@ var putIntoTable = function(tableName, keyword, column, value, callback) {
    It calls initTable and then, once that finishes, it uploads all the words
    in parallel and waits for all the uploads to complete (async.forEach). */
 
-initTable("words", function(err, data) {
+initTable("users", function(err, data) {
   if (err)
     console.log("Error while initializing table: "+err);
   else {
-    async.forEach(words, function (word, callback) {
-      console.log("Uploading word: " + word[0]);
-      putIntoTable("words", word[0], "German", word[1], function(err, data) {
+    async.forEach(users, function (user, callback) {
+      console.log("uploading username: " + user[0]);
+      putIntoTable("users", user[0], user[1], user[2], function(err) {
         if (err)
-          console.log("Oops, error when adding "+word[0]+": " + err);
+          console.log("Oops, error when adding "+user[0]+": " + err);
       });
     }, function() { console.log("Upload complete")});
   }

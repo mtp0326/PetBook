@@ -11,6 +11,7 @@ import org.apache.spark.sql.SparkSession;
 
 import edu.upenn.cis.nets2120.config.Config;
 import edu.upenn.cis.nets2120.storage.SparkConnector;
+import scala.Tuple2;
 
 public class ComputeRanks {
 	/**
@@ -24,9 +25,15 @@ public class ComputeRanks {
 	SparkSession spark;
 	
 	JavaSparkContext context;
+	static int maxIters;
+	static double delta;
+	static boolean debugMode;
 	
 	public ComputeRanks() {
 		System.setProperty("file.encoding", "UTF-8");
+		maxIters = 25;
+		delta = 30;
+		debugMode =false;
 	}
 
 	/**
@@ -53,12 +60,28 @@ public class ComputeRanks {
 	JavaPairRDD<Integer,Integer> getSocialNetwork(String filePath) {
 
     // TODO Load the file filePath into an RDD (take care to handle both spaces and tab characters as separators)
-    return null;
+		JavaRDD<String[]> file = context.textFile(filePath, Config.PARTITIONS)
+				.map(line -> line.toString().split("\\s+"));
+		JavaPairRDD<Integer, Integer> result = file.mapToPair(line ->{
+			return new Tuple2<>(Integer.parseInt(line[1]), Integer.parseInt(line[0]));
+		});
+
+    return result;
 	}
 	
 	private JavaRDD<Integer> getSinks(JavaPairRDD<Integer,Integer> network) {
 		// TODO Find the sinks in the provided graph
-    return null;
+		JavaRDD<Integer> followers = network.distinct().mapToPair( r->{
+			return new Tuple2<Integer, Integer>( r._2, r._1 );
+		}).reduceByKey((i1, i2) -> i1 + i2).map(t -> {
+			return t._1;
+		});
+		JavaRDD<Integer> followed = network.distinct().reduceByKey((i1, i2) -> i1 + i2)
+				.map(t->{
+					return t._1;
+				});
+		return followed.subtract(followers);
+		
 	}
 
 	/**
@@ -72,10 +95,87 @@ public class ComputeRanks {
 
 		// Load the social network
 		// followed, follower
+		// TODO find the sinks
+	    // TODO add back-edges
 		JavaPairRDD<Integer, Integer> network = getSocialNetwork(Config.SOCIAL_NET_PATH);
-
-    // TODO find the sinks
-    // TODO add back-edges
+		JavaRDD<Integer> sinks = getSinks(network);
+	
+		JavaPairRDD<Integer, String> sinkPair = sinks.mapToPair(r ->{
+				return new Tuple2<Integer,String>(r, "s");
+		});
+		
+	
+		JavaPairRDD<Integer, Tuple2<String, Integer>> joined = sinkPair.join(network);
+		JavaPairRDD<Integer, Integer> backEdges = joined.mapToPair( r ->{
+			return new Tuple2<Integer, Integer>(r._2._2, r._1 );
+		});
+		System.out.println("Added "+backEdges.count()+" backlinks");
+		backEdges.collect().stream().forEach( item ->{
+			System.out.println(item._1 + ", " + item._2 );
+		}
+				);
+		
+		JavaPairRDD<Integer, Integer> edgeRDD = network.union(backEdges)
+				.mapToPair(t -> new Tuple2<Integer, Integer>(t._2, t._1));
+		
+		JavaRDD<Integer> nodes = edgeRDD.reduceByKey((a, b) -> a+b).keys();
+		System.out.println("This graph contains "+ nodes.count() +" nodes and "+ network.count()+ " edges");
+		System.out.println("all edges: ");
+		edgeRDD.collect().stream().forEach( item ->{
+			System.out.println( "("+ item._1 + ", " + item._2 + ")");
+		});
+		
+		//assign weight to each back link
+		JavaPairRDD<Integer, Double> nodeTransferRDD = edgeRDD
+				.mapToPair(item -> new Tuple2<Integer, Double>(item._1, 1.0))
+				.reduceByKey((a,b) -> a+b)
+				.mapToPair(item -> new Tuple2<Integer, Double>(item._1, 1.0/item._2));
+		//join the two RDDs together by key
+		JavaPairRDD<Integer, Tuple2<Integer, Double>> edgeTransferRDD = edgeRDD.join(nodeTransferRDD);
+		edgeTransferRDD.collect().stream().forEach( item ->{
+			System.out.println(item._1 + ": (" + item._2._1 + ", " + item._2._2 + ")");
+		}
+				);
+		
+		double d = 0.15;
+		
+		int i = 1;
+		boolean converge = false;
+		JavaPairRDD<Integer,Double> pageRankRDD = edgeRDD.mapToPair(item -> new Tuple2<Integer, Double>(item._1, 1.0));
+		while(i <= maxIters && !converge) {
+		
+	
+			JavaPairRDD<Integer, Double> propogateRDD = edgeTransferRDD
+					.join(pageRankRDD)
+					.distinct()
+					.mapToPair(item -> new Tuple2<Integer, Double>(item._2._1._1, item._2._2 * item._2._1._2));
+			JavaPairRDD<Integer, Double> pageRankRDD2 = propogateRDD
+					.reduceByKey((a,b) -> a+b)
+					.mapToPair(item -> new Tuple2<Integer, Double>(item._1, d + (1-d) * item._2));
+			JavaPairRDD<Double, Integer> difference = pageRankRDD.union(pageRankRDD2)
+					.reduceByKey((a,b) -> a-b)
+					.mapToPair(item -> 
+						new Tuple2<Double, Integer>(item._2, item._1))
+					.sortByKey(false);
+			pageRankRDD = pageRankRDD2;		
+			
+			if(difference.keys().take(1).get(0) <= delta) {
+				converge = true;	
+			}
+			if(debugMode) {
+				System.out.println("round " + i +":");
+				pageRankRDD2.collect().stream().forEach(item ->{
+					
+					System.out.println(item._1 + ": "+item._2);
+				}
+						);
+			
+			}
+		
+		i++;	
+		}
+				
+				
 
 		logger.info("*** Finished social network ranking! ***");
 	}
@@ -95,10 +195,36 @@ public class ComputeRanks {
 
 	public static void main(String[] args) {
 		final ComputeRanks cr = new ComputeRanks();
-
+		for(int i = 0; i < args.length; i ++) {
+			System.out.println(args[i]);
+		}
+		
 		try {
+			
+			System.out.println("main!!");
 			cr.initialize();
-
+			if(args.length == 1) {
+				delta = Double.parseDouble(args[0]);
+				System.out.println("maxIters: " + maxIters +" delta: "+ delta+ " debug: "+ debugMode);
+				
+			}else if (args.length == 2) {
+				delta = Double.parseDouble(args[0]);
+				maxIters = Integer.parseInt(args[1]);
+				System.out.println("maxIters: " + maxIters +" delta: "+ delta+ " debug: "+ debugMode);
+				
+			}else if(args.length>=3){
+				debugMode = true; 
+				delta = Double.parseDouble(args[0]);
+				maxIters = Integer.parseInt(args[1]);
+				System.out.println("maxIters: " + maxIters +" delta: "+ delta+ " debug: "+ debugMode);
+				
+				
+			}
+			else if(args.length ==0){
+				System.out.println("no args!");
+			}
+		
+			
 			cr.run();
 		} catch (final IOException ie) {
 			logger.error("I/O error: ");

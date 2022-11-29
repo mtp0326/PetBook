@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+	
+  <h1>Log in page</h1>
+  <% if (check) { %>
+ 	<meta http-equiv="refresh" content="1; url='/restaurants'"/>
+  <% } else { %>
+  <script>
+  	alert("login info incorrect")
+  </script>
+  <meta http-equiv="refresh" content="1; url='/'"/>
+  <% } %>
+</body>
+</html>

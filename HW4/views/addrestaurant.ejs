@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+  <h1>Add Restaurant</h1>
+  <%if (error == 0) { %>
+  	<script>
+  		alert("name incorrect")
+  	</script>
+  <% } else if (error == 1) { %>
+  	<script>
+  		alert("latitude incorrect")
+  	</script>
+  <% } else if (error == 2) { %>
+  	<script>
+  		alert("longitude incorrect")
+  	</script>
+  <% } else if (error == 3) { %>
+  	<script>
+  		alert("description incorrect")
+  	</script>
+  <% } %>
+  <meta http-equiv="refresh" content="1; url='/restaurants'"/>
+  
+</body>
+</html>

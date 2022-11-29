@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+		
+  <!-- <h1>Restaurants</h1>
+  <% if (check) { %>
+  <table>
+		<tr>
+			<th>name</th>
+			<th>username</th>
+			<th>latitude</th>
+			<th>longitude</th>
+			<th>brief description</th>
+		</tr>
+		<% for(let i = 0; i < list.length; i++){ %>
+			<tr>
+				<td><%= list[i].name.S %></td>
+				<td><%= list[i].creator.S %></td>
+				<td><%= list[i].latitude.S %></td>
+				<td><%= list[i].longitude.S %></td>
+				<td><%= list[i].description.S %></td>
+			</tr>
+			<% } %>
+	</table> -->
+	
+	<title>Map</title>
+	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDwwTWkmsYL5Vn5DDOnZm1LhqlxOeURXU
+&callback=loadMap"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+	</script><script type="text/javascript">
+	var map;
+	var currUser;
+	var markersAdd=[];
+	var loadMap = function(){
+		var myOptions = {
+			center:new google.maps.LatLng(39.952335, -75.163789),
+			zoom:11, mapTypeId:google.maps.MapTypeId.ROADMAP
+		};
+		map = new google.maps.Map(document.getElementById("map"), myOptions);
+		
+
+		
+		
+		leftClick(map);
+		
+		
+		
+	};
+
+	var refreshTime = function(){
+		$("#clock").html((new Date()).toString());
+		
+		for(let i = 0; i< markersAdd.length; i++){
+			markersAdd[i].setMap(null);
+		}
+		markersAdd=[];
+		$(document).ready(function () {
+
+		$.getJSON('/getList', 
+		function(elements){
+			var markers = [];
+			var latArr = elements.map(obj => parseFloat(obj.latitude.S));
+			var lonArr = elements.map(obj => parseFloat(obj.longitude.S));
+			var nameArr = elements.map(obj => obj.name.S);
+			var desArr = elements.map(obj => obj.description.S);
+			var creaArr = elements.map(obj => obj.creator.S);
+
+		for(let i = 0; i < elements.length; i++){
+			var newIt =
+			{
+				"name" : nameArr[i],
+				"creator" : creaArr[i],
+				"latitude" : latArr[i],
+				"longitude" : lonArr[i],
+				"description" : desArr[i],
+			
+		}
+		markers.push(newIt);
+	}
+	console.log(markers);
+	addMarkers(map, markers);
+});
+});
+
+		for(let i = 0; i< markersAdd.length; i++){
+			markersAdd[i].setMap(map);
+		}
+		
+		console.log(markersAdd);
+
+		setTimeout(refreshTime, 5000);
+	};
+	$(document).ready(function(){
+		setTimeout(refreshTime,5000);
+	});
+
+	
+	$(document).ready(function () {
+			console.log("creator!");
+			$.getJSON('/getCreator', 
+			function(elements){
+				currUser = elements;
+		
+			});
+		});
+		console.log("here");
+		$(document).ready(function () {
+
+			console.log("here!");
+			$.getJSON('/getList', 
+			function(elements){
+				var markers = [];
+				var latArr = elements.map(obj => parseFloat(obj.latitude.S));
+				var lonArr = elements.map(obj => parseFloat(obj.longitude.S));
+				var nameArr = elements.map(obj => obj.name.S);
+				var desArr = elements.map(obj => obj.description.S);
+				var creaArr = elements.map(obj => obj.creator.S);
+
+				for(let i = 0; i < elements.length; i++){
+					var newIt =
+					{
+						"name" : nameArr[i],
+						"creator" : creaArr[i],
+						"latitude" : latArr[i],
+						"longitude" : lonArr[i],
+						"description" : desArr[i],
+						
+						
+					}
+					markers.push(newIt);
+				}
+				console.log(markers);
+				addMarkers(map, markers);
+			});
+		});
+
+		
+
+
+		
+	
+
+		
+		
+
+	function leftClick(map){
+		google.maps.event.addListener(map, 'click',
+		function(event){
+
+
+			var htmlOut = "Lat: "+event.latLng.lat()+
+			", Lon: " +event.latLng.lng();
+
+			$("#pos").html(htmlOut);
+
+		}
+	);
+	}
+
+	
+	
+
+	function addMarkers(map, markers){
+		
+		
+		for(let i = 0; i < markers.length; i++){
+			var image;
+			console.log(currUser);
+			if(currUser == markers[i].creator){
+				image = "https://img.icons8.com/material/24/FAB005/marker--v1.png";
+			}
+			else{
+				image =  "https://img.icons8.com/material-rounded/24/FA5252/marker.png";
+			}
+			
+   
+			var markerOptions = {	
+				map: map,
+				position: {lat: markers[i].latitude, lng: markers[i].longitude},
+				icon: image,
+				name: markers[i].name,
+				creator: markers[i].creator,
+				latitude: markers[i].latitude,
+				longitude: markers[i].longitude,
+				description: markers[i].description
+
+			};
+			var markerItem = new google.maps.Marker(markerOptions);
+			markerItem['self'] = markerItem;
+
+			markersAdd.push(markerItem);
+			
+		}
+		console.log(markersAdd);
+
+
+
+
+		// markersAdd =
+		addPanToMarker(map, markersAdd);
+		deleteMarker(map);
+		
+	};
+
+	function deleteMarker(map){
+	markersAdd.map(marker=> {
+	marker.addListener('rightclick', event =>{
+			console.log(markersAdd);
+			if(currUser != marker.creator){
+				alert("cannot delete marks not added by you");
+			}
+			else{
+				$.ajax({
+        			type: "POST",
+        			url: "/deleteitem",
+        			data: { 
+            			name : marker.name,
+						longitude: marker.longitude,
+						latitude: marker.latitude,
+						description: marker.description
+        			},
+       			success: function(result) {
+				console.log(result)
+            	alert('deleted');
+				marker.setMap(null);
+				markersAdd.splice(markersAdd.indexOf(marker), 1);
+				console.log(markersAdd);
+				},
+        error: function(result) {
+            alert('error');
+        }
+    });
+
+			}
+
+		});
+    });
+	}
+
+
+
+	
+	function addPanToMarker(map, markersAdd) {
+		console.log("addPan" + markersAdd);
+      markersAdd = markersAdd.map(marker=> {
+        marker.addListener('click', event => {
+        
+          const location = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+          map.panTo(location);
+          const contentString =  "<b>"+marker.name+"</b>"+ "<br>"+
+		  marker.description+ "<br>"+
+		  "added by "+  marker.creator;
+          
+          const infowindow = new google.maps.InfoWindow({
+    		content: contentString,
+    		ariaLabel: "marker",
+  			});
+  			
+  			 infowindow.open({
+      		anchor: marker,
+      		map,
+   			 });
+  			
+  			
+          
+          
+        });
+
+
+      });
+    }
+	
+	
+	</script>
+	<script async defer
+		src=
+			"https://maps.googleapis.com/maps/api/js?key=AIzaSyBDwwTWkmsYL5Vn5DDOnZm1LhqlxOeURXU
+&callback=loadMap">
+		
+	</script>
+	<script>
+		$(document).ready(function(){
+			$("button").click(function(e){
+				e.preventDefault();
+				var latUpd = document.getElementsByName("latitude")[0].value;
+				var lonUpd = document.getElementsByName("longitude")[0].value;
+				var nameUpd = document.getElementsByName("name")[0].value;
+				var desUpd = document.getElementsByName("description")[0].value;
+				$.ajax({
+        			type: "POST",
+        			url: "/createrestaurant",
+        			data: { 
+            			name : nameUpd,
+						longitude: lonUpd,
+						latitude: latUpd,
+						description: desUpd
+        			},
+        success: function(result) {
+            alert('added');
+			console.log(result);
+			console.log(document.getElementsByName("name")[0].value);
+			tempMarkers =[];
+			var newIt =
+					{
+						"name" : document.getElementsByName("name")[0].value,
+						"creator" : currUser,
+						"latitude" : parseFloat(document.getElementsByName("latitude")[0].value),
+						"longitude" : parseFloat(document.getElementsByName("longitude")[0].value),
+						"description" : document.getElementsByName("description")[0].value,
+					}
+					console.log(newIt);
+					tempMarkers.push(newIt);
+					console.log(tempMarkers);
+					addMarkers(map, tempMarkers);
+
+
+
+        },
+        error: function(result) {
+            alert('error');
+        }
+    });
+			
+			});
+
+			
+			
+
+		});
+		
+		
+
+		
+	</script>
+	</head>
+	<body>
+		<div id="map" style="width:800px;height:500px;"></div>
+		<div id = "pos"> left click to show position!</div>
+		<div id = "clock">clock</div>
+		
+
+
+	<h1>Add new restaurant</h1>
+	<form action="/createrestaurant"  method="post">
+		<p>Name: <input type="text" name="name"></p>
+		<p>latitude: <input type="text" name="latitude"></p>
+		<p>longitude: <input type="text" name="longitude"></p>
+		<p>description: <input type="text" name="description"></p>
+		<button>ADD</button>
+	</form>
+
+	
+	
+	<a href="/logout">logout</a>
+			
+	
+  <% } else { %>
+  	<script>
+  		alert("login required")
+  	</script>
+  	<meta http-equiv="refresh" content="1; url='/'"/>
+  <% } %>
+
+</body>
+</html>

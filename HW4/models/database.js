@@ -7,28 +7,119 @@ var db = new AWS.DynamoDB();
    and call that function from your routes - don't just call DynamoDB directly!
    This makes it much easier to make changes to your database schema. */
 
-var myDB_lookup = function(searchTerm, language, callback) {
-  console.log('Looking up: ' + searchTerm); 
+var login = function(searchTerm, callback) {
+  console.log('Login: ' + searchTerm); 
 
   var params = {
-      KeyConditions: {
-        keyword: {
+	TableName : "users",	
+     KeyConditions: {
+        username: {
           ComparisonOperator: 'EQ',
           AttributeValueList: [ { S: searchTerm } ]
         }
       },
-      TableName: "words",
-      AttributesToGet: [ 'German' ]
+      AttributesToGet: [ 'password' ]
   };
 
   db.query(params, function(err, data) {
+	
     if (err || data.Items.length == 0) {
       callback(err, null);
     } else {
-      callback(err, data.Items[0].German.S);
+      callback(err, data.Items[0].password.S);
     }
   });
+};
+
+var login_add = function(keyword, password, fullname) {
+	var params={
+		TableName : "users",	
+		Item: {
+			"username" :{
+				S: keyword
+			},
+			"password" :{
+				S: password
+			},
+			"fullname" :{
+				S: fullname
+			}
+			
+		}
+	};
+	db.putItem(params, function(err,data){
+		if(err){
+			console.log(err);
+		}
+		
+	});
+	
+		
 }
+
+var restaurants = function(callback) {
+  var params = {
+	TableName : "restaurants",	
+	Select: "ALL_ATTRIBUTES"
+};
+  
+
+  
+
+  db.scan(params, function(err, data) {
+   callback(err, data.Items);
+  })
+};
+
+var delete_item = function(name, username, latitude, longitude, description){
+	var params = {
+		TableName : "restaurants",	
+			Key :{
+				"name" :{
+					S: name
+				} 
+				
+			}
+	  };
+	  db.deleteItem(params, function(err,data){
+		console.log(data);
+		if(err){
+			console.log(err);
+		}
+	});
+};
+
+var restaurant_add = function(name, username, latitude, longitude, description) {
+	var params = {
+	TableName : "restaurants",	
+    	Item :{
+			"name":{
+				S: name
+			},
+			"creator":{
+				S: username
+			},
+			"latitude":{
+				S: latitude
+			},
+			"longitude":{
+				S: longitude
+			},
+			"description":{
+				S: description
+			}
+			
+		}
+  };
+	db.putItem(params, function(err,data){
+		console.log(data);
+		if(err){
+			console.log(err);
+		}
+	});
+	
+		
+};
 
 // TODO Your own functions for accessing the DynamoDB tables should go here
 
@@ -39,7 +130,11 @@ var myDB_lookup = function(searchTerm, language, callback) {
 // TODO Don't forget to add any new functions to this class, so app.js can call them. (The name before the colon is the name you'd use for the function in app.js; the name after the colon is the name the method has here, in this file.)
 
 var database = { 
-  lookup: myDB_lookup
+	login : login,
+	login_add: login_add,
+	restaurants: restaurants,
+	delete_item: delete_item,
+	restaurant_add: restaurant_add
 };
 
 module.exports = database;

@@ -6,10 +6,11 @@
       "start": "node app.js"
    },
    "dependencies": {
-      "express": "*",
+      "async": "*",
       "aws-sdk": "*",
       "ejs": "*",
-      "async": "*",
+      "express": "*",
+      "express-session": "^1.17.3",
       "lru-cache": "*"
    }
 }

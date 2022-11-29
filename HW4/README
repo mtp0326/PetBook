@@ -1,12 +1,14 @@
-Full name:  ______________
-SEAS login: ______________
+Full name:  Cindy Wei______________
+SEAS login: weicindy ______________
 
 Which features did you implement? 
   (list features, or write 'Entire assignment')
+Entire assignment
+replace everywhere that says YOUR_API_KEY with a new api key
 
 Which milestone(s) are you submitting? (Please check only one!)
   [ ] HW4MS1
-  [ ] HW4MS2
+  [ v] HW4MS2
   [ ] HW4MS3
 
 Did you complete any extra-credit tasks? If so, which ones?
@@ -14,13 +16,13 @@ Did you complete any extra-credit tasks? If so, which ones?
 
 Did you personally write _all_ the code you are submitting
 (other than code from the course web page)?
-  [ ] Yes
+  [v ] Yes
   [ ] No
 
 Did you copy any code from the Internet, or from classmates?
   [ ] Yes
-  [ ] No
+  [ v] No
 
 Did you collaborate with anyone on this assignment?
   [ ] Yes
-  [ ] No
+  [ v ] No

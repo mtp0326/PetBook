@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+  <h1>Create Account</h1>
+  <% if (check) { %>
+  	<meta http-equiv="refresh" content="1; url='/restaurants'"/>
+  <% } else { %>
+  	<script>
+  		alert("username has been used");
+  	</script>
+  	<meta http-equiv="refresh" content="1; url='/signup'"/>
+  <% } %>
+
+</body>
+</html>
