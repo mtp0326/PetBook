@@ -1,71 +1,132 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Restaurant Review</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <style>
-      html,
-      body {
-        height: 100%;
-      }
+    <title>PennBook</title>
+    <link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    body {
+    
+      
+    height: 100%;
 
-      body {
-        display: flex;
-        align-items: center;
-        padding-top: 40px;
-        padding-bottom: 40px;
-        background-color: #f5f5f5;
-      }
-
-      .form-signin {
-        max-width: 330px;
-        padding: 15px;
-      }
-
-      .form-signin .form-floating:focus-within {
-        z-index: 2;
-      }
-
-      .form-signin input[type="text"] {
-        margin-bottom: -1px;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-      }
-
-      .form-signin input[type="password"] {
-        margin-bottom: 10px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-      }
-    </style>
-  </head>
-<body class="text-center">
-	<!-- This is a simple example template with a form that has a single input field. 
-		   You'll need something similar for the login page -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    padding-top: 200px;
+    padding-bottom: 200px;
+    background-color: #ebebeb;
+    align-items: center;
+    text-align: center;
+    margin: 100;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
   
-  <main class="form-signin w-100 m-auto">
-    <h1>Restaurant Reviews</h1>
-    <p></p>
-    <h2 class="h3 mb-3 fw-normal">Please sign in</h2>
-    <form action="/checklogin" method="post">
-      <div class="form-floating">
-        <input type="text" class="form-control" id="floatingInput" placeholder="username" name="username">
-        <label for="floatingInput">Username</label>
-      </div>
-      <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
-        <label for="floatingPassword">Password</label>
-      </div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-    </form>
-    <a href="/signup">Sign Up Here</a>
+  }
+
+  input[type=submit] {
+    appearance:none;
+  -webkit-appearance:none;
+    padding:10px;
+    margin:10px 0; 
+    border:0;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    background-color:#0668E1;
+    color:#fff;
+    border-radius:5px;
+}
+
+button[type=submit] {
+    appearance:none;
+  -webkit-appearance:none;
+    padding:10px;
+    margin:10px 0; 
+    border:0;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    background-color:#0b994d;
+    color:#fff;
+    border-radius:5px;
+}
+
+input[type=text] {
+
+    padding:10px;
+    margin:10px 0; 
+    border:0;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    border-radius:5px;
+    
+}
+input[type=password] {
+
+padding:10px;
+margin:10px 0; 
+border:0;
+box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+border-radius:5px;
+
+}
+
+  h1{
+    color:#0668E1;
+   
+    font-weight: bold;
+    font-size:100px ;
+  }
+  h5{
+    color: rgb(39, 31, 31);
+   
+    font-size:20px ;
+  }
+
+  h4{
+    color: rgb(39, 31, 31);
+
+    font-size:15px ;
+  }
+  p{
+    color: rgb(39, 31, 31);
+
+    font-size:20px ;
+  }
+  span.info{
+    display: inline-block;
+    width: 350px;
+    height: 350px;
+    padding: 20px;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+  border-radius:5px;
+    background-color: rgb(255, 255, 255);
+
+  }
+  span.title{
+    display: inline-block;
+    padding: 50px;
+ 
+  }
+    
   
-    <p class="mt-5 mb-3 text-muted">© 2022</p>
-    <h6><br><font color="black"><%= "Jiwoong Matt Park, mtp0326" %><p></br></h6>
-  </main>
-  
+</style>  
+    </head>
+    
+<body>
+<span class ="title">
+  <h1>pennbook</h1>
+  <h5>
+    Connect with your friends around Penn on Pennbook.
+  </h5>
+</span>
+<span class = "info">
+  <form action="/checklogin" method="post">
+    <p>
+      <input id = "floatingPassword" type="text" placeholder="Username" name="username">
+    </p>
+    <p>
+      <input id="floatingPassword" type="password" placeholder="Password" name="password">
+    </p>
+    <input type = "submit" value="Log In">
+  </form>
+  <form action = "/signup">
+    <button type = "submit">Create Account</button>
+  </form>
+</span>
 </body>
 </html>

@@ -1,10 +1,8 @@
 var db = require('../models/database.js');
-var isCreated = true;
 var isVerified = false;
 // TODO The code for your own routes should go here
 //gets the main page (USED POP-UP box instead of the red failed sign)
 var getMain = function(req, res) {
-  isCreated = true;
   isVerified = false;
   res.render('main.ejs');
 };
@@ -13,22 +11,25 @@ var getMain = function(req, res) {
 var postResultsUser = function(req, res) {
   var usernameCheck = req.body.username;
   var passwordCheck = req.body.password;
-  db.passwordLookup(usernameCheck, "username", function(err, data) {
+  console.log(usernameCheck);
+  console.log(passwordCheck);
+  db.passwordLookup(usernameCheck, function(err, data) {
     if (data == passwordCheck && !err) {
       req.session.username = req.body.username;
       req.session.password = req.body.password;
-      res.render('checklogin.ejs', {"verify" : true});
       isVerified = true;
+      res.render('checklogin.ejs', {"check" : true});
     } else {
-      res.render('checklogin.ejs', {"verify" : false});
       isVerified = false;
+      res.render('checklogin.ejs', {"check" : false});
     }
+      
   });
 };
 
 //gets signup page
 var getSignup = function(req, res) {
-	res.render('signup.ejs', {"isCreated" : isCreated});
+	res.render('signup.ejs', {"check" : isVerified});
 }
 
 //gets logout page
@@ -41,28 +42,35 @@ var getLogout = function(req, res) {
 //check if new account can be created by receiving null (which means that username in db is empty)
 //and create the new account and go to restaurants or fail and go back to signup.
 var postNewAccount = function(req, res) {
-  var usernameNewCheck = req.body.newUsername;
+  var usernameNewCheck = req.body.username;
   db.usernameLookup(usernameNewCheck, "username", function(err, data) {
 	if(data == null || err) {
-    req.session.username = req.body.newUsername;
-    req.session.password = req.body.newPassword;
-    req.session.fullname = req.body.newFullname;
-		db.createAccount(req.session.username, req.session.password, req.session.fullname, function(err, data){});
+    req.session.username = req.body.username;
+    req.session.password = req.body.password;
+    req.session.fullname = req.body.firstname + " " + req.body.lastname;
+    req.session.affiliation = req.body.affiliation;
+    req.session.email = req.body.email;
+    req.session.birthday = req.body.birthday;
+    
+    var interestList = (req.body.interest.toLowerCase()).split(", ");
+    req.session.interest = interestList;
+    req.session.pfpURL = req.body.pfpURL;
+		db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
+      req.session.interest, req.session.pfpURL, function(err, data){});
 		isVerified = true;
-		isCreated = true;
-		res.render('createaccount.ejs', {"created" : true});
+    res.render('createaccount.ejs', {"check" : true});
 	} else {
 		isVerified = false;
-		isCreated = false;
-		res.render('createaccount.ejs', {"created" : false});
+    res.render('createaccount.ejs', {"check" : false});
 	}
+    
   });
 };
 
 //render homepage
 //NEW: getHomepage, homepage.ejs
 var getHomepage = function(req, res) {
-	res.render('homepage.ejs', {"isVerified" : isVerified})
+	res.render('homepage.ejs', {"check" : isVerified})
 };
 
 //ajax: query posts of friend's userid

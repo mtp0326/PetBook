@@ -46,5 +46,5 @@ app.post('/deleteList', routes.post_deleteRestaurantAjax);
 /* Run the server */
 
 console.log('Author: Jiwoong Matt Park (mtp0326)');
-app.listen(80);
-console.log('HTTP server started on port 80');
+app.listen(8080);
+console.log('HTTP server started on port 8080');

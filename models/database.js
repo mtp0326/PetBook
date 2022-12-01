@@ -9,7 +9,7 @@ var db = new AWS.DynamoDB();
    This makes it much easier to make changes to your database schema. */
 
 //gets username input and returns the password
-var myDB_getPassword = function(searchTerm, language, callback) {
+var myDB_getPassword = function(searchTerm, callback) {
   var params = {
       KeyConditions: {
         username: {
@@ -22,6 +22,7 @@ var myDB_getPassword = function(searchTerm, language, callback) {
   };
 
   db.query(params, function(err, data) {
+    console.log(data);
     if (err || data.Items.length == 0) {
       callback(err, null);
     } else {
@@ -56,33 +57,45 @@ var myDB_getUsername = function(searchTerm, language, callback) {
 //create a new account with the right db parameters
 var myDB_createAccount =
   function(newUsername, newPassword, newFullname, newAffiliation,
-    newBirthday, newEmail, newChatID, newFriends, newInterest, newPfpURL, callback) {
-  	var params = {
-      TableName: "users",
-      Item : {
-        "username": { S: newUsername },
-        "password": { S: newPassword },
-        "fullname": { S: newFullname },
-        "affiliation": { S: newAffiliation },
-        "birthday": { S: newBirthday },
-        "email": { S: newEmail },
-        "chatID": { L: newChatID },
-        "friends": { SS: newFriends },
-        "interest": { L: newInterest },
-        "pfpURL": { S: newPfpURL }
-      }
-    };
+    newEmail, newBirthday, newInterest, newPfpURL, callback) {
+
+      console.log(newUsername
+      + " " + newPassword
+      + " " + newFullname
+      + " " + newAffiliation
+      + " " + newEmail
+      + " " + newBirthday
+      + " " + newInterest
+      + " " + newPfpURL);
+
+      var params = {
+        TableName: "users",
+        Item : {
+          "username": { S: newUsername },
+          "password": { S: newPassword },
+          "fullname": { S: newFullname },
+          "affiliation": { S: newAffiliation },
+          "birthday": { S: newBirthday },
+          "email": { S: newEmail },
+          "chatID": { L: [] },
+          "friends": { SS: [] },
+          "interest": { L: newInterest },
+          "pfpURL": { S: newPfpURL }
+        }
+      };
+      console.log(params);
 
   db.putItem(params, function(err, data) {
+    console.log(data);
     if (err) {
-		console.log(err)
+		  console.log(err)
     }
   });
 }
 
 //NEW
 //outputs friends
-var myDB_getFriends = (username, function(callback) {
+var myDB_getFriends = (function(username, callback) {
   var params = {
   TableName: "users",
     Key: {"username" : {S: username}},
@@ -100,13 +113,14 @@ var myDB_getFriends = (username, function(callback) {
 
 //NEW
 //outputs all restaurants from db into an array
-var myDB_allPosts = (userID, function(callback) {
+var myDB_allPosts = (function(userID, callback) {
   var params = {
   TableName: "posts",
     Key: {"userID" : {S: userID}}
   };
 
   db.query(params, function(err, data) {
+    console.log(data);
     if(err) {
       console.log(err);
     } else { //not sure if data.Items is all the items that has the key of userID???
