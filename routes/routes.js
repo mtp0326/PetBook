@@ -82,8 +82,8 @@ var getHomepagePostListAjax = function(req, res) {
     var tempList = [];
     db.getAllPosts(req.session.username, function(err, data){
       var contentArr = data.map(obj => obj.content.S);
-      var commentsArr = data.map(obj => obj.comments.S);
-      var likesArr = data.map(obj => obj.likes.S);
+      var commentsArr = data.map(obj => obj.comments.L);
+      var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
       var timestampArr = data.map(obj => obj.timestamp.S);
       
@@ -113,8 +113,8 @@ var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
   } else {
     db.getAllPosts(recFriendsList[counter], function(err, data){
       var contentArr = data.map(obj => obj.content.S);
-      var commentsArr = data.map(obj => obj.comments.S);
-      var likesArr = data.map(obj => obj.likes.S);
+      var commentsArr = data.map(obj => obj.comments.L);
+      var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
       var timestampArr = data.map(obj => obj.timestamp.S);
       
@@ -130,7 +130,6 @@ var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
         recPostsList.push(pointer);
       }
       counter++;
-
       recGetAllPosts(recFriendsList, recPostsList, counter, callback);
     });
   }
