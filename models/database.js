@@ -127,7 +127,7 @@ var myDB_getFriends = (function(username, callback) {
 });
 
 //NEW
-//outputs all restaurants from db into an array
+//outputs all posts from user into an array
 var myDB_allPosts = (function(userID, callback) {
   var params = {
     TableName: "posts",

@@ -80,9 +80,28 @@ var getHomepagePostListAjax = function(req, res) {
     console.log("friend: " + friendsList);
 
     var tempList = [];
-    recGetAllPosts(friendsList, tempList, 0, function(postsList) {
-      postsList.sort((a, b) => (a.timestamp).localeCompare(b.timestamp)).reverse();
-      res.send(JSON.stringify(postsList));
+    db.getAllPosts(req.session.username, function(err, data){
+      var contentArr = data.map(obj => obj.content.S);
+      var commentsArr = data.map(obj => obj.comments.S);
+      var likesArr = data.map(obj => obj.likes.S);
+      var userIDArr = data.map(obj => obj.userID.S);
+      var timestampArr = data.map(obj => obj.timestamp.S);
+      
+      for(let i = 0; i < userIDArr.length; i++) {
+        var pointer =  {
+          "content": contentArr[i],
+          "comments": commentsArr[i],
+          "likes": likesArr[i],
+          "userID" : userIDArr[i],
+          "timestamp" : timestampArr[i]
+        };
+        tempList.push(pointer);
+      }
+      recGetAllPosts(friendsList, tempList, 0, function(postsList) {
+        postsList.sort((a, b) => (a.timestamp).localeCompare(b.timestamp)).reverse();
+        console.log(postsList)
+        res.send(JSON.stringify(postsList));
+      });
     });
   });
 };
