@@ -82,26 +82,8 @@ var getHomepagePostListAjax = function(req, res) {
     var tempList = [];
     recGetAllPosts(friendsList, tempList, 0, function(postsList) {
 
-      var sortedList = [];
-      var contentArr = postsList.map(obj => obj.content.S);
-      var commentsArr = postsList.map(obj => obj.comments.S);
-      var likesArr = postsList.map(obj => obj.likes.S);
-      var userIDArr = postsList.map(obj => obj.userID.S);
-      var timestampArr = postsList.map(obj => obj.timestamp.S);
-      
-      console.log(contentArr);
-      for(let i = 0; i < userIDArr.length; i++) {
-        var pointer =  {
-          "content": contentArr[i],
-          "comments": commentsArr[i],
-          "likes": likesArr[i],
-          "userID" : userIDArr[i],
-          "timestamp" : timestampArr[i]
-        };
-        sortedList.push(pointer);
-      }
-      console.log(sortedList);
-      sortedList.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
+      console.log(postsList);
+      postsList.sort((a, b) => (a.timestamp).localeCompare(b.timestamp)).reverse();
       res.send(JSON.stringify("postsList: " + postsList));
     });
   });
