@@ -212,7 +212,74 @@ var myDB_updateInterest = function(username, newInterests, callback) {
     });
 }
 
+//creates post with the right db parameters
+var myDB_createPost = function(userID, content, timestamp, callback) {
+  var params = {
+  TableName: "posts",
+    Item : {
+        "userID" : {
+          S: userID
+        },
+        "content": {
+          S: content
+        },
+        "timestamp": {
+          S: timestamp
+        },
+        "comments": {
+          L: []
+        },
+        "likes": {
+          L: []
+        }
+      }
+    };
 
+db.putItem(params, function(err, data) {
+  if (err) {
+  console.log(err);
+  }
+});
+}
+
+//adds comment in post using userID (partition key) and timestamp (sort key)
+var myDB_addComment = function(userID, timestamp, comment, callback) {
+  var paramsGet = {
+    TableName: "posts",
+    KeyConditionExpression: "userID = :a and timestamp = :b",
+    ExpressionAttributeValues: {
+      ":a": { S: userID },
+      ":b": { S: timestamp }
+    }
+  };
+
+  db.getItem(paramsGet, function(err, data) {
+    var tempArr = data.Items[0].comments.L;
+    tempArr.push(comment);
+
+    var paramsPut = {
+      TableName: "posts",
+      KeyConditionExpression: "userID = :a and timestamp = :b",
+      ExpressionAttributeValues: {
+        ":a": { S: userID },
+        ":b": { S: timestamp }
+      },
+      Item : {
+        "comments": {
+          L: tempArr
+        }
+      }
+    };
+
+    db.putItem(paramsPut, function(err, data) {
+      if (err) {
+      console.log(err);
+      }
+    });
+  });
+}
+
+//***************************************************** */
 
 
 //creates restaurant with the right db parameters
@@ -323,6 +390,8 @@ var database = {
   //NEW
   getAllPosts : myDB_allPosts,
   getFriends : myDB_getFriends,
+  createPost : myDB_createPost,
+  addComment : myDB_addComment,
 
   updateEmail : myDB_updateEmail,
   updatePw : myDB_updatepw,

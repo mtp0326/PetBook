@@ -140,8 +140,45 @@ var getCreator = function(req, res) {
   res.send(JSON.stringify(req.session.username));
 };
 
+//create new post in the db when all inputs exist in posts
+var postNewPostAjax = function(req, res) {
+  var content = req.body.content;
+  var timestamp = req.body.timestamp;
+  if(content.length != 0 && timestamp.length != 0) {
+	  db.createPost(req.session.username, content, timestamp, function(err, data){});
+    
+    var response = {
+      "userID": req.session.username,
+      "content" : content,
+      "timestamp": timestamp
+    };
 
+    res.send(response);
+  } else {
+	  res.send(null);
+  }
+};
 
+//ajax: add comment in post data in posts
+var postNewCommentAjax = function(req, res) {
+  var userID = req.body.userID;
+  var timestamp = req.body.timestamp;
+  var comment = req.body.comment;
+  if(userID.length != 0 && timestamp.length != 0 && comment.length != 0) {
+    db.addComment(userID, timestamp, comment, function(err,data){});
+    
+    var response = {
+      "userID": userID,
+      "timestamp": timestamp,
+      "comment" : comment
+    };
+
+    res.send(response);
+  } else {
+    res.send(null);
+  }
+};
+//***************************************************** */
 
 //get all restaurants and login verification and put in restaurants
 var getRestaurants = function(req, res) {
@@ -216,6 +253,9 @@ var routes = {
   //NEW
   get_homepage : getHomepage,
   get_homepagePostListAjax : getHomepagePostListAjax,
+
+  post_newPostAjax : postNewPostAjax,
+  post_newCommentAjax : postNewCommentAjax,
 
   post_newAccount : postNewAccount,
   post_newRestaurantAjax : postNewRestaurantAjax,

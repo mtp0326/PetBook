@@ -34,6 +34,9 @@ app.get('/getCreator', routes.get_creator);
 app.get('/homepage', routes.get_homepage);
 app.get('/getPostAjax', routes.get_homepagePostListAjax);
 
+app.post('/createpost', routes.post_newPostAjax);
+app.post('/createcomment', routes.post_newCommentAjax);
+
 app.post('/checklogin', routes.verifyUser);
 app.post('/createaccount', routes.post_newAccount);
 app.post('/addList', routes.post_newRestaurantAjax);
