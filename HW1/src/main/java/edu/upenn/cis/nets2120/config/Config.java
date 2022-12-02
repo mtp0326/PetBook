@@ -22,7 +22,7 @@ public class Config {
 	 * keep this as http://localhost:8000; for MS2; you should replace it
 	 * with https://dynamodb.us-east-1.amazonaws.com. 
 	 */
-	public static String DYNAMODB_URL = "http://localhost:8000";
+	public static String DYNAMODB_URL = "http://dynamodb.us-east-1.amazonaws.com";
 	//		"https://dynamodb.us-east-1.amazonaws.com";
 	
 	/**
@@ -31,5 +31,5 @@ public class Config {
 	 * If we are local, performance is really slow - so you should switch
 	 * to the real thing as soon as basic functionality is in place.
 	 */
-	public static Boolean LOCAL_DB = true;
+	public static Boolean LOCAL_DB = false;
 }

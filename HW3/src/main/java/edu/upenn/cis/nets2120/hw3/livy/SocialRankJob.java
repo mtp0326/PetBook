@@ -61,7 +61,7 @@ public class SocialRankJob implements Job<List<MyPair<Integer,Double>>> {
 				.map(line -> line.toString().split("\\s+"));
 		JavaPairRDD<Integer, Integer> result = file.mapToPair(line ->{
 			return new Tuple2<>(Integer.parseInt(line[1]), Integer.parseInt(line[0]));
-		});
+		}).distinct();
 
     return result;
 	}
@@ -128,8 +128,8 @@ public class SocialRankJob implements Job<List<MyPair<Integer,Double>>> {
 
 		
 				
-		JavaRDD<Integer> nodes = edgeRDD.reduceByKey((a, b) -> a+b).keys();
-		System.out.println("This graph contains "+ nodes.count() +" nodes and "+ network.count()+ " edges");
+//		JavaRDD<Integer> nodes = edgeRDD.reduceByKey((a, b) -> a+b).keys();
+//		System.out.println("This graph contains "+ nodes.count() +" nodes and "+ network.count()+ " edges");
 //		System.out.println("all edges: ");
 //		edgeRDD.collect().stream().forEach( item ->{
 //			System.out.println( "("+ item._1 + ", " + item._2 + ")");
@@ -172,12 +172,12 @@ public class SocialRankJob implements Job<List<MyPair<Integer,Double>>> {
 					.sortByKey(false, Config.PARTITIONS);
 			dround = difference.keys().take(1).get(0);
 			System.out.println("round "+i+" delta: "+ dround);
+			pageRankRDD = pageRankRDD2;	
 			if(dround <= delta) {
 				converge = true;	
 			}
-			else {
-				pageRankRDD = pageRankRDD2;	
-			}
+			
+	
 			
 		i++;	
 		}

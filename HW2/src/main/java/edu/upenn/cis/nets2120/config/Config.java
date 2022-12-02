@@ -34,10 +34,13 @@ public class Config {
 	
 	public static String TED_TALK_PATH = "target/ted_talks_en.csv";
 	
+	// 
+	
 	/**
 	 * The path to the space-delimited social network data
 	 */
-	public static String SOCIAL_NET_PATH = "target/twitter_combined.txt";
+	public static String SOCIAL_NET_PATH = "simple-example.txt";
+	// target/twitter_combined.txt
 	
 //	public static String TED_PATH = "s3a://penn-cis545-files/ted_talks_en.csv";
 

@@ -1,3 +1,4 @@
+
 package edu.upenn.cis.nets2120.hw1.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -106,3 +107,4 @@ public class TestStoreAndQuery {
 		}
 	}
 }
+

@@ -156,7 +156,7 @@ public class ComputeRanks {
 					.reduceByKey((a,b) -> a-b)
 					.mapToPair(item -> 
 						new Tuple2<Double, Integer>(item._2, item._1))
-					.sortByKey(false);
+					.sortByKey(false, Config.PARTITIONS);
 			pageRankRDD = pageRankRDD2;		
 			
 			if(difference.keys().take(1).get(0) <= delta) {

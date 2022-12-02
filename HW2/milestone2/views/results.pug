@@ -6,6 +6,47 @@ html
 		link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
 		meta(name='viewport' content='width=device-width, initial-scale=1')
+	
 	body(class="container")
 		h1 NETS 2120 Homework 2 Milestone 2 - TED Navigator
 		h3 Top #{results.length} TED talks matching "#{search}"
+		each result in results
+			table(style = 'width:100%', border = '1')
+				tr
+					th Speaker
+					td #{result.speaker_1}
+				tr
+					th Talk Title
+					td 
+						a(href=result.url) #{result.title}
+				tr
+					th link
+					td 
+						iframe(width = "600", height = "400", src = results.url.replace("www", "embed")) 
+				tr
+					th Social ID
+					td #{result.social_id}
+				tr
+					th number of talk views
+					td #{result.views}
+				tr
+					th duration
+					td #{result.duration}
+				tr 
+					th topics
+					td  
+						each res in result.topics
+							a(href= "http://localhost:8081/talks?keyword=" + res) #{res}
+							br
+				
+				tr
+					th related talks
+					td  
+						each key, value in result.related_talks
+							a(href= "/talk?id=" + value) #{key}
+							br
+			
+			
+  		
+		
+		

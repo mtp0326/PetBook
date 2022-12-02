@@ -30,14 +30,36 @@ app.get('/bear.jpg', function(request, response) {
 });
 
 app.get('/talks', function(request, response) {
-  var docClient = new AWS.DynamoDB.DocumentClient();
+ var search = stemmer((request.query.keyword).toLowerCase());
+ var docClient = new AWS.DynamoDB.DocumentClient();
+ var params={
+	TableName: "inverted",
+	KeyConditionExpression: "keyword = :keyword",
+	
+	ExpressionAttributeValues:{
+		":keyword":search
+	}
+	
+};
 
-  console.log(request.query.keyword);
-  
 
+results = new Array;
+
+docClient.query(params, function(err,data){
+	if(err){
+		console.log(err); 
+	}else{
+		var count = 0;
+		while(count < 15 && data.Items.length>count){
+			results.push(data.Items[count].url);
+			count++;
+		}
+		 response.render("results", { "search": request.query.keyword, "results": results });	
+	}
+});
   // TODO look up the word (or, in the case of EC2, words) in 'terms' in DynamoDB and hand them over as the variable 'results' below
 
-  response.render("results", { "search": request.query.keyword, "results": results });
+ 
 });
 
 app.listen(port, () => {

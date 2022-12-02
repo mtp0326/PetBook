@@ -15,8 +15,8 @@ public class Config {
 	/**
 	 * The path to the space-delimited social network data
 	 */
-//	public static String SOCIAL_NET_PATH = "s3a://penn-cis545-files/twitter_combined.txt";
-	public static String SOCIAL_NET_PATH = "simple-example.txt";
+	public static String SOCIAL_NET_PATH = "s3a://penn-cis545-files/twitter_combined.txt";
+//	public static String SOCIAL_NET_PATH = "simple-example.txt";
 	
 	
 	public static String BIGGER_SOCIAL_NET_PATH = "s3a://penn-cis545-files/soc-LiveJournal1.txt";

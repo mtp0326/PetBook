@@ -139,7 +139,6 @@ public class LoadData {
 
 		try {
 			ld.initialize();
-
 			ld.run();
 		} catch (final IOException ie) {
 			logger.error("I/O error: ");

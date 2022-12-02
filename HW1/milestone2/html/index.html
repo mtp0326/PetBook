@@ -18,13 +18,22 @@
  <input type="text" id="keyword" name="keyword" />
   <input type="submit" value="Search">
 </form>
+
 <script>
   function validate(term) {
     var searchString = term.value;
-
+    if(searchString.length < 1){
+    	return false;
+    }
+    for(let i = 0; i < searchString.length; i++){
+    	if(!((searchString[i]>='A' && searchString[i]<='Z') || (searchString[i]>='a' && searchString[i]<='z'))){
+    		return false;
+    	}
+    }
+	
     // TODO implement this function; return true below if the search string looks good
 
-    return false; 
+    return true; 
   }
 </script>
 </body>

@@ -20,7 +20,7 @@ public class ComputeRanksLivy {
 	public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, ExecutionException {
 		
 		LivyClient client = new LivyClientBuilder()
-				  .setURI(new URI("http://ec2-44-211-45-220.compute-1.amazonaws.com:8998/"))
+				  .setURI(new URI("http://ec2-34-230-61-138.compute-1.amazonaws.com:8998/"))
 				  .build();
 
 		try {
@@ -29,40 +29,45 @@ public class ComputeRanksLivy {
 		  System.out.printf("Uploading %s to the Spark context...\n", jar);
 		  client.uploadJar(new File(jar)).get();
 		  
-		  String sourceFile = Config.SOCIAL_NET_PATH;
+		  String sourceFile = Config.BIGGER_SOCIAL_NET_PATH;
 
 		  System.out.printf("Running SocialRankJob with %s as its input...\n", sourceFile);
 		  List<MyPair<Integer,Double>> resultWithBL = client.submit(new SocialRankJob(true, sourceFile)).get();
-		  System.out.println("With backlinks: " + resultWithBL);
+//		  System.out.println("With backlinks: " + resultWithBL);
 		  
 		  
-		  List<MyPair<Integer,Double>> resultWOBL = client.submit(new SocialRankJob(false, sourceFile)).get();
-		  System.out.println("Without backlinks: " + resultWOBL);
+//		  List<MyPair<Integer,Double>> resultWOBL = client.submit(new SocialRankJob(false, sourceFile)).get();
+//		  System.out.println("Without backlinks: " + resultWOBL);
 		  
-		  List<Integer> resultWithBLNode = new ArrayList<>();
-		  resultWithBL.forEach(t ->{
-				resultWithBLNode.add(t.getLeft());
-			});
+//		  List<Integer> resultWithBLNode = new ArrayList<>();
+//		  resultWithBL.forEach(t ->{
+//				resultWithBLNode.add(t.getLeft());
+//			});
+//		  
+//		  List<Integer> resultWOBLNode = new ArrayList<>();
+//		  resultWOBL.forEach(t ->{
+//				resultWOBLNode.add(t.getLeft());
+//			});
 		  
-		  List<Integer> resultWOBLNode = new ArrayList<>();
-		  resultWOBL.forEach(t ->{
-				resultWOBLNode.add(t.getLeft());
-			});
+		  FileWriter newFile = new FileWriter("results2.txt");
 		  
-		  FileWriter newFile = new FileWriter("results1.txt");
-		  
-		  List<Integer> NodesInBothLists = new ArrayList<>(resultWithBLNode);
-		  
-		  NodesInBothLists.retainAll(resultWOBLNode);
-		  resultWithBLNode.removeAll(NodesInBothLists);
-		  resultWOBLNode.removeAll(NodesInBothLists);
+//		  List<Integer> NodesInBothLists = new ArrayList<>(resultWithBLNode);
+//		  
+//		  NodesInBothLists.retainAll(resultWOBLNode);
+//		  resultWithBLNode.removeAll(NodesInBothLists);
+//		  resultWOBLNode.removeAll(NodesInBothLists);
 		  
 		  
-//		  newFile.write(resultWithBLNode + "\n");
-		  newFile.write("Nodes exclusive to computations without back-links" + resultWOBLNode+ "\n");
+		  for(int i = 0; i< resultWithBL.size(); i++) {
+			  newFile.write(resultWithBL.get(i).getLeft()+", "+resultWithBL.get(i).getRight()+"\n");
+			  System.out.println(resultWithBL.get(i).getLeft()+", "+resultWithBL.get(i).getRight());
+		  }
 		  
-		  newFile.write("Nodes in both lists" + NodesInBothLists + "\n");
-		  newFile.close();
+//		  newFile.write("Nodes exclusive to computations without back-links" + resultWOBLNode+ "\n");
+//		  newFile.write("Nodes exclusive to computations withback-links" + resultWithBLNode+ "\n");
+//		  
+//		  newFile.write("Nodes in both lists" + NodesInBothLists + "\n");
+//		  newFile.close();
 		  // TODO write the output to a file that you'll upload.
 		} finally {
 		  client.stop(true);

@@ -1,0 +1,1 @@
+{"version":3,"file":"ResourceNotFoundException.js","sourceRoot":"","sources":["ResourceNotFoundException.ts"],"names":[],"mappings":";;AAEa,QAAA,yBAAyB,GAAgB;IAClD,IAAI,EAAE,WAAW;IACjB,QAAQ,EAAE,EAAE;IACZ,OAAO,EAAE;QACL,OAAO,EAAE;YACL,KAAK,EAAE;gBACH,IAAI,EAAE,QAAQ;aACjB;SACJ;KACJ;IACD,aAAa,EAAE,2BAA2B;CAC7C,CAAC"}
