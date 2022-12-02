@@ -11,8 +11,6 @@ var getMain = function(req, res) {
 var postResultsUser = function(req, res) {
   var usernameCheck = req.body.username;
   var passwordCheck = req.body.password;
-  console.log(usernameCheck);
-  console.log(passwordCheck);
   db.passwordLookup(usernameCheck, function(err, data) {
     if (data == passwordCheck && !err) {
       req.session.username = req.body.username;
@@ -23,7 +21,6 @@ var postResultsUser = function(req, res) {
       isVerified = false;
       res.render('checklogin.ejs', {"check" : false});
     }
-      
   });
 };
 
@@ -77,21 +74,73 @@ var getHomepage = function(req, res) {
 //Also renders comments if exists
 //NEW: getHomepagePostList, getAllPosts
 var getHomepagePostListAjax = function(req, res) {
-  var friendsList = [];
-  var postsList = [];
+  
   db.getFriends(req.session.username, function(err, data){
-    friendsList.push(data);
-  });
-  for(const friend of friendsList) {
-    db.getAllPosts(friend, function(err, data){
-      postsList.push(data);
+    var friendsList = data.map(obj => obj.S);
+    console.log("friend: " + friendsList);
+
+    var tempList = [];
+    recGetAllPosts(friendsList, tempList, 0, function(postsList) {
+
+      var sortedList = [];
+      var contentArr = postsList.map(obj => obj.content.S);
+      var commentsArr = postsList.map(obj => obj.comments.S);
+      var likesArr = postsList.map(obj => obj.likes.S);
+      var userIDArr = postsList.map(obj => obj.userID.S);
+      var timestampArr = postsList.map(obj => obj.timestamp.S);
+      
+      console.log(contentArr);
+      for(let i = 0; i < userIDArr.length; i++) {
+        var pointer =  {
+          "content": contentArr[i],
+          "comments": commentsArr[i],
+          "likes": likesArr[i],
+          "userID" : userIDArr[i],
+          "timestamp" : timestampArr[i]
+        };
+        sortedList.push(pointer);
+      }
+      console.log(sortedList);
+      sortedList.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
+      res.send(JSON.stringify("postsList: " + postsList));
     });
-  }
-  postsList.sort((a, b) => a.timestamp.S.localeCompare(b.timestamp.S)).reverse();
-	res.send(JSON.stringify(postsList))
+  });
 };
 
+var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
+  if (counter >= recFriendsList.length) {
+    console.log("recFriendsList: " + recPostsList);
+    callback(recPostsList);
+  } else {
+    db.getAllPosts(recFriendsList[counter], function(err, data){
+      var contentArr = data.map(obj => obj.content.S);
+      var commentsArr = data.map(obj => obj.comments.S);
+      var likesArr = data.map(obj => obj.likes.S);
+      var userIDArr = data.map(obj => obj.userID.S);
+      var timestampArr = data.map(obj => obj.timestamp.S);
+      
+      console.log(contentArr);
+      for(let i = 0; i < userIDArr.length; i++) {
+        var pointer =  {
+          "content": contentArr[i],
+          "comments": commentsArr[i],
+          "likes": likesArr[i],
+          "userID" : userIDArr[i],
+          "timestamp" : timestampArr[i]
+        };
+        recPostsList.push(pointer);
+      }
+      counter++;
 
+      recGetAllPosts(recFriendsList, recPostsList, counter, callback);
+    });
+  }
+}
+
+//ajax: get the creator information
+var getCreator = function(req, res) {
+  res.send(JSON.stringify(req.session.username));
+};
 
 
 
@@ -108,10 +157,7 @@ var getRestaurantList = function(req, res) {
   });
 };
 
-//ajax: get the creator information
-var getCreator = function(req, res) {
-	  res.send(JSON.stringify(req.session.username));
-};
+
 
 //create new restaurant in the db when all inputs exist
 var postNewRestaurantAjax = function(req, res) {

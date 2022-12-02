@@ -67,19 +67,27 @@ var myDB_createAccount =
       + " " + newBirthday
       + " " + newInterest
       + " " + newPfpURL);
+      var interestArr =[];
+      for(let i = 0; i < newInterest.length; i++){
+        var newIt =
+        {
+          "S" : newInterest[i]
+        }
+        interestArr.push(newIt);
+      }
 
       var params = {
         TableName: "users",
         Item : {
           "username": { S: newUsername },
-          "password": { S: newPassword },
-          "fullname": { S: newFullname },
           "affiliation": { S: newAffiliation },
           "birthday": { S: newBirthday },
-          "email": { S: newEmail },
           "chatID": { L: [] },
-          "friends": { SS: [] },
-          "interest": { L: newInterest },
+          "email": { S: newEmail },
+          "friends": { L: [] },
+          "fullname": { S: newFullname },
+          "interest": { L: interestArr },
+          "password": { S: newPassword },
           "pfpURL": { S: newPfpURL }
         }
       };
@@ -88,6 +96,7 @@ var myDB_createAccount =
   db.putItem(params, function(err, data) {
     console.log(data);
     if (err) {
+      console.log("error");
 		  console.log(err)
     }
   });
@@ -98,15 +107,22 @@ var myDB_createAccount =
 var myDB_getFriends = (function(username, callback) {
   var params = {
   TableName: "users",
-    Key: {"username" : {S: username}},
-    ExpressionAttributeValues: "friends"
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [ { S: username } ]
+      }
+    },
+    TableName: "users",
+    AttributesToGet: [ 'friends' ]
   };
 
   db.query(params, function(err, data) {
     if(err) {
       console.log(err);
     } else {
-      callback(err, data.Items);
+      console.log(data.Items[0].friends.L);
+      callback(err, data.Items[0].friends.L);
     }
   });
 });
@@ -115,16 +131,19 @@ var myDB_getFriends = (function(username, callback) {
 //outputs all restaurants from db into an array
 var myDB_allPosts = (function(userID, callback) {
   var params = {
-  TableName: "posts",
-    Key: {"userID" : {S: userID}}
+    TableName: "posts",
+    KeyConditionExpression: "userID = :a",
+    ExpressionAttributeValues: {
+      ":a": { S: userID }
+    }
   };
 
   db.query(params, function(err, data) {
-    console.log(data);
     if(err) {
       console.log(err);
     } else { //not sure if data.Items is all the items that has the key of userID???
-      data.Items.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
+      // data.Items.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
+      console.log(data.Items);
       callback(err, data.Items);
     }
   });

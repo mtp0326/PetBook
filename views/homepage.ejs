@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    
     <title>HomePage</title>
     <% if (check) { %>
   
@@ -10,48 +11,82 @@
     <link rel="stylesheet"
 		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-      $(document).ready(function(){
-        $("button").click(function(e){
-          e.preventDefault();
-          var desUpd = document.getElementsByName("content")[0].value;
-          $.ajax({
-                type: "POST",
-                url: "/createpost",
-                data: { 
-                  description: desUpd
-                },
-          success: function(result) {
-              alert('posted');
-            
-        var newIt =
-            {
-              "creator" : currUser,
-              "description" : document.getElementsByName("content")[0].value,
-            }
-       
-          },
-          error: function(result) {
-              alert('error');
-          }
-      });
+        //CHANGED
+        var sessionCreator = "";
+        window.onload = function () {
+			readyPosts();
+		}
+		//calls ajax with /getList that retreives restaraut data from db
+		function readyPosts() {
+			$(document).ready(function () {
+				$.getJSON('/getPostAjax', function(elementsArr) {
+                    console.log(elementsArr);
+					// for(let i = 0; i < elementsArr.length; i++) {
+					// 	var nameN = elementsArr[i].name;
+					// 	var latN = elementsArr[i].latitude;
+					// 	var lngN = elementsArr[i].longitude;
+					// 	var desN = elementsArr[i].description;
+					// 	var creN = elementsArr[i].creator;
+					// 	var Item = 
+					// 	{
+					// 		"name": nameN,
+					// 		"latm": latN,
+					// 		"lngm": lngN,
+					// 		"description" : desN,
+					// 		"creator" : creN
+					// 	};
+					// 	markers.push(Item);
+					// }
+			        // initMap();
+				});
+			});
+		}
+
+        $(document).ready(function(){
+            $("button").click(function(e){
+            e.preventDefault();
+            var desUpd = document.getElementsByName("content")[0].value;
+            $.ajax({
+                    type: "POST",
+                    url: "/createpost",
+                    data: { 
+                    description: desUpd
+                    },
+            success: function(result) {
+                alert('posted');
+                
+            var newIt =
+                {
+                "creator" : currUser,
+                "description" : document.getElementsByName("content")[0].value,
+                }
         
+            },
+            error: function(result) {
+                alert('error');
+            }
         });
-  
+            
+            });
+    
         
         
   
       });
       
+        $(document).ready(function() {
+			$.getJSON('/getCreator', function(creator) {
+				sessionCreator = creator;
+                console.log(sessionCreator);
+			});
+			setTimeout(refreshTime, 5000);
+	    });
       
   
       
     </script>
-    
-    
-    
-    
     
     <% } else { %>
       <script>
