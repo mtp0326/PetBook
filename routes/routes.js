@@ -81,10 +81,8 @@ var getHomepagePostListAjax = function(req, res) {
 
     var tempList = [];
     recGetAllPosts(friendsList, tempList, 0, function(postsList) {
-
-      console.log(postsList);
       postsList.sort((a, b) => (a.timestamp).localeCompare(b.timestamp)).reverse();
-      res.send(JSON.stringify("postsList: " + postsList));
+      res.send(JSON.stringify(postsList));
     });
   });
 };
