@@ -32,6 +32,7 @@ var myDB_getChatroom = function(chatID, callback) {
 	    } else if (chatID.length == 0) {
 		  callback("chatID cannot be empty", null);
 		} else {
+		  //data.Item.content.S, data.Item.chatroomName.S
 	      callback(null, data.Item);
 	    }
 	});
@@ -86,15 +87,57 @@ var myDB_updateMessage = function(chatID, content, callback) {
 	});
 }
 
+// Gets the chatroom's messages
+/*
+var myDB_getChatMessages = function(chatID, callback) {
+  	var params = {
+      	TableName: "chatrooms",
+      	Key: {"chatID" : {S: chatID}},
+  	};
 
+	db.getItem(params, function(err, data) {
+	  	if (err) {
+	      callback(err, null);
+	    } else {
+	      callback(null, data.Item);
+	    }
+	});
+}*/
 
-
+// When a user accepts a group chat invite, add the user to the groupchat and create the chatroom on the user's chat list
+var myDB_addUserToChat = function(newUserID, groupchatID, callback) {
+	var params = {
+		TableName: "chatrooms",
+		Key: {"chatID" : {S: groupchatID}},
+		
+		//right syntax?
+		UpdateExpression: "ADD userIDs :newUserID",
+//	    UpdateExpression: "ADD #u :newUserID",
+//	    ExpressionAttributeNames: {
+//	      "#u": "userIDs"
+//	    },
+	    ExpressionAttributeValues : {
+	      ":newUserID": newUserID
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	//console.log(JSON.stringify(data));
+	    if (err) {
+	      callback(err, null);
+	    } else {
+	      callback(null, null);
+	    }
+	});
+}
 
 var chatDB = { 
   getUserChatroomIDs: myDB_getUserChatrooms,
+  
   getChatroom : myDB_getChatroom,
   addChatroom : myDB_postChatroom,
+  getMessages : myDB_getChatMessages,
   addMessage : myDB_updateMessage,
+  addUserToChat : myDB_addUserToChat,
 };
 
 module.exports = chatDB;
