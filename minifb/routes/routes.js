@@ -1,11 +1,15 @@
-
 var db = require('../models/database.js');
+
 var isVerified = false;
 // TODO The code for your own routes should go here
-//gets the main page (USED POP-UP box instead of the red failed sign)
 var getMain = function(req, res) {
   isVerified = false;
   res.render('main.ejs');
+};
+
+var getWall = function(req, res) {
+  isVerified = false;
+  res.render('wall.ejs', {"check" : true});
 };
 
 //for results if the username and password are correct
@@ -36,6 +40,10 @@ var getLogout = function(req, res) {
   req.session.destroy();
 	res.render('logout.ejs', {});
 }
+
+var getChat = function(req, res) {
+	res.render('chat.ejs', {"check" : isVerified})
+};
 
 //check if new account can be created by receiving null (which means that username in db is empty)
 //and create the new account and go to restaurants or fail and go back to signup.
@@ -81,9 +89,28 @@ var getHomepagePostListAjax = function(req, res) {
     console.log("friend: " + friendsList);
 
     var tempList = [];
-    recGetAllPosts(friendsList, tempList, 0, function(postsList) {
-      postsList.sort((a, b) => (a.timestamp).localeCompare(b.timestamp)).reverse();
-      res.send(JSON.stringify(postsList));
+    db.getAllPosts(req.session.username, function(err, data){
+      var contentArr = data.map(obj => obj.content.S);
+      var commentsArr = data.map(obj => obj.comments.L);
+      var likesArr = data.map(obj => obj.likes.L);
+      var userIDArr = data.map(obj => obj.userID.S);
+      var timestampArr = data.map(obj => obj.timestamp.S);
+      
+      for(let i = 0; i < userIDArr.length; i++) {
+        var pointer =  {
+          "content": contentArr[i],
+          "comments": commentsArr[i],
+          "likes": likesArr[i],
+          "userID" : userIDArr[i],
+          "timestamp" : timestampArr[i]
+        };
+        tempList.push(pointer);
+      }
+      recGetAllPosts(friendsList, tempList, 0, function(postsList) {
+        postsList.sort((a, b) => (a.timestamp).localeCompare(b.timestamp)).reverse();
+        console.log(postsList)
+        res.send(JSON.stringify(postsList));
+      });
     });
   });
 };
@@ -95,8 +122,8 @@ var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
   } else {
     db.getAllPosts(recFriendsList[counter], function(err, data){
       var contentArr = data.map(obj => obj.content.S);
-      var commentsArr = data.map(obj => obj.comments.S);
-      var likesArr = data.map(obj => obj.likes.S);
+      var commentsArr = data.map(obj => obj.comments.L);
+      var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
       var timestampArr = data.map(obj => obj.timestamp.S);
       
@@ -112,7 +139,6 @@ var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
         recPostsList.push(pointer);
       }
       counter++;
-
       recGetAllPosts(recFriendsList, recPostsList, counter, callback);
     });
   }
@@ -123,13 +149,57 @@ var getCreator = function(req, res) {
   res.send(JSON.stringify(req.session.username));
 };
 
+//create new post in the db when all inputs exist in posts
+var postNewPostAjax = function(req, res) {
+  var content = req.body.content;
+  var timestamp = req.body.timestamp;
+  if(content.length != 0 && timestamp.length != 0) {
+	  db.createPost(req.session.username, content, timestamp, function(err, data){});
+    
+    var response = {
+      "userID": req.session.username,
+      "content" : content,
+      "timestamp": timestamp
+    };
 
+    res.send(response);
+  } else {
+	  res.send(null);
+  }
+};
 
+//ajax: add comment in post data in posts
+var postNewCommentAjax = function(req, res) {
+  var userID = req.body.userID;
+  var timestamp = req.body.timestamp;
+  var comment = req.body.comment;
+  console.log(userID);
+  console.log(timestamp);
+  console.log(comment);
+
+  if(userID.length != 0 && timestamp.length != 0 && comment.length != 0) {
+    db.addComment(userID, timestamp, comment, function(err,data){});
+    
+    var response = {
+      "userID": userID,
+      "timestamp": timestamp,
+      "comment" : comment
+    };
+    console.log(response);
+
+    res.send(response);
+  } else {
+    res.send(null);
+  }
+};
+//***************************************************** */
 
 //get all restaurants and login verification and put in restaurants
 var getRestaurants = function(req, res) {
 	res.render('restaurants.ejs', {"isVerified" : isVerified})
 };
+
+
 
 //ajax: get all data of restaurants
 var getRestaurantList = function(req, res) {
@@ -195,10 +265,14 @@ var routes = {
   get_signup : getSignup,
   get_logout : getLogout,
   get_creator : getCreator,
-
+  get_chat: getChat,
+  get_wall: getWall,
   //NEW
   get_homepage : getHomepage,
   get_homepagePostListAjax : getHomepagePostListAjax,
+
+  post_newPostAjax : postNewPostAjax,
+  post_newCommentAjax : postNewCommentAjax,
 
   post_newAccount : postNewAccount,
   post_newRestaurantAjax : postNewRestaurantAjax,

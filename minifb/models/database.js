@@ -1,7 +1,6 @@
 var AWS = require('aws-sdk');
 AWS.config.update({region:'us-east-1'});
 var db = new AWS.DynamoDB();
-//new db??
 
 /* The function below is an example of a database method. Whenever you need to 
    access your database, you should define a function (myDB_addUser, myDB_getPassword, ...)
@@ -55,8 +54,6 @@ var myDB_getUsername = function(searchTerm, language, callback) {
 
 //NEW
 //create a new account with the right db parameters
-
-//CHANGED myDB_createAccount
 var myDB_createAccount =
   function(newUsername, newPassword, newFullname, newAffiliation,
     newEmail, newBirthday, newInterest, newPfpURL, callback) {
@@ -109,33 +106,43 @@ var myDB_createAccount =
 var myDB_getFriends = (function(username, callback) {
   var params = {
   TableName: "users",
-    Key: {"username" : {S: username}},
-    ExpressionAttributeValues: "friends"
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [ { S: username } ]
+      }
+    },
+    TableName: "users",
+    AttributesToGet: [ 'friends' ]
   };
 
   db.query(params, function(err, data) {
     if(err) {
       console.log(err);
     } else {
-      callback(err, data.Items);
+      console.log(data.Items[0].friends.L);
+      callback(err, data.Items[0].friends.L);
     }
   });
 });
 
 //NEW
-//outputs all restaurants from db into an array
+//outputs all posts from user into an array
 var myDB_allPosts = (function(userID, callback) {
   var params = {
-  TableName: "posts",
-    Key: {"userID" : {S: userID}}
+    TableName: "posts",
+    KeyConditionExpression: "userID = :a",
+    ExpressionAttributeValues: {
+      ":a": { S: userID }
+    }
   };
 
   db.query(params, function(err, data) {
-    console.log(data);
     if(err) {
       console.log(err);
     } else { //not sure if data.Items is all the items that has the key of userID???
-      data.Items.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
+      // data.Items.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
+      console.log(data.Items);
       callback(err, data.Items);
     }
   });
@@ -205,7 +212,74 @@ var myDB_updateInterest = function(username, newInterests, callback) {
     });
 }
 
+//creates post with the right db parameters
+var myDB_createPost = function(userID, content, timestamp, callback) {
+  var params = {
+  TableName: "posts",
+    Item : {
+        "userID" : {
+          S: userID
+        },
+        "content": {
+          S: content
+        },
+        "timestamp": {
+          S: timestamp
+        },
+        "comments": {
+          L: []
+        },
+        "likes": {
+          L: []
+        }
+      }
+    };
 
+db.putItem(params, function(err, data) {
+  if (err) {
+  console.log(err);
+  }
+});
+}
+
+//adds comment in post using userID (partition key) and timestamp (sort key)
+var myDB_addComment = function(userID, timestamp, comment, callback) {
+  var paramsGet = {
+    TableName: "posts",
+    KeyConditionExpression: "userID = :a and timestamp = :b",
+    ExpressionAttributeValues: {
+      ":a": { S: userID },
+      ":b": { S: timestamp }
+    }
+  };
+
+  db.getItem(paramsGet, function(err, data) {
+    var tempArr = data.Items[0].comments.L;
+    tempArr.push(comment);
+
+    var paramsPut = {
+      TableName: "posts",
+      KeyConditionExpression: "userID = :a and timestamp = :b",
+      ExpressionAttributeValues: {
+        ":a": { S: userID },
+        ":b": { S: timestamp }
+      },
+      Item : {
+        "comments": {
+          L: tempArr
+        }
+      }
+    };
+
+    db.putItem(paramsPut, function(err, data) {
+      if (err) {
+      console.log(err);
+      }
+    });
+  });
+}
+
+//***************************************************** */
 
 
 //creates restaurant with the right db parameters
@@ -316,6 +390,8 @@ var database = {
   //NEW
   getAllPosts : myDB_allPosts,
   getFriends : myDB_getFriends,
+  createPost : myDB_createPost,
+  addComment : myDB_addComment,
 
   updateEmail : myDB_updateEmail,
   updatePw : myDB_updatepw,
