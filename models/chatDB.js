@@ -3,7 +3,7 @@ AWS.config.update({region:'us-east-1'});
 var db = new AWS.DynamoDB();
 //var docClient = new AWS.DynamoDB.DocumentClient();
 
-// Gets all of the user's chatrooms ids
+// Gets a list of all the user's chatrooms ids
 var myDB_getUserChatrooms = function(username, callback) {
   var params = {
       TableName: "users",
@@ -14,16 +14,35 @@ var myDB_getUserChatrooms = function(username, callback) {
     if (err) {
       callback(err, null);
     } else {
-      callback(null, data.Item);
+      callback(null, data.Item.chatID.L);
     }
   });
 }
 
-// Gets the chatroom info with a given chatID
-var myDB_getChatroom = function(chatID, callback) {
+// Gets a list of the online users
+var myDB_getOnlineUsers = function(callback) {
+  var params = {
+      TableName: "online",
+      Key: {"users" : {S: online}},
+  };
+
+  db.getItem(params, function(err, data) {
+    if (err) {
+      callback(err, null);
+    } else {
+      callback(null, data.Item.userIDs.SS);
+    }
+  });
+}
+
+// Gets the chatroom info with a given chatID (= userID, created time)
+var myDB_getChatroom = function(chatID, createTime, callback) {
 	var params = {
         TableName: "chatrooms",
-        Key: {"chatID" : {S: chatID}},
+        Key: {
+			"chatID" : {S: chatID},
+			"createTime" : {S: createTime},
+		},
 	}
 	
 	db.getItem(params, function(err, data) {
@@ -39,18 +58,17 @@ var myDB_getChatroom = function(chatID, callback) {
 }
 
 // Adds a new chatroom with given info
-var myDB_postChatroom = function(chatID, userIDs, chatroomName, currTime, callback) {
+var myDB_postChatroom = function(chatID, createTime, userIDs, callback) {
 	//chatID: userID + timestamp
-	//otherUserIDs: list of strings
+	//otherUserIDs: set of strings
 	var params = {
 		TableName: "chatrooms",
 		Item: {
 		  'chatID' : {S: chatID},
+		  'createTime' : {S: createTime},
 		  'userIDs' : {SS: userIDs},
-		  'lastMessageTime' : {S: currTime},
-		  'chatroomName' : {S: chatroomName},
 		},
-		ConditionExpression: "attribute_not_exists(username)",
+		//ConditionExpression: "attribute_not_exists(username)",
 	}
 	db.putItem(params, function(err, data) {
 	//console.log(JSON.stringify(data));
@@ -63,10 +81,14 @@ var myDB_postChatroom = function(chatID, userIDs, chatroomName, currTime, callba
 }
 
 // Adds a new message to the chatroom
-var myDB_updateMessage = function(chatID, content, callback) {
+//content: [timestamp, userID, content]
+var myDB_updateMessage = function(chatID, createTime, newMessage, callback) {
 	var params = {
 		TableName: "chatrooms",
-		Key: {"chatID" : {S: chatID}},
+		Key: {
+	      "chatID" : {S: chatID},
+		  "createTime" : {S: createTime},
+		},
 		
 		//right syntax?
 	    UpdateExpression: "SET #c = list_append(#c, :new)",
@@ -74,7 +96,7 @@ var myDB_updateMessage = function(chatID, content, callback) {
 	      "#c": "content"
 	    },
 	    ExpressionAttributeValues : {
-	      ":new": content
+	      ":new": newMessage
 	    },
 	}
 	db.updateItem(params, function(err, data) {
@@ -105,10 +127,13 @@ var myDB_getChatMessages = function(chatID, callback) {
 }*/
 
 // When a user accepts a group chat invite, add the user to the groupchat and create the chatroom on the user's chat list
-var myDB_addUserToChat = function(newUserID, groupchatID, callback) {
+var myDB_addUserToChat = function(newUserID, groupChatID, createTime, callback) {
 	var params = {
 		TableName: "chatrooms",
-		Key: {"chatID" : {S: groupchatID}},
+		Key: {
+	      "chatID" : {S: groupChatID},
+		  "createTime" : {S: createTime},
+		},
 		
 		//right syntax?
 		UpdateExpression: "ADD userIDs :newUserID",
@@ -131,8 +156,11 @@ var myDB_addUserToChat = function(newUserID, groupchatID, callback) {
 }
 
 var chatDB = { 
+  // user DB
   getUserChatroomIDs: myDB_getUserChatrooms,
-  
+  // online DB
+  getOnlineUsers: myDB_getOnlineUsers,
+  // chat DB
   getChatroom : myDB_getChatroom,
   addChatroom : myDB_postChatroom,
   getMessages : myDB_getChatMessages,
