@@ -28,9 +28,26 @@ var getOnlineUsers = function(req, res) {
 	}
 };
 
+var addOnlineUser = function(req, res) {
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.addUserOnline(req.session.username, function(err, data) {
+			if (err) {console.log(err);}
+		});	
+	}
+}
 
 
+// Deletes session, userID from online db
 var logout = function(req, res) {
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.deleteUserOnline(req.session.username, function(err, data) {
+			if (err) {console.log(err);}
+		});	
+	}
 	req.session.destroy();
 	res.redirect("/");
 }
@@ -39,6 +56,7 @@ var logout = function(req, res) {
 var routes = { 
     get_chat: getChat,
     get_online_users: getOnlineUsers,
+    add_online_user: addOnlineUser,
   
     log_out: logout,
 };
