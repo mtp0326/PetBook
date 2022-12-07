@@ -12,17 +12,29 @@ var getChat = function(req, res) {
 
 // Send all online user info to chat page
 var getOnlineUsers = function(req, res) {
-
+	var friendsList = [];
+	var onlineFriends = [];
+	
     // Checks whether all fields are filled; if not, show warning message	
 	if (!req.session.username) {
 		res.render('login.ejs', {message: "Need to log in"});
 	} else {
-		chatdb.getOnlineUsers(function(err, data) {
-			if (err) {
-				console.log(err);
+		db.getFriends(req.session.username, function(err1, data1){
+    		friendsList = data1.map(obj => obj.S);
+    		//console.log("friend: " + friendsList);
+  		});
+  		
+		chatdb.getOnlineUsers(function(err2, data2) {
+			if (err2) {
+				console.log(err2);
 			} else {
-				// data: string set of userIDs
-				res.json(data);
+				// data2: string set of userIDs				
+				data2.forEach(function(r) {
+					if (friendsList.includes(r.S)) {
+						onlineFriends.push(r.S);
+					}
+				});	
+				res.json(onlineFriends);
 			}
 		});	
 	}
