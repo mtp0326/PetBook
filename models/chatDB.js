@@ -50,7 +50,7 @@ var myDB_getChatroom = function(chatID, callback) {
 	    } else if (chatID.length == 0) {
 		  callback("chatID cannot be empty", null);
 		} else {
-		  //data.Item.content.S, data.Item.chatroomName.S
+		  //data.Item - has chatID, content, userIDs
 	      callback(null, data.Item);
 	    }
 	});
@@ -66,7 +66,6 @@ var myDB_postChatroom = function(userID, createTime, userIDs, callback) {
 		  'chatID' : {S: chatID},
 		  'userIDs' : {SS: userIDs},
 		},
-		//ConditionExpression: "attribute_not_exists(username)",
 	}
 	db.putItem(params, function(err, data) {
 	//console.log(JSON.stringify(data));
