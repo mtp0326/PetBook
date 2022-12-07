@@ -70,6 +70,21 @@ var getChatRooms = function(req, res) {
 	}
 };
 
+// Add a new instance of chatroom
+var addChatRoom = function(req, res) {
+	// info needed: timestamp
+	var timestamp = new Date().getTime();
+	
+	// Checks whether all fields are filled; if not, show warning message	
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.addChatroom(req.session.username, timestamp, [], function(err, data) {
+			if (err) {console.log(err);}
+		});
+	}
+}
+
 
 // Deletes session, userID from online db
 var logout = function(req, res) {
@@ -90,7 +105,8 @@ var routes = {
     get_online_users: getOnlineUsers,
     get_chatrooms: getChatRooms,
     add_online_user: addOnlineUser,
-  
+    add_chatroom: addChatRoom,
+
     log_out: logout,
 };
 
