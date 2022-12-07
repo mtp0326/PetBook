@@ -57,18 +57,17 @@ var myDB_getChatroom = function(chatID, callback) {
 }
 
 // Adds a new chatroom with given info
-var myDB_postChatroom = function(userID, createTime, userIDs, callback) {
+var myDB_addChatroom = function(userID, createTime, callback) {
 	//otherUserIDs: set of strings
 	var chatID = userID.concat(" ", createTime.toString());
 	var params = {
 		TableName: "chatrooms",
 		Item: {
 		  'chatID' : {S: chatID},
-		  'userIDs' : {SS: userIDs},
+		  'userIDs' : {SS: {}},
 		},
 	}
 	db.putItem(params, function(err, data) {
-	//console.log(JSON.stringify(data));
 	    if (err) {
 	      callback(err, null);
 	    } else {
@@ -182,7 +181,7 @@ var chatDB = {
   getOnlineUsers: myDB_getOnlineUsers,
   
   getChatroom : myDB_getChatroom,
-  addChatroom : myDB_postChatroom,
+  addChatroom : myDB_addChatroom,
   getMessages : myDB_getChatMessages,
   addMessage : myDB_updateMessage,
   addUserToChat : myDB_addUserToChat,
