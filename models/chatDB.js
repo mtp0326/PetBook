@@ -35,13 +35,12 @@ var myDB_getOnlineUsers = function(callback) {
   });
 }
 
-// Gets the chatroom info with a given chatID (= userID, created time)
-var myDB_getChatroom = function(chatID, createTime, callback) {
+// Gets the chatroom info with a given chatID (= "userID created time")
+var myDB_getChatroom = function(chatID, callback) {
 	var params = {
         TableName: "chatrooms",
         Key: {
 			"chatID" : {S: chatID},
-			"createTime" : {S: createTime},
 		},
 	}
 	
@@ -58,14 +57,13 @@ var myDB_getChatroom = function(chatID, createTime, callback) {
 }
 
 // Adds a new chatroom with given info
-var myDB_postChatroom = function(chatID, createTime, userIDs, callback) {
-	//chatID: userID + timestamp
+var myDB_postChatroom = function(userID, createTime, userIDs, callback) {
 	//otherUserIDs: set of strings
+	var chatID = userID.concat(" ", createTime.toString());
 	var params = {
 		TableName: "chatrooms",
 		Item: {
 		  'chatID' : {S: chatID},
-		  'createTime' : {S: createTime},
 		  'userIDs' : {SS: userIDs},
 		},
 		//ConditionExpression: "attribute_not_exists(username)",
@@ -82,14 +80,12 @@ var myDB_postChatroom = function(chatID, createTime, userIDs, callback) {
 
 // Adds a new message to the chatroom
 //content: [timestamp, userID, content]
-var myDB_updateMessage = function(chatID, createTime, newMessage, callback) {
+var myDB_updateMessage = function(chatID, newMessage, callback) {
 	var params = {
 		TableName: "chatrooms",
 		Key: {
 	      "chatID" : {S: chatID},
-		  "createTime" : {S: createTime},
 		},
-		
 		//right syntax?
 	    UpdateExpression: "SET #c = list_append(#c, :new)",
 	    ExpressionAttributeNames: {
@@ -109,38 +105,15 @@ var myDB_updateMessage = function(chatID, createTime, newMessage, callback) {
 	});
 }
 
-// Gets the chatroom's messages
-/*
-var myDB_getChatMessages = function(chatID, callback) {
-  	var params = {
-      	TableName: "chatrooms",
-      	Key: {"chatID" : {S: chatID}},
-  	};
-
-	db.getItem(params, function(err, data) {
-	  	if (err) {
-	      callback(err, null);
-	    } else {
-	      callback(null, data.Item);
-	    }
-	});
-}*/
-
 // When a user accepts a group chat invite, add the user to the groupchat and create the chatroom on the user's chat list
-var myDB_addUserToChat = function(newUserID, groupChatID, createTime, callback) {
+var myDB_addUserToChat = function(newUserID, groupChatID, callback) {
 	var params = {
 		TableName: "chatrooms",
 		Key: {
 	      "chatID" : {S: groupChatID},
-		  "createTime" : {S: createTime},
 		},
 		
-		//right syntax?
 		UpdateExpression: "ADD userIDs :newUserID",
-//	    UpdateExpression: "ADD #u :newUserID",
-//	    ExpressionAttributeNames: {
-//	      "#u": "userIDs"
-//	    },
 	    ExpressionAttributeValues : {
 	      ":newUserID": newUserID
 	    },
