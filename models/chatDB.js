@@ -23,7 +23,7 @@ var myDB_getUserChatrooms = function(username, callback) {
 var myDB_getOnlineUsers = function(callback) {
   var params = {
       TableName: "online",
-      Key: {"users" : {S: online}},
+      Key: {"users" : {S: "online"}},
   };
 
   db.getItem(params, function(err, data) {
@@ -155,17 +155,67 @@ var myDB_addUserToChat = function(newUserID, groupChatID, createTime, callback) 
 	});
 }
 
+// Adds a logged-in user to online DB
+var myDB_addOnline = function(newUserID, callback) {
+	var params = {
+		TableName: "online",
+		Key: {
+	      "users" : {S: "online"},
+		},
+	    UpdateExpression: "ADD #c :new",
+	    ExpressionAttributeNames: {
+	      "#c": "userIDs"
+	    },
+	    ExpressionAttributeValues : {
+	      ":new": newUserID
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	//console.log(JSON.stringify(data));
+	    if (err) {
+	      callback(err, null);
+	    } else {
+	      callback(null, null);
+	    }
+	});
+}
+
+// Deletes a logged-out user from online DB
+var myDB_deleteOnline = function(deleteUserID, callback) {
+	var params = {
+		TableName: "online",
+		Key: {
+	      "users" : {S: "online"},
+		},
+	    UpdateExpression: "DELETE #c :new",
+	    ExpressionAttributeNames: {
+	      "#c": "userIDs"
+	    },
+	    ExpressionAttributeValues : {
+	      ":d": deleteUserID
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      callback(err, null);
+	    } else {
+	      callback(null, null);
+	    }
+	});
+}
+
 var chatDB = { 
-  // user DB
   getUserChatroomIDs: myDB_getUserChatrooms,
-  // online DB
+  
   getOnlineUsers: myDB_getOnlineUsers,
-  // chat DB
+  
   getChatroom : myDB_getChatroom,
   addChatroom : myDB_postChatroom,
   getMessages : myDB_getChatMessages,
   addMessage : myDB_updateMessage,
   addUserToChat : myDB_addUserToChat,
+  addUserOnline : myDB_addOnline,
+  deleteUserOnline : myDB_deleteOnline,
 };
 
 module.exports = chatDB;
