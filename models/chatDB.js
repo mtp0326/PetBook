@@ -59,7 +59,7 @@ var myDB_getChatroom = function(chatID, callback) {
 // Adds a new chatroom with given info
 var myDB_addChatroom = function(userID, createTime, callback) {
 	//otherUserIDs: set of strings
-	var chatID = userID.concat(" ", createTime.toString());
+	var chatID = userID.concat("-", createTime.toString());
 	var params = {
 		TableName: "chatrooms",
 		Item: {
@@ -77,8 +77,8 @@ var myDB_addChatroom = function(userID, createTime, callback) {
 }
 
 // Adds a new message to the chatroom
-//content: [timestamp, userID, content]
-var myDB_updateMessage = function(chatID, newMessage, callback) {
+//newMessage: [timestamp, userID, content]
+var myDB_addMessage = function(chatID, newMessage, callback) {
 	var params = {
 		TableName: "chatrooms",
 		Key: {
@@ -183,7 +183,7 @@ var chatDB = {
   getChatroom : myDB_getChatroom,
   addChatroom : myDB_addChatroom,
   getMessages : myDB_getChatMessages,
-  addMessage : myDB_updateMessage,
+  addMessage : myDB_addMessage,
   addUserToChat : myDB_addUserToChat,
   addUserOnline : myDB_addOnline,
   deleteUserOnline : myDB_deleteOnline,
