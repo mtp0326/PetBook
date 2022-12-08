@@ -99,6 +99,27 @@ var addChatRoom = function(req, res) {
 	}
 }
 
+// Add a new instance of chatroom
+var addMessage = function(req, res) {
+	
+	// info needed from frontend: chat id, content
+	var chatID = req.body.chatID;
+	var content = req.body.message;	
+	
+	var timestamp = new Date().getTime();
+	
+	//message([timestamp, userID, content])
+	var message = [timestamp, req.session.username, content];
+	
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.addMessage(chatID, message, [], function(err, data) {
+			if (err) {console.log(err);}
+		});
+	}
+}
+
 
 // Deletes session, userID from online db
 var logout = function(req, res) {
@@ -120,6 +141,7 @@ var routes = {
     get_chatrooms: getChatRooms,
     add_online_user: addOnlineUser,
     add_chatroom: addChatRoom,
+    add_message: addMessage,
 
     log_out: logout,
 };
