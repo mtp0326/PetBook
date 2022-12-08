@@ -352,6 +352,7 @@ var getOtherWallPage = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
+  console.log("print");
   req.session.currWall = req.query.username;
   // req.session.currWall.save();
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
