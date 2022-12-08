@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HomePage</title>
+    <title>Wall</title>
     <% if (check) { %>
   
     
@@ -308,14 +308,14 @@ button[type=post] {
       console.log("here!");
 			$(document).ready(function () {
         console.log("here!!");
-				$.getJSON('/getPostAjax', function(elementsArr) {
+				$.getJSON('/getWallAjax', function(elementsArr) { // EDIT THIS PART
           console.log("here!!!");
           console.log(elementsArr);
             
 					for(let i = 0; i < elementsArr.length; i++) {
 						var contentN = elementsArr[i].content;
 						var userIDN = elementsArr[i].userID;
-						var timestampN = elementsArr[i].timestamp;
+						var timepostN = elementsArr[i].timepost;
             var likesN = elementsArr[i].likes;
             var commentsN = elementsArr[i].comments;
 						
@@ -325,7 +325,7 @@ button[type=post] {
               "comments":commentsN,
               "likes": likesN,
 							"userID": userIDN,
-							"timestamp": timestampN,
+							"timepost": timepostN,
 							
 						};
 						friendposts.push(Item);
@@ -390,7 +390,7 @@ button[type=post] {
       test_el = document.createElement('div');
      
 
-              var test = new Date(parseInt(friendpost.timestamp));
+              var test = new Date(parseInt(friendpost.timepost));
         
               var time = (new Date(test)).toLocaleDateString()
               +
@@ -419,9 +419,9 @@ button[type=post] {
                 +commentsArr[i]+
                 '</div>';
                 }
-                var commentID = "comment-button-"+friendpost.userID+"-"+friendpost.timestamp
+                var commentID = "comment-button-"+friendpost.userID+"-"+friendpost.timepost
         
-                var commentContent = "commentcontent-"+friendpost.userID+"-"+friendpost.timestamp
+                var commentContent = "commentcontent-"+friendpost.userID+"-"+friendpost.timepost
                 test_el.innerHTML+=
                
                 '<div class="row px-3 form-group"><textarea class="comment" placeholder="say something..." name='+commentContent+'></textarea>'
@@ -454,7 +454,7 @@ button[type=post] {
             data:{ 
                 comment : contentWithUser,
                 userID: sessionCreator,
-                timestamp: new Date().getTime()
+                timepost: new Date().getTime()
             },
            
            
@@ -505,7 +505,7 @@ button[type=post] {
             data:{ 
                 content : contentUpd,
                 userID: sessionCreator,
-                timestamp: new Date().getTime()
+                timepost: new Date().getTime()
             },
            
            
@@ -520,7 +520,7 @@ button[type=post] {
               "comments": [],
               "likes": [],
 							"userID": result.userID,
-							"timestamp": result.timestamp,
+							"timepost": result.timepost,
 							
 						};
 						// friendposts.push(Item);

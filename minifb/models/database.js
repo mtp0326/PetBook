@@ -21,7 +21,6 @@ var myDB_getPassword = function(searchTerm, callback) {
   };
 
   db.query(params, function(err, data) {
-    console.log(data);
     if (err || data.Items.length == 0) {
       callback(err, null);
     } else {
@@ -66,6 +65,7 @@ var myDB_createAccount =
       + " " + newBirthday
       + " " + newInterest
       + " " + newPfpURL);
+
       var interestArr =[];
       for(let i = 0; i < newInterest.length; i++){
         var newIt =
@@ -90,7 +90,6 @@ var myDB_createAccount =
           "pfpURL": { S: newPfpURL }
         }
       };
-      console.log(params);
 
   db.putItem(params, function(err, data) {
     console.log(data);
@@ -120,7 +119,6 @@ var myDB_getFriends = (function(username, callback) {
     if(err) {
       console.log(err);
     } else {
-      console.log(data.Items[0].friends.L);
       callback(err, data.Items[0].friends.L);
     }
   });
@@ -141,8 +139,7 @@ var myDB_allPosts = (function(userID, callback) {
     if(err) {
       console.log(err);
     } else { //not sure if data.Items is all the items that has the key of userID???
-      // data.Items.sort((a, b) => (a.timestamp.S).localeCompare(b.timestamp.S)).reverse();
-      console.log(data.Items);
+      // data.Items.sort((a, b) => (a.timepost.S).localeCompare(b.timepost.S)).reverse();
       callback(err, data.Items);
     }
   });
@@ -213,7 +210,7 @@ var myDB_updateInterest = function(username, newInterests, callback) {
 }
 
 //creates post with the right db parameters
-var myDB_createPost = function(userID, content, timestamp, callback) {
+var myDB_createPost = function(userID, content, timepost, callback) {
   var params = {
   TableName: "posts",
     Item : {
@@ -223,8 +220,8 @@ var myDB_createPost = function(userID, content, timestamp, callback) {
         "content": {
           S: content
         },
-        "timestamp": {
-          S: timestamp
+        "timepost": {
+          S: timepost
         },
         "comments": {
           L: []
@@ -242,41 +239,137 @@ db.putItem(params, function(err, data) {
 });
 }
 
-//adds comment in post using userID (partition key) and timestamp (sort key)
-var myDB_addComment = function(userID, timestamp, comment, callback) {
+//adds comment in post using userID (partition key) and timepost (sort key)
+var myDB_addComment = function(userID, timepost, comment, callback) {
+  console.log("userID " + userID);
+  console.log("timepost " + timepost);
+  console.log("comment " + comment);
   var paramsGet = {
-    TableName: "posts",
-    KeyConditionExpression: "userID = :a and timestamp = :b",
+    TableName: 'posts',
+    KeyConditionExpression: 'userID = :a and timepost = :b',
     ExpressionAttributeValues: {
-      ":a": { S: userID },
-      ":b": { S: timestamp }
+      ':a': { S: userID },
+      ':b': { S: timepost }
     }
   };
 
-  db.getItem(paramsGet, function(err, data) {
+  db.query(paramsGet, function(err, data) {
+    console.log("error :" + err);
+    console.log("data: " + data);
     var tempArr = data.Items[0].comments.L;
-    tempArr.push(comment);
+    var stringifyComment = {
+      S: comment
+    }
 
-    var paramsPut = {
+    tempArr.push(stringifyComment);
+    console.log(tempArr);
+
+    var paramsUpdate = {
       TableName: "posts",
-      KeyConditionExpression: "userID = :a and timestamp = :b",
-      ExpressionAttributeValues: {
-        ":a": { S: userID },
-        ":b": { S: timestamp }
+      Key : {
+        'userID' : {
+          S: userID
+        },
+        'timepost' : {
+          S: timepost
+        },
       },
-      Item : {
-        "comments": {
-          L: tempArr
-        }
+      UpdateExpression: 'SET comments = :c',
+      ExpressionAttributeValues: {
+        ':c': { L: tempArr }
       }
     };
 
-    db.putItem(paramsPut, function(err, data) {
+    db.updateItem(paramsUpdate, function(err, data) {
       if (err) {
       console.log(err);
       }
     });
   });
+}
+
+//NEW
+//outputs all walls from user into an array
+var myDB_allWalls = (function(receiver, callback) {
+  var params = {
+    TableName: "walls",
+    KeyConditionExpression: "receiver = :a",
+    ExpressionAttributeValues: {
+      ":a": { S: receiver }
+    }
+  };
+
+  db.query(params, function(err, data) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log("myDB_allWalls");
+      console.log(data.Items);
+      callback(err, data.Items);
+    }
+  });
+});
+
+//NEW
+///query as sender
+//outputs all walls as sender from user into an array
+var myDB_allWallsAsSender = (function(receiver, sender, callback) {
+  console.log("receiver");
+  console.log(receiver);
+  console.log("sender");
+  console.log(sender);
+  var params = {
+    TableName: "walls",
+    KeyConditionExpression: "receiver = :a",
+    FilterExpression: 'contains (sender, :b)',
+    ExpressionAttributeValues: {
+      ":a": { S: receiver },
+      ":b": { S: sender }
+    }
+  };
+
+  db.query(params, function(err, data) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log("data.Items");
+      console.log(data.Items);
+      callback(err, data.Items);
+    }
+  });
+});
+
+//creates wall with the right db parameters
+var myDB_createWall = function(receiver, sender, content, timepost, callback) {
+  var params = {
+  TableName: "walls",
+    Item : {
+        "receiver" : {
+          S: receiver
+        },
+        "sender" : {
+          S: sender
+        },
+        "content": {
+          S: content
+        },
+        "timepost": {
+          S: timepost
+        },
+        "comments": {
+          L: []
+        },
+        "likes": {
+          L: []
+        }
+      }
+    };
+
+db.putItem(params, function(err, data) {
+  if (err) {
+  console.log(err);
+  }
+});
 }
 
 //***************************************************** */
@@ -392,6 +485,9 @@ var database = {
   getFriends : myDB_getFriends,
   createPost : myDB_createPost,
   addComment : myDB_addComment,
+  getAllWalls : myDB_allWalls,
+  getAllWallsAsSender : myDB_allWallsAsSender,
+  createWall : myDB_createWall,
 
   updateEmail : myDB_updateEmail,
   updatePw : myDB_updatepw,

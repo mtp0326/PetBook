@@ -7,7 +7,19 @@ var getMain = function(req, res) {
   res.render('main.ejs');
 };
 
+//render homepage
+//NEW: getHomepage, homepage.ejs
+var getHomepage = function(req, res) {
+  if(!req.session.username) {
+    return res.redirect('/')
+  }
+	res.render('homepage.ejs', {"check" : isVerified})
+};
+
 var getWall = function(req, res) {
+  if(!req.session.username) {
+    return res.redirect('/')
+  }
   isVerified = false;
   res.render('wall.ejs', {"check" : true});
 };
@@ -73,12 +85,6 @@ var postNewAccount = function(req, res) {
   });
 };
 
-//render homepage
-//NEW: getHomepage, homepage.ejs
-var getHomepage = function(req, res) {
-	res.render('homepage.ejs', {"check" : isVerified})
-};
-
 //ajax: query posts of friend's userid
 //Also renders comments if exists
 //NEW: getHomepagePostList, getAllPosts
@@ -86,7 +92,6 @@ var getHomepagePostListAjax = function(req, res) {
   
   db.getFriends(req.session.username, function(err, data){
     var friendsList = data.map(obj => obj.S);
-    console.log("friend: " + friendsList);
 
     var tempList = [];
     db.getAllPosts(req.session.username, function(err, data){
@@ -94,7 +99,7 @@ var getHomepagePostListAjax = function(req, res) {
       var commentsArr = data.map(obj => obj.comments.L);
       var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
-      var timestampArr = data.map(obj => obj.timestamp.S);
+      var timepostArr = data.map(obj => obj.timepost.S);
       
       for(let i = 0; i < userIDArr.length; i++) {
         var pointer =  {
@@ -102,14 +107,32 @@ var getHomepagePostListAjax = function(req, res) {
           "comments": commentsArr[i],
           "likes": likesArr[i],
           "userID" : userIDArr[i],
-          "timestamp" : timestampArr[i]
+          "timepost" : timepostArr[i]
         };
         tempList.push(pointer);
       }
-      recGetAllPosts(friendsList, tempList, 0, function(postsList) {
-        postsList.sort((a, b) => (a.timestamp).localeCompare(b.timestamp)).reverse();
-        console.log(postsList)
-        res.send(JSON.stringify(postsList));
+
+      db.getAllWalls(req.session.username, function(err, data){
+        var contentArr = data.map(obj => obj.content.S);
+        var commentsArr = data.map(obj => obj.comments.L);
+        var likesArr = data.map(obj => obj.likes.L);
+        var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
+        var timepostArr = data.map(obj => obj.timepost.S);
+        
+        for(let i = 0; i < userIDArr.length; i++) {
+          var pointer =  {
+            "content": contentArr[i],
+            "comments": commentsArr[i],
+            "likes": likesArr[i],
+            "userID" : userIDArr[i],
+            "timepost" : timepostArr[i]
+          };
+          tempList.push(pointer);
+        }
+        recGetAllPosts(friendsList, tempList, 0, function(postsList) {
+          postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
+          res.send(JSON.stringify(postsList));
+        });
       });
     });
   });
@@ -117,7 +140,6 @@ var getHomepagePostListAjax = function(req, res) {
 
 var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
   if (counter >= recFriendsList.length) {
-    console.log("recFriendsList: " + recPostsList);
     callback(recPostsList);
   } else {
     db.getAllPosts(recFriendsList[counter], function(err, data){
@@ -125,21 +147,39 @@ var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
       var commentsArr = data.map(obj => obj.comments.L);
       var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
-      var timestampArr = data.map(obj => obj.timestamp.S);
+      var timepostArr = data.map(obj => obj.timepost.S);
       
-      console.log(contentArr);
       for(let i = 0; i < userIDArr.length; i++) {
         var pointer =  {
           "content": contentArr[i],
           "comments": commentsArr[i],
           "likes": likesArr[i],
           "userID" : userIDArr[i],
-          "timestamp" : timestampArr[i]
+          "timepost" : timepostArr[i]
         };
         recPostsList.push(pointer);
       }
-      counter++;
-      recGetAllPosts(recFriendsList, recPostsList, counter, callback);
+
+      db.getAllWalls(recFriendsList[counter], function(err, data){
+        var contentArr = data.map(obj => obj.content.S);
+        var commentsArr = data.map(obj => obj.comments.L);
+        var likesArr = data.map(obj => obj.likes.L);
+        var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
+        var timepostArr = data.map(obj => obj.timepost.S);
+        
+        for(let i = 0; i < userIDArr.length; i++) {
+          var pointer =  {
+            "content": contentArr[i],
+            "comments": commentsArr[i],
+            "likes": likesArr[i],
+            "userID" : userIDArr[i],
+            "timepost" : timepostArr[i]
+          };
+          recPostsList.push(pointer);
+        }
+        counter++;
+        recGetAllPosts(recFriendsList, recPostsList, counter, callback);
+      });
     });
   }
 }
@@ -152,14 +192,14 @@ var getCreator = function(req, res) {
 //create new post in the db when all inputs exist in posts
 var postNewPostAjax = function(req, res) {
   var content = req.body.content;
-  var timestamp = req.body.timestamp;
-  if(content.length != 0 && timestamp.length != 0) {
-	  db.createPost(req.session.username, content, timestamp, function(err, data){});
+  var timepost = req.body.timepost;
+  if(content.length != 0 && timepost.length != 0) {
+	  db.createPost(req.session.username, content, timepost, function(err, data){});
     
     var response = {
       "userID": req.session.username,
       "content" : content,
-      "timestamp": timestamp
+      "timepost": timepost
     };
 
     res.send(response);
@@ -171,27 +211,157 @@ var postNewPostAjax = function(req, res) {
 //ajax: add comment in post data in posts
 var postNewCommentAjax = function(req, res) {
   var userID = req.body.userID;
-  var timestamp = req.body.timestamp;
+  var timepost = req.body.timepost;
   var comment = req.body.comment;
-  console.log(userID);
-  console.log(timestamp);
-  console.log(comment);
+  console.log("userID " + userID);
+  console.log("timepost " + timepost);
+  console.log("comment " + comment);
 
-  if(userID.length != 0 && timestamp.length != 0 && comment.length != 0) {
-    db.addComment(userID, timestamp, comment, function(err,data){});
+  if(userID.length != 0 && timepost.length != 0 && comment.length != 0) {
+    console.log("passing");
+    db.addComment(userID, timepost, comment, function(err,data){});
     
     var response = {
       "userID": userID,
-      "timestamp": timestamp,
+      "timepost": timepost,
       "comment" : comment
     };
-    console.log(response);
 
     res.send(response);
   } else {
     res.send(null);
   }
 };
+
+//ajax: get your posts and wall you receive from friends posting on yours
+//NEW
+var getWallListAjax = function(req, res) {
+    console.log(req.session.username);
+    var tempList = [];
+    ///req.session.username into B's wall
+    db.getAllPosts(req.session.username, function(err, data){
+      var contentArr = data.map(obj => obj.content.S);
+      var commentsArr = data.map(obj => obj.comments.L);
+      var likesArr = data.map(obj => obj.likes.L);
+      var userIDArr = data.map(obj => obj.userID.S);
+      var timepostArr = data.map(obj => obj.timepost.S);
+      
+      for(let i = 0; i < userIDArr.length; i++) {
+        var pointer =  {
+          "content": contentArr[i],
+          "comments": commentsArr[i],
+          "likes": likesArr[i],
+          "userID" : userIDArr[i],
+          "timepost" : timepostArr[i]
+        };
+        tempList.push(pointer);
+      }
+      ///req.session.username into B's wall
+      console.log("getA");
+      db.getAllWalls("A", function(err, postsList) {
+        var contentArr = postsList.map(obj => obj.content.S);
+        var commentsArr = postsList.map(obj => obj.comments.L);
+        var likesArr = postsList.map(obj => obj.likes.L);
+        var userIDArr = postsList.map(obj => obj.sender.S + " to " + obj.receiver.S);
+        var timepostArr = postsList.map(obj => obj.timepost.S);
+        
+        for(let i = 0; i < userIDArr.length; i++) {
+          var pointer =  {
+            "content": contentArr[i],
+            "comments": commentsArr[i],
+            "likes": likesArr[i],
+            "userID" : userIDArr[i],
+            "timepost" : timepostArr[i]
+          };
+          tempList.push(pointer);
+        }
+
+        db.getFriends(req.session.username, function(err, data){
+          var friendsList = data.map(obj => obj.S);
+
+          ///recursion as friends
+          recGetAllWalls(friendsList, tempList, req.session.username, 0, function(postsList) {
+            console.log("postsList");
+            console.log(postsList);
+            if(postsList.length > 1) {
+              postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
+            }
+            console.log(postsList);
+            res.send(JSON.stringify(postsList));
+
+            if(err) {
+              console.log("error" + err);
+            }
+          });
+        });
+      });
+    });
+};
+
+var recGetAllWalls = function(recFriendsList, recWallsList, sender, counter, callback) {
+  if (counter >= recFriendsList.length) {
+    console.log("recWallsList");
+    console.log(recWallsList);
+    callback(recWallsList);
+  } else {
+      db.getAllWallsAsSender(recFriendsList[counter], sender, function(err, data){
+        console.log("asSe" + data);
+            var contentArr = data.map(obj => obj.content.S);
+            var commentsArr = data.map(obj => obj.comments.L);
+            var likesArr = data.map(obj => obj.likes.L);
+            var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
+            var timepostArr = data.map(obj => obj.timepost.S);
+            
+            for(let i = 0; i < userIDArr.length; i++) {
+              var pointer =  {
+                "content": contentArr[i],
+                "comments": commentsArr[i],
+                "likes": likesArr[i],
+                "userID" : userIDArr[i],
+                "timepost" : timepostArr[i]
+              };
+              recWallsList.push(pointer);
+            }
+        counter++;
+        recGetAllWalls(recFriendsList, recWallsList, sender, counter, callback);
+      });
+  }
+}
+
+//create new wall in the db when all inputs exist in posts
+var postNewWallAjax = function(req, res) {
+  var receiver// = B's wall
+  var content = req.body.content;
+  var timepost = req.body.timepost;
+  if(content.length != 0 && timepost.length != 0 && receiver.length != 0) {
+	  db.createWall(receiver, req.session.username, content, timepost, function(err, data){});
+    
+    var response = {
+      "userID": req.session.username + " to " + receiver,
+      "content" : content,
+      "timepost": timepost
+    };
+
+    res.send(response);
+  } else {
+	  res.send(null);
+  }
+};
+
+var getOtherWallPage = function(req, res) {
+  if(!req.session.username) {
+    return res.redirect('/')
+  }
+  req.session.currWall = req.query.username;
+  // req.session.currWall.save();
+  db.usernameLookup(req.session.currWall, "username", function(err, data){
+    if(data === req.session.currWall) {
+      res.render('wall.ejs', {"check" : true, "isOther" : true, "username" : req.session.currWall});
+    }
+  });
+}
+
+
 //***************************************************** */
 
 //get all restaurants and login verification and put in restaurants
@@ -270,9 +440,11 @@ var routes = {
   //NEW
   get_homepage : getHomepage,
   get_homepagePostListAjax : getHomepagePostListAjax,
+  get_wallListAjax : getWallListAjax,
 
   post_newPostAjax : postNewPostAjax,
   post_newCommentAjax : postNewCommentAjax,
+  post_newWallAjax : postNewWallAjax,
 
   post_newAccount : postNewAccount,
   post_newRestaurantAjax : postNewRestaurantAjax,

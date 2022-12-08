@@ -10,83 +10,703 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Chat</title>
+
+    <style>
+body {
+  background: #efefef;      
+  height:100%; 
+  font-family: Arial, Helvetica, sans-serif;
+    
+}
+/* #center-text {          
+  display: flex;
+  flex: 1;
+  flex-direction:column; 
+  justify-content: center;
+  align-items: center;  
+  height:100%;
+  
+} */
+
+
+#chat-circle {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  background: #0668E1;
+  width: 80px;
+  height: 80px;  
+  border-radius: 50%;
+  color: white;
+  padding: 28px;
+  cursor: pointer;
+  box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.6), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.btn#my-btn {
+     background: white;
+    padding-top: 13px;
+    padding-bottom: 12px;
+    border-radius: 45px;
+    padding-right: 40px;
+    padding-left: 40px;
+    color: #0668E1;
+}
+#chat-overlay {
+    background: rgba(255,255,255,0.1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: none;
+}
+
+
+
+
+.chat-box {
+  display: none;
+  background: #efefef;
+  position:fixed;
+  right:30px;
+  bottom:50px;  
+  width:800px;
+  max-width: 85vw;
+  max-height:100vh;
+  border-radius:5px;  
+   box-shadow: 0px 5px 35px 9px #0668E1; 
+  box-shadow: 0px 5px 35px 9px #ccc;
+}
+#chatname{
+  display: inline-block;
+}
+.chat-box-toggle {
+  
+  float:right;
+  margin-right:15px;
+  cursor:pointer;
+}
+.right{
+  flex: 1;
+ background: #efefef;
+  
+}
+
+.chat-box-header {
+
+  background: #0668E1;
+  height:70px;
+  border-top-left-radius:5px;
+  border-top-right-radius:5px; 
+  color:white;
+  text-align:center;
+  font-size:20px;
+  padding-top:17px;
+  opacity: 1;
+}
+.chat-box-body {
+ 
+  height:370px;  
+  height:auto;
+  border:1px solid #ccc;  
+  overflow: hidden;
+ 
+}
+
+.whole{
+  display:flex;
+  
+}
+
+.left {
+
+  width: 200px;
+ 
+}
+
+
+.chat-box-body:after {
+  top: 0;
+  left: 0;
+  right: 0;
+  height:100%;
+  content: "";
+  position: absolute;
+  z-index: -1;  
+  opacity: 0.1;
+   
+}
+#chat-input {
+  background: #f4f7f9;
+  width:100%; 
+  position:relative;
+  height:47px;  
+  padding-top:10px;
+  padding-right:50px;
+  padding-bottom:10px;
+  padding-left:15px;
+  border:none;
+  resize:none;
+  outline:none;
+  border:1px solid #ccc;
+  color:#888;
+  border-top:none;
+  border-bottom-right-radius:5px;
+  border-bottom-left-radius:5px;
+  overflow:hidden;  
+}
+.chat-input > form {
+    margin-bottom: 0;
+}
+
+.chat-submit {  
+  position:absolute;
+  bottom:3px;
+  right:10px;
+  background: transparent;
+  box-shadow:none;
+  border:none;
+  border-radius:50%;
+  color:#0668E1;
+  width:35px;
+  height:35px;  
+}
+.chat-logs {
+  padding:15px; 
+  height:370px;
+  overflow-y:scroll;
+}
+
+.chat-logs::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.chat-logs::-webkit-scrollbar
+{
+	width: 5px;  
+	background-color: #F5F5F5;
+}
+
+.chat-logs::-webkit-scrollbar-thumb
+{
+	background-color: #0668E1;
+}
+
+
+
+@media only screen and (max-width: 500px) {
+   .chat-logs {
+        height:40vh;
+    }
+}
+
+.chat-msg.user > .msg-avatar img {
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  float:left;
+  width:15%;
+}
+.chat-msg.self > .msg-avatar img {
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  float:right;
+  width:15%;
+}
+.cm-msg-text {
+  background:white;
+  padding:10px 15px 10px 15px;  
+  color:#666;
+  max-width:75%;
+  float:left;
+  margin-left:10px; 
+  position:relative;
+  margin-bottom:20px;
+  border-radius:30px;
+}
+.chat-msg {
+  clear:both;    
+}
+.chat-msg.self > .cm-msg-text {  
+  float:right;
+
+  background: #0668E1;
+  color:white; 
+}
+ .cm-msg-button>ul>li {
+  list-style:none;
+  float:left;
+  width:50%;
+}
+.cm-msg-button {
+    clear: both;
+    margin-bottom: 70px;
+}
+button[type=chatroom-submit] {
+  appearance:none;
+  -webkit-appearance:none;
+    padding:10px;
+    margin:10px 50px; 
+    border:0;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    background-color:#0b994d;
+    color:#fff;
+    border-radius:5px;
+    position: absolute;
+   
+    bottom: 0;
+    left: 0;
+    
+}
+
+h1{
+  font-size: 20px;
+  font-weight: 600; 
+
+}
+
+
+    </style>
  
     </head>
 <body>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-    <script src="/node_modules/socket.io/client-dist/socket.io.js"></script>  
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
     <script>
         var socket = io();
-        var id = Math.random();
-        var room = false;
+        var id = "";
         
+        var roomID;
+  
+       
+        console.log(roomID);
+        var INDEX = 0; 
+
+        window.onload = function () {
+			  getFriendsOnline();
+        getChatRooms();
+		}
+
+    function getChatRooms() {
+      var activegc=[];
+			$(document).ready(function () {
+        console.log("chatrooms!!");
+				$.getJSON('/getchatrooms', function(elementsArr) {
+       
+          console.log(elementsArr);
+          
+          for(let i = 0; i < elementsArr.length; i++){
+            var Item = 
+            {
+              "content": elementsArr[i].content,
+              "chatID":elementsArr[i].chatID,
+              "users":elementsArr[i].userIDs
+            };
+            console.log(elementsArr[i]);
+            activegc.push(Item);
+            console.log(Item);
+          }
+          console.log(activegc);
+          for (let i = activegc.length-1; i >=0 ; i--) {
+            createChatRoomButton(activegc[i])
+};
+          
+
+				});
+			});
+		}
+		
+		function getFriendsOnline() {
+      var onlinefriends=[];
+			$(document).ready(function () {
+        console.log("friends online!!");
+				$.getJSON('/getonlineusers', function(elementsArr) {
+          console.log("here!!!");
+          console.log(elementsArr);
+          
+          for(let i = 0; i < elementsArr.length; i++){
+            var Item = 
+            {
+              "name": elementsArr[i]
+            };
+            console.log(elementsArr[i]);
+            onlinefriends.push(Item);
+            console.log(Item);
+          }
+          console.log(onlinefriends);
+          for (let i = onlinefriends.length-1; i >=0 ; i--) {
+            createOnlineFriendDiv(onlinefriends[i]);
+};
+          
+
+				});
+			});
+		}
+
+    function createOnlineFriendDiv(onlinefriend){
+      test_el = document.createElement('div');
+      test_el.innerHTML = 
+              '<div class="onlinefriend"><div class= "user">'
+                +onlinefriend.name+
+                '</div>';
+      
+      var inviteID = "invite-button-"+onlinefriend.name
+      test_el.innerHTML+=
+      '<button type = "invite" id = '+inviteID+'>invite</button></div>'
+      document.body.appendChild(test_el);
+      var onlineFriendsDiv = document.getElementById('online-friends');
+      onlineFriendsDiv.after(test_el);
+      var inviteIDWithHash = "#"+inviteID;
+      inviteButtons(inviteIDWithHash, onlinefriend.name);       
+    }
+
+    function inviteButtons(inviteID, onlinefriend){
+      $(document).ready(function(){
+      $(inviteID).click(function(e){
+        if(roomID != undefined){
+          console.log("invite clicked!");
+          e.preventDefault();
+        
+          $.ajax({
+            type: "POST",
+            url: "/addUserToChat",
+            data:{ 
+                chatID : roomID,
+                userID: onlinefriend,
+            },
+           
+           
+          success: function(result) {
+          alert('added');
+          console.log(result);
+
+          },
+      error: function(result) {
+          alert('error');
+      }
+  });
+        }
+      
+    
+    });
+
+  });
+    }
+
+   
+
+
+
+
         function sendChat() {
-            if($('#input').val().trim() !== ''){
-                socket.emit('chat message',{
-                    text:$('#input').val().trim(),
+            console.log("send chat");
+            if($('#chat-input').val().trim() !== ''){
+
+                var messageItem ={
+                    text:$('#chat-input').val().trim(),
                     sender: id,
-                    room: 1
-                });
-                $('#input').val('');
-                $('#input').focus();
+                    room: roomID,
+                    timestamp: new Date().getTime()
+
+                }
+                socket.emit("chat message", messageItem);
+                console.log("emitted");
+                
+                $('#chat-input').val('');
+                $('#chat-input').focus();
             }
         }
 
+      $(document).ready(function() {
+			$.getJSON('/getCreator', function(creator) {
+				id = creator;
+                console.log(id);
+                $("#currUser").html(id);
+			});
+			
+	    });
+
+        $(document).ready(function () {
+            socket.emit("join room", {
+                sender: id,
+                room: roomID
+            });
+        });
+
+    function generate_message(msg, type, sender) {
+
+    console.log(msg);
+    INDEX++;
+   var str = "";
+   if(id == sender){
+    str += "<div id='cm-msg-"+INDEX+"' class=\"chat-msg "+type+"\">";
+    str += "          <div class=\"cm-msg-text\">";
+    str += msg;
+    str += "          <\/div>";
+    str += "        <\/div>";
+   }
+   else{
+    str += "<div id='cm-msg-"+INDEX+"' class=\"chat-msg "+type+"\">";
+     str += "          <span class=\"sender\">";
+      str += "          <div class=\"cm-msg-sender\">";
+    str += sender;
+    str += "          <\/div>";
+     str += "          <\/span>";
+    str += "          <div class=\"cm-msg-text\">";
+    str += msg;
+    str += "          <\/div>";
+    str += "        <\/div>";
+   }
+    
+    $(".chat-logs").append(str);
+    $("#cm-msg-"+INDEX).hide().fadeIn(300);
+    if(type == 'self'){
+     $("#chat-input").val(''); 
+    }    
+    $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 1000);    
+  }  
+  
+  
+ 
+
+
+
+
+// Called whenever a chat is sent, emits to socket and posts to the database
         $(document).ready(function(){
-            socket.on('chat message', function(msg){
+            console.log("here");
+           
+            socket.on("chat message", function(msg){
+                console.log("in chat message")
+                console.log(msg);
                 var message_temp = document.createElement("li");
+                var text = msg.text;
+
                 if(id == msg.sender){
-                    message_temp.setAttribute("class", "me");
+                    generate_message(text, 'self', id);
+                   
                 } else {
-                    message_temp.setAttribute("class", "other");
+                    generate_message(text, 'user', msg.sender);
+                   
                 }
-                message_temp.appendChild(document.createTextNode(msg.text))
-                $('#messages').append(message_temp);
-                $('#messages').animate({
-                    scrollTop: $('#messages').get(0).scrollHeight},0);
+              
                 });
-                $(".left").addClass("fullWidth");
-                $("#roomBtn").on("click", function(){
-                    if(!room){
-                        $.post('/join', {room: 1}, function(data){
-                            if(data.success){
-                                alert('succes');
-                            }
-                            else{
-                                alert('error');
-                            }
-                        })
-                    }
-                })            
+
+                $("#chat-circle").click(function() {    
+                    $("#chat-circle").toggle('scale');
+                    $(".chat-box").toggle('scale');
+                })
+  
+                $(".chat-box-toggle").click(function() {
+                    $("#chat-circle").toggle('scale');
+                    $(".chat-box").toggle('scale');
+                })
+
+
+                  
             })
    
     </script>
+
+    <script>
+   
+    $(document).ready(function(){
+      var input = document.getElementById("chat-input");
+    input.addEventListener("keypress", function (e) {
+    if (e.keyCode === 13) {
+      event.preventDefault();  //checks whether the pressed key is "Enter"
+      sendChat();
+    }
+});
+    })
+    
+    </script>
+
+<script>
+  $(document).ready(function(){
+    $("#chatroom-submit").click(function(e){
+      console.log("chatroom create!");
+      e.preventDefault();
+      
+      $.ajax({
+            type: "POST",
+            url: "/addchatroom",
+            data:{ 
+                username: id
+            },
+           
+      
+      success: function(result) {
+          console.log("chatroom created!!!!");
+          console.log(result);
+          var Item = 
+          {
+            "chatID" : result.chatID,
+            "users" : result.userIDs
+          };
+          console.log(Item);
+          createChatRoomButton(Item);
+      },
+      error: function(result) {
+        console.log(result);
+          alert('error');
+      }
+  });
+    
+    });
+
+  });
+
+
+
+  function createChatRoomButton(chatroom){
+    console.log("create chatroom button")
+    test_el = document.createElement('div');
+    var chatName = "";
+    var usersArr1 = [];
+    var usersArr = [];
+    console.log(chatroom.users);
+    var usersArr1 = (chatroom.users).L;
+    var usersArr = usersArr1.map(obj => obj.S);
+    console.log(usersArr);
+    
+    for(let i = 0; i < usersArr.length; i++){
+      console.log(usersArr[i]);
+      chatName+=usersArr[i]+" ";
+    }
+    console.log(chatName);
+  
+
+    var gcID = "gc-button-"+chatroom.chatID.S
+      test_el.innerHTML+=
+      '<button type = "gc" id = '+gcID+'>'+ chatName +'</button></div>'
+      document.body.appendChild(test_el);
+      var gcDiv = document.getElementById('chatrooms');
+      gcDiv.after(test_el);     
+      gcButtons(gcID, chatName); 
+  }
+
+
+  function gcButtons(gcID, chatName){
+    var gcIDWithHash = "#"+gcID;  
+     $(document).ready(function(){
+    $(gcIDWithHash).click(function(e){
+      console.log("gc clicked!");
+     
+      e.preventDefault();
+     
+      // $.getJSON('/getChatRoom', function(element) {
+      //     console.log("here!!!");
+      //     console.log(element);
+			// 	});
+      // 
+      console.log(chatName);
+      $("#chatname").html(chatName);
+      roomID = gcID;
+      console.log(roomID);
+     
+      
+
+    });
+
+  });
+
+ 
+    }
+  </script>
+
+   
+  
 
 
 
 
 <main>
-    <div class = "left">
-        <div class = "fadeIn second" id="buttons-wrapper">
-            <h2 id = "roomBtn" class= "underlineHover">enter chat room</h2>
-        </div>
-    </div>
-    <div class = "right">
-        <div>
-            <ul id = "messages">
-            </ul>
-        </div>
-        <form id="message-form">
-            <div id = "form-message">
-                <input class="form-control" id="input" autocomplete="off" placeholder="type a message..."
-                onfocus="this.placeholder=''" onblur="this.placeholder='type a message...'">
-                <button type = "button" id="send-btn" class="btn btn-light" onclick = "return sendChat();">
-                   send </button>
-            </div>
-        </form>
+    
+   
+  
 
+        <div id="body"> 
+            
+          
+        <div id="chat-circle" class="btn btn-raised">
+                <div id="chat-overlay"></div>
+                <img src="https://img.icons8.com/material-rounded/24/FFFFFF/communication.png"/>
+            </div>
+          
+          <div class="chat-box">
+       
+         
+          <div class = "whole">
+            <div class = "left">
+              <div id = "online-friends">
+                  <h1> online friends</h1>
+              </div>
+          
+              <div id = "chatrooms">
+                <h1> active chatrooms</h1>       
+              </div>
+
+              <button type = "chatroom-submit" class="chatroom-submit" id="chatroom-submit">
+                add new chat
+               </button>
+          </div>
+          
+          <div class = "right">
+              <div class="chat-box-header">
+              <div id = "chatname">
+              chat
+              </div>
+              <span class="chat-box-toggle">
+                <img src="https://img.icons8.com/material-outlined/24/FFFFFF/cancel--v1.png"/>
+              </span>
+            </div>
+            <div class = right-chatbox>
+            <div class="chat-box-body">
+              <div class="chat-box-overlay">   
+              </div>
+              <div class="chat-logs">
+               
+              </div>
+            </div>
+           
+                </div>
+                <div class="chat-input">      
+              
+                  <div>
+                    <ul id = "messages">
+                    </ul>
+                </div>
+                      
+                </div>
+                        <input class="text" id="chat-input" autocomplete="off" placeholder="type a message..."
+                        onfocus="this.placeholder=''" onblur="this.placeholder='type a message...'">
+                     
+           
+            <button type = "submit" class="chat-submit" id="chat-submit" onclick = sendChat()>
+              <img src="https://img.icons8.com/material/24/0668E1/filled-sent.png"/>
+              </button>
+          </div>
+
+           
+
+       </div>
+          </div>
+          
+          </div>
+
+          
+          
+        </div>
+        
+       
 
 </main>
 </body>
