@@ -14,8 +14,9 @@ var getChat = function(req, res) {
 var getOnlineUsers = function(req, res) {
 	var friendsList = [];
 	var onlineFriends = [];
+	var counter = 0;
+	var data2Length = 0;
 	
-    // Checks whether all fields are filled; if not, show warning message	
 	if (!req.session.username) {
 		res.render('login.ejs', {message: "Need to log in"});
 	} else {
@@ -28,13 +29,17 @@ var getOnlineUsers = function(req, res) {
 			if (err2) {
 				console.log(err2);
 			} else {
-				// data2: string set of userIDs				
+				// data2: string set of userIDs	
+				data2Length = data2.length;			
 				data2.forEach(function(r) {
 					if (friendsList.includes(r.S)) {
 						onlineFriends.push(r.S);
+						counter++;
+						if (data2Length === counter) {
+							res.json(onlineFriends);
+						}
 					}
-				});	
-				res.json(onlineFriends);
+				});
 			}
 		});	
 	}
