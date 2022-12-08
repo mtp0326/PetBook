@@ -72,11 +72,13 @@ var getChatRooms = function(req, res) {
 						} else {
 							// data2: Item with chatID, content, userIDs
 							chatroomList.push(data2);
+							if (data1.length == chatroomList.length) {
+								// list of data2
+								res.json(chatroomList);	
+							}
 						}
 					})
-				});
-				// list of data2
-				res.json(chatroomList);				
+				});			
 			}
 		});
 	}
