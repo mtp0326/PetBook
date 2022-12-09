@@ -93,13 +93,14 @@
    app.post('/addmessage', chats.add_message);
    app.get('/getchatrooms', chats.get_chatrooms);
    app.post('/logoutchat', chats.log_out);
+   app.get('/getOtherWallPage', routes.get_otherWallPage);
 
    
 
 
    /* Run the server */
    
-   console.log('Author: Jiwoong Matt Park (mtp0326)');
+   console.log('Pennbook G27');
    // app.listen(8080);
    http.listen(8080, () => {
       console.log('listening on 8080');

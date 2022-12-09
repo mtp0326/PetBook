@@ -2,134 +2,134 @@ var db = require('../models/database.js');
 
 var isVerified = false;
 // TODO The code for your own routes should go here
-var getMain = function(req, res) {
+var getMain = function (req, res) {
   isVerified = false;
   res.render('main.ejs');
 };
 
 //render homepage
 //NEW: getHomepage, homepage.ejs
-var getHomepage = function(req, res) {
-  if(!req.session.username) {
+var getHomepage = function (req, res) {
+  if (!req.session.username) {
     return res.redirect('/')
   }
-	res.render('homepage.ejs', {"check" : isVerified})
+  res.render('homepage.ejs', { "check": isVerified })
 };
 
-var getWall = function(req, res) {
-  if(!req.session.username) {
+var getWall = function (req, res) {
+  if (!req.session.username) {
     return res.redirect('/')
   }
   isVerified = false;
-  res.render('wall.ejs', {"check" : true});
+  res.render('wall.ejs',{ "check": true, "isOther": false, "username": req.session.userName });
 };
 
 //for results if the username and password are correct
-var postResultsUser = function(req, res) {
+var postResultsUser = function (req, res) {
   var usernameCheck = req.body.username;
   var passwordCheck = req.body.password;
-  db.passwordLookup(usernameCheck, function(err, data) {
+  db.passwordLookup(usernameCheck, function (err, data) {
     if (data == passwordCheck && !err) {
       req.session.username = req.body.username;
       req.session.password = req.body.password;
       isVerified = true;
-      res.render('checklogin.ejs', {"check" : true});
+      res.render('checklogin.ejs', { "check": true });
     } else {
       isVerified = false;
-      res.render('checklogin.ejs', {"check" : false});
+      res.render('checklogin.ejs', { "check": false });
     }
   });
 };
 
 //gets signup page
-var getSignup = function(req, res) {
-	res.render('signup.ejs', {"check" : isVerified});
+var getSignup = function (req, res) {
+  res.render('signup.ejs', { "check": isVerified });
 }
 
 //gets logout page
-var getLogout = function(req, res) {
-	req.session.username = null;
+var getLogout = function (req, res) {
+  req.session.username = null;
   req.session.destroy();
-	res.render('logout.ejs', {});
+  res.render('logout.ejs', {});
 }
 
-var getChat = function(req, res) {
-	res.render('chat.ejs', {"check" : isVerified})
+var getChat = function (req, res) {
+  res.render('chat.ejs', { "check": isVerified })
 };
 
 //check if new account can be created by receiving null (which means that username in db is empty)
 //and create the new account and go to restaurants or fail and go back to signup.
-var postNewAccount = function(req, res) {
+var postNewAccount = function (req, res) {
   var usernameNewCheck = req.body.username;
-  db.usernameLookup(usernameNewCheck, "username", function(err, data) {
-	if(data == null || err) {
-    req.session.username = req.body.username;
-    req.session.password = req.body.password;
-    req.session.fullname = req.body.firstname + " " + req.body.lastname;
-    req.session.affiliation = req.body.affiliation;
-    req.session.email = req.body.email;
-    req.session.birthday = req.body.birthday;
-    
-    var interestList = (req.body.interest.toLowerCase()).split(", ");
-    req.session.interest = interestList;
-    req.session.pfpURL = req.body.pfpURL;
-		db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
-      req.session.interest, req.session.pfpURL, function(err, data){});
-		isVerified = true;
-    res.render('createaccount.ejs', {"check" : true});
-	} else {
-		isVerified = false;
-    res.render('createaccount.ejs', {"check" : false});
-	}
-    
+  db.usernameLookup(usernameNewCheck, "username", function (err, data) {
+    if (data == null || err) {
+      req.session.username = req.body.username;
+      req.session.password = req.body.password;
+      req.session.fullname = req.body.firstname + " " + req.body.lastname;
+      req.session.affiliation = req.body.affiliation;
+      req.session.email = req.body.email;
+      req.session.birthday = req.body.birthday;
+
+      var interestList = (req.body.interest.toLowerCase()).split(", ");
+      req.session.interest = interestList;
+      req.session.pfpURL = req.body.pfpURL;
+      db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
+        req.session.interest, req.session.pfpURL, function (err, data) { });
+      isVerified = true;
+      res.render('createaccount.ejs', { "check": true });
+    } else {
+      isVerified = false;
+      res.render('createaccount.ejs', { "check": false });
+    }
+
   });
 };
 
 //ajax: query posts of friend's userid
 //Also renders comments if exists
 //NEW: getHomepagePostList, getAllPosts
-var getHomepagePostListAjax = function(req, res) {
-  
-  db.getFriends(req.session.username, function(err, data){
+var getHomepagePostListAjax = function (req, res) {
+
+  db.getFriends(req.session.username, function (err, data) {
     var friendsList = data.map(obj => obj.S);
 
     var tempList = [];
-    db.getAllPosts(req.session.username, function(err, data){
+    db.getAllPosts(req.session.username, function (err, data) {
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
       var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
       var timepostArr = data.map(obj => obj.timepost.S);
-      
-      for(let i = 0; i < userIDArr.length; i++) {
-        var pointer =  {
+
+      for (let i = 0; i < userIDArr.length; i++) {
+        var pointer = {
           "content": contentArr[i],
           "comments": commentsArr[i],
           "likes": likesArr[i],
-          "userID" : userIDArr[i],
-          "timepost" : timepostArr[i]
+          "userID": userIDArr[i],
+          "timepost": timepostArr[i]
         };
         tempList.push(pointer);
       }
 
-      db.getAllWalls(req.session.username, function(err, data){
+      db.getAllWalls(req.session.username, function (err, data) {
         var contentArr = data.map(obj => obj.content.S);
         var commentsArr = data.map(obj => obj.comments.L);
         var likesArr = data.map(obj => obj.likes.L);
         var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
         var timepostArr = data.map(obj => obj.timepost.S);
-        
-        for(let i = 0; i < userIDArr.length; i++) {
-          var pointer =  {
+
+        for (let i = 0; i < userIDArr.length; i++) {
+          var pointer = {
             "content": contentArr[i],
             "comments": commentsArr[i],
             "likes": likesArr[i],
-            "userID" : userIDArr[i],
-            "timepost" : timepostArr[i]
+            "userID": userIDArr[i],
+            "timepost": timepostArr[i]
           };
           tempList.push(pointer);
         }
-        recGetAllPosts(friendsList, tempList, 0, function(postsList) {
+        recGetAllPosts(friendsList, tempList, 0, function (postsList) {
           postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
           res.send(JSON.stringify(postsList));
         });
@@ -138,42 +138,42 @@ var getHomepagePostListAjax = function(req, res) {
   });
 };
 
-var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
+var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) {
   if (counter >= recFriendsList.length) {
     callback(recPostsList);
   } else {
-    db.getAllPosts(recFriendsList[counter], function(err, data){
+    db.getAllPosts(recFriendsList[counter], function (err, data) {
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
       var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
       var timepostArr = data.map(obj => obj.timepost.S);
-      
-      for(let i = 0; i < userIDArr.length; i++) {
-        var pointer =  {
+
+      for (let i = 0; i < userIDArr.length; i++) {
+        var pointer = {
           "content": contentArr[i],
           "comments": commentsArr[i],
           "likes": likesArr[i],
-          "userID" : userIDArr[i],
-          "timepost" : timepostArr[i]
+          "userID": userIDArr[i],
+          "timepost": timepostArr[i]
         };
         recPostsList.push(pointer);
       }
 
-      db.getAllWalls(recFriendsList[counter], function(err, data){
+      db.getAllWalls(recFriendsList[counter], function (err, data) {
         var contentArr = data.map(obj => obj.content.S);
         var commentsArr = data.map(obj => obj.comments.L);
         var likesArr = data.map(obj => obj.likes.L);
         var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
         var timepostArr = data.map(obj => obj.timepost.S);
-        
-        for(let i = 0; i < userIDArr.length; i++) {
-          var pointer =  {
+
+        for (let i = 0; i < userIDArr.length; i++) {
+          var pointer = {
             "content": contentArr[i],
             "comments": commentsArr[i],
             "likes": likesArr[i],
-            "userID" : userIDArr[i],
-            "timepost" : timepostArr[i]
+            "userID": userIDArr[i],
+            "timepost": timepostArr[i]
           };
           recPostsList.push(pointer);
         }
@@ -185,31 +185,31 @@ var recGetAllPosts = function(recFriendsList, recPostsList, counter, callback) {
 }
 
 //ajax: get the creator information
-var getCreator = function(req, res) {
+var getCreator = function (req, res) {
   res.send(JSON.stringify(req.session.username));
 };
 
 //create new post in the db when all inputs exist in posts
-var postNewPostAjax = function(req, res) {
+var postNewPostAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  if(content.length != 0 && timepost.length != 0) {
-	  db.createPost(req.session.username, content, timepost, function(err, data){});
-    
+  if (content.length != 0 && timepost.length != 0) {
+    db.createPost(req.session.username, content, timepost, function (err, data) { });
+
     var response = {
       "userID": req.session.username,
-      "content" : content,
+      "content": content,
       "timepost": timepost
     };
 
     res.send(response);
   } else {
-	  res.send(null);
+    res.send(null);
   }
 };
 
 //ajax: add comment in post data in posts
-var postNewCommentAjax = function(req, res) {
+var postNewCommentAjax = function (req, res) {
   var userID = req.body.userID;
   var timepost = req.body.timepost;
   var comment = req.body.comment;
@@ -217,14 +217,14 @@ var postNewCommentAjax = function(req, res) {
   console.log("timepost " + timepost);
   console.log("comment " + comment);
 
-  if(userID.length != 0 && timepost.length != 0 && comment.length != 0) {
+  if (userID.length != 0 && timepost.length != 0 && comment.length != 0) {
     console.log("passing");
-    db.addComment(userID, timepost, comment, function(err,data){});
-    
+    db.addComment(userID, timepost, comment, function (err, data) { });
+
     var response = {
       "userID": userID,
       "timepost": timepost,
-      "comment" : comment
+      "comment": comment
     };
 
     res.send(response);
@@ -235,128 +235,133 @@ var postNewCommentAjax = function(req, res) {
 
 //ajax: get your posts and wall you receive from friends posting on yours
 //NEW
-var getWallListAjax = function(req, res) {
-    console.log(req.session.username);
-    var tempList = [];
+var getWallListAjax = function (req, res) {
+  console.log(req.session.username);
+  var tempList = [];
+  ///req.session.username into B's wall
+  db.getAllPosts(req.session.username, function (err, data) {
+    var contentArr = data.map(obj => obj.content.S);
+    var commentsArr = data.map(obj => obj.comments.L);
+    var likesArr = data.map(obj => obj.likes.L);
+    var userIDArr = data.map(obj => obj.userID.S);
+    var timepostArr = data.map(obj => obj.timepost.S);
+
+    for (let i = 0; i < userIDArr.length; i++) {
+      var pointer = {
+        "content": contentArr[i],
+        "comments": commentsArr[i],
+        "likes": likesArr[i],
+        "userID": userIDArr[i],
+        "timepost": timepostArr[i]
+      };
+      tempList.push(pointer);
+    }
     ///req.session.username into B's wall
-    db.getAllPosts(req.session.username, function(err, data){
-      var contentArr = data.map(obj => obj.content.S);
-      var commentsArr = data.map(obj => obj.comments.L);
-      var likesArr = data.map(obj => obj.likes.L);
-      var userIDArr = data.map(obj => obj.userID.S);
-      var timepostArr = data.map(obj => obj.timepost.S);
-      
-      for(let i = 0; i < userIDArr.length; i++) {
-        var pointer =  {
+    console.log("getA");
+    db.getAllWalls("A", function (err, postsList) {
+      var contentArr = postsList.map(obj => obj.content.S);
+      var commentsArr = postsList.map(obj => obj.comments.L);
+      var likesArr = postsList.map(obj => obj.likes.L);
+      var userIDArr = postsList.map(obj => obj.sender.S + " to " + obj.receiver.S);
+      var timepostArr = postsList.map(obj => obj.timepost.S);
+
+      for (let i = 0; i < userIDArr.length; i++) {
+        var pointer = {
           "content": contentArr[i],
           "comments": commentsArr[i],
           "likes": likesArr[i],
-          "userID" : userIDArr[i],
-          "timepost" : timepostArr[i]
+          "userID": userIDArr[i],
+          "timepost": timepostArr[i]
         };
         tempList.push(pointer);
       }
-      ///req.session.username into B's wall
-      console.log("getA");
-      db.getAllWalls("A", function(err, postsList) {
-        var contentArr = postsList.map(obj => obj.content.S);
-        var commentsArr = postsList.map(obj => obj.comments.L);
-        var likesArr = postsList.map(obj => obj.likes.L);
-        var userIDArr = postsList.map(obj => obj.sender.S + " to " + obj.receiver.S);
-        var timepostArr = postsList.map(obj => obj.timepost.S);
-        
-        for(let i = 0; i < userIDArr.length; i++) {
-          var pointer =  {
-            "content": contentArr[i],
-            "comments": commentsArr[i],
-            "likes": likesArr[i],
-            "userID" : userIDArr[i],
-            "timepost" : timepostArr[i]
-          };
-          tempList.push(pointer);
-        }
 
-        db.getFriends(req.session.username, function(err, data){
-          var friendsList = data.map(obj => obj.S);
+      db.getFriends(req.session.username, function (err, data) {
+        var friendsList = data.map(obj => obj.S);
 
-          ///recursion as friends
-          recGetAllWalls(friendsList, tempList, req.session.username, 0, function(postsList) {
-            console.log("postsList");
-            console.log(postsList);
-            if(postsList.length > 1) {
-              postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
-            }
-            console.log(postsList);
-            res.send(JSON.stringify(postsList));
+        ///recursion as friends
+        recGetAllWalls(friendsList, tempList, req.session.username, 0, function (postsList) {
+          console.log("postsList");
+          console.log(postsList);
+          if (postsList.length > 1) {
+            postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
+          }
+          console.log(postsList);
+          res.send(JSON.stringify(postsList));
 
-            if(err) {
-              console.log("error" + err);
-            }
-          });
+          if (err) {
+            console.log("error" + err);
+          }
         });
       });
     });
+  });
 };
 
-var recGetAllWalls = function(recFriendsList, recWallsList, sender, counter, callback) {
+var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, callback) {
   if (counter >= recFriendsList.length) {
     console.log("recWallsList");
     console.log(recWallsList);
     callback(recWallsList);
   } else {
-      db.getAllWallsAsSender(recFriendsList[counter], sender, function(err, data){
-        console.log("asSe" + data);
-            var contentArr = data.map(obj => obj.content.S);
-            var commentsArr = data.map(obj => obj.comments.L);
-            var likesArr = data.map(obj => obj.likes.L);
-            var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
-            var timepostArr = data.map(obj => obj.timepost.S);
-            
-            for(let i = 0; i < userIDArr.length; i++) {
-              var pointer =  {
-                "content": contentArr[i],
-                "comments": commentsArr[i],
-                "likes": likesArr[i],
-                "userID" : userIDArr[i],
-                "timepost" : timepostArr[i]
-              };
-              recWallsList.push(pointer);
-            }
-        counter++;
-        recGetAllWalls(recFriendsList, recWallsList, sender, counter, callback);
-      });
+    db.getAllWallsAsSender(recFriendsList[counter], sender, function (err, data) {
+      console.log("asSe" + data);
+      var contentArr = data.map(obj => obj.content.S);
+      var commentsArr = data.map(obj => obj.comments.L);
+      var likesArr = data.map(obj => obj.likes.L);
+      var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
+      var timepostArr = data.map(obj => obj.timepost.S);
+
+      for (let i = 0; i < userIDArr.length; i++) {
+        var pointer = {
+          "content": contentArr[i],
+          "comments": commentsArr[i],
+          "likes": likesArr[i],
+          "userID": userIDArr[i],
+          "timepost": timepostArr[i]
+        };
+        recWallsList.push(pointer);
+      }
+      counter++;
+      recGetAllWalls(recFriendsList, recWallsList, sender, counter, callback);
+    });
   }
 }
 
 //create new wall in the db when all inputs exist in posts
-var postNewWallAjax = function(req, res) {
+var postNewWallAjax = function (req, res) {
   var receiver// = B's wall
   var content = req.body.content;
   var timepost = req.body.timepost;
-  if(content.length != 0 && timepost.length != 0 && receiver.length != 0) {
-	  db.createWall(receiver, req.session.username, content, timepost, function(err, data){});
-    
+  if (content.length != 0 && timepost.length != 0 && receiver.length != 0) {
+    db.createWall(receiver, req.session.username, content, timepost, function (err, data) { });
+
     var response = {
       "userID": req.session.username + " to " + receiver,
-      "content" : content,
+      "content": content,
       "timepost": timepost
     };
 
     res.send(response);
   } else {
-	  res.send(null);
+    res.send(null);
   }
 };
 
-var getOtherWallPage = function(req, res) {
-  if(!req.session.username) {
+var getOtherWallPage = function (req, res) {
+  if (!req.session.username) {
     return res.redirect('/')
   }
+  console.log("print");
   req.session.currWall = req.query.username;
   // req.session.currWall.save();
-  db.usernameLookup(req.session.currWall, "username", function(err, data){
-    if(data === req.session.currWall) {
-      res.render('wall.ejs', {"check" : true, "isOther" : true, "username" : req.session.currWall});
+  db.usernameLookup(req.session.currWall, "username", function (err, data) {
+    console.log("this is usernamelookup");
+    console.log(req.session.currWall);
+      console.log(data);
+    if (data === req.session.currWall) {
+      
+      res.render('wall.ejs', { "check": true, "isOther": false, "username": req.session.currWall });
     }
   });
 }
@@ -365,33 +370,33 @@ var getOtherWallPage = function(req, res) {
 //***************************************************** */
 
 //get all restaurants and login verification and put in restaurants
-var getRestaurants = function(req, res) {
-	res.render('restaurants.ejs', {"isVerified" : isVerified})
+var getRestaurants = function (req, res) {
+  res.render('restaurants.ejs', { "isVerified": isVerified })
 };
 
 
 
 //ajax: get all data of restaurants
-var getRestaurantList = function(req, res) {
-	db.getAllRestaurants(function(err, data){
-	  res.send(JSON.stringify(data))
+var getRestaurantList = function (req, res) {
+  db.getAllRestaurants(function (err, data) {
+    res.send(JSON.stringify(data))
   });
 };
 
 
 
 //create new restaurant in the db when all inputs exist
-var postNewRestaurantAjax = function(req, res) {
+var postNewRestaurantAjax = function (req, res) {
   var latitude = req.body.latitude;
   var longitude = req.body.longitude;
   var resName = req.body.name;
   var description = req.body.description;
-  if(latitude.length != 0 && longitude.length != 0 && resName.length != 0 && description.length != 0) {
-	  db.createRestaurant(resName, latitude, longitude, description, req.session.username, function(err, data){});
-    
+  if (latitude.length != 0 && longitude.length != 0 && resName.length != 0 && description.length != 0) {
+    db.createRestaurant(resName, latitude, longitude, description, req.session.username, function (err, data) { });
+
     var response = {
       "name": resName,
-      "latitude" : latitude,
+      "latitude": latitude,
       "longitude": longitude,
       "description": description,
       "creator": req.session.username
@@ -399,14 +404,14 @@ var postNewRestaurantAjax = function(req, res) {
 
     res.send(response);
   } else {
-	  res.send(null);
+    res.send(null);
   }
 };
 
 //ajax: deletes the restaurant data in db
-var postDeleteRestaurantAjax = function(req, res) {
+var postDeleteRestaurantAjax = function (req, res) {
   var resName = req.body.name;
-  db.deleteRestaurant(resName, function(err,data){});
+  db.deleteRestaurant(resName, function (err, data) { });
   res.send(resName);
 };
 
@@ -427,28 +432,30 @@ var postDeleteRestaurantAjax = function(req, res) {
 
 // TODO Don't forget to add any new functions to this class, so app.js can call them. (The name before the colon is the name you'd use for the function in app.js; the name after the colon is the name the method has here, in this file.)
 
-var routes = { 
+var routes = {
   get_main: getMain,
   verifyUser: postResultsUser,
-  get_restaurants : getRestaurants,
-  get_restaurantList : getRestaurantList,
-  get_signup : getSignup,
-  get_logout : getLogout,
-  get_creator : getCreator,
+  get_restaurants: getRestaurants,
+  get_restaurantList: getRestaurantList,
+  get_signup: getSignup,
+  get_logout: getLogout,
+  get_creator: getCreator,
   get_chat: getChat,
   get_wall: getWall,
+  get_otherWallPage: getOtherWallPage,
+
   //NEW
-  get_homepage : getHomepage,
-  get_homepagePostListAjax : getHomepagePostListAjax,
-  get_wallListAjax : getWallListAjax,
+  get_homepage: getHomepage,
+  get_homepagePostListAjax: getHomepagePostListAjax,
+  get_wallListAjax: getWallListAjax,
 
-  post_newPostAjax : postNewPostAjax,
-  post_newCommentAjax : postNewCommentAjax,
-  post_newWallAjax : postNewWallAjax,
+  post_newPostAjax: postNewPostAjax,
+  post_newCommentAjax: postNewCommentAjax,
+  post_newWallAjax: postNewWallAjax,
 
-  post_newAccount : postNewAccount,
-  post_newRestaurantAjax : postNewRestaurantAjax,
-  post_deleteRestaurantAjax : postDeleteRestaurantAjax
+  post_newAccount: postNewAccount,
+  post_newRestaurantAjax: postNewRestaurantAjax,
+  post_deleteRestaurantAjax: postDeleteRestaurantAjax
 
   //post_newRestaurant : postNewRestaurant
 };

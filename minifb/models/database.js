@@ -496,6 +496,7 @@ var database = {
   createRestaurant : myDB_createRestaurant,
   getAllRestaurants : myDB_allRestaurants,
   deleteRestaurant : myDB_deleteRestaurant
+  
 
   
 };

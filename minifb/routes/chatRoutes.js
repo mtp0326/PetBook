@@ -32,14 +32,22 @@ var getOnlineUsers = function(req, res) {
 						console.log(err2);
 					} else {
 						// data2: string set of userIDs	
-						data2Length = data2.length;			
+						data2Length = data2.length;
+						console.log(friendsList.includes("hello"));
+
 						data2.forEach(function(r) {
-							if (friendsList.includes(r.S)) {
-								onlineFriends.push(r.S);
-								counter++;
-								if (data2Length === counter) {
-									res.json(onlineFriends);
+							if (friendsList.includes(r)) {
+								var stringifyFriend = {
+									S: r
 								}
+								console.log("print");
+								console.log(stringifyFriend);
+								onlineFriends.push(stringifyFriend);
+							}
+							counter++;
+							if (data2Length === counter) {
+								console.log(onlineFriends);
+								res.json(onlineFriends);
 							}
 						});
 					}
@@ -48,12 +56,12 @@ var getOnlineUsers = function(req, res) {
   		});
 	}
 };
-
 var addOnlineUser = function(req, res) {
 	// Checks whether all fields are filled; if not, show warning message	
 	if (!req.session.username) {
 		res.render('login.ejs', {message: "Not logged in"});
 	} else {
+		console.log("add online user: "+ req.session.username);
 		chatdb.addUserOnline(req.session.username, function(err, data) {
 			if (err) {console.log(err);}
 		});
