@@ -87,6 +87,7 @@ app.post('/checklogin', routes.verifyUser);
 app.post('/createaccount', routes.post_newAccount);
 app.post('/addList', routes.post_newRestaurantAjax);
 app.post('/deleteList', routes.post_deleteRestaurantAjax);
+app.post('/editaccount', routes.post_updateUser);
 
 //chat
 app.get('/getonlineusers', chats.get_online_users);

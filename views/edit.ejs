@@ -21,6 +21,7 @@
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 600;
     padding: 50px;
+  
   }
     input[type=date] {
  
@@ -110,57 +111,91 @@ h1{
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
 </script>
 <script type="text/javascript">
-      $(document).ready(function() {
+      window.onload = function(){
+        // document.getElementById('firstnameT').value = "cha";
+         getUserInfo();
         
+      }
+      function getUserInfo(){
+      $(document).ready(function() {
       $.getJSON('/getEditUserInfoAjax', function(data) {
                 console.log(data);
-                var firstnameUpd = data.fullname.S;
-                var lastnameUpd = data.fullname.S;
+                var interestArr = [];
+                var interestUpd = "";
+                var fullname = data.fullname.S;
+                var fullnameArr = fullname.split(" ");
+                var firstnameUpd = fullnameArr[0];
+                var lastnameUpd = fullnameArr[1];
                 var passwordUpd = data.password.S;
                 var emailUpd = data.email.S;
                 var affiliationUpd = data.affiliation.S;
-                var interestUpd = data.interest.L;
+                interestArr = data.interest.L;
                 var pfpURLUpd = data.pfpURL.S;
+                if(interestArr.length >=1){
+                  for(let i = 0; i < interestArr.length-1; i++){
+                  interestUpd +=interestArr[i].S + ","
+                }
+                interestUpd +=interestArr[interestArr.length-1].S;
+                }
+                createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd, interestUpd);
                 
                 
+               
       });
       
       });
+    }
+    function createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd, interestUpd){
+      
+      test_el = document.createElement('div');
+    
+test_el.innerHTML =
+'<form action="/postUpdateUser" method="post">'
++   '<div class="firstname">'
++'<input type="text" name="firstname" class="form-control" id="firstnameT" placeholder = "First name" required=""' 
++'value='+firstnameUpd+'></div>'
++ '<div class="lastname">'
++'<input type="text" name= "lastname" class="form-control" id="lastname" placeholder = "Last name" required=""'
++'value='+lastnameUpd+'></div>'
++     '<div class="password">'
++        '<input type="password" name= "password" class="form-control" id="password" placeholder = "Password" required=""'
++'value='+passwordUpd+'></div>'
++    '</div>'
++    '<div class="email">'
++    '<input type="text" name= "email" class="form-control" id="email" placeholder = "Email" required=""'
++'value='+emailUpd+'></div>'
++ '</div>'
++    '<div class="affiliation">'
++    '<input type="text" name= "affiliation" class="form-control" id="affiliation" placeholder = "Affiliation" required=""'
++'value='+affiliationUpd+'></div>'
++ '</div>'
++ '<div class="interest">'
++    '<input type="text" name= "interest" class="form-control" id="interest" placeholder = "Interest" required=""'
++'value='+interestUpd+'></div>'
++ '</div>'
++ '<div class="pfpURL">'
++    '<input type="text" name= "pfpURL" class="form-control" id="pfpURL" placeholder = "Profile Picture URL" required=""'
++'value='+pfpURLUpd+'></div>'
++ '</div>'
++  '<input type="submit" value="Submit Changes">'
++ '</form>';
+document.body.appendChild(test_el);
+var cardDiv = document.getElementById('title');
+cardDiv.after(test_el);
+    }
+   
      
   </script>
   </head>
+  <div class="card" id ="cardID">
+  </div>
 <body class="p-3 m-0 border-0 bd-example">
   
   
   <span class="info">
+    <div id = title>
     <h1>Edit Personal Information</h1>
-  <form action="/postUpdateUser" method="post">
-   <div class="firstname">
-      
-        <input type="text" name="firstname" class="form-control" id="firstnameT" placeholder = "First name" required="" value="">
     </div>
-   <div class="lastname">
-        <input type="text" name= "lastname" class="form-control" id="lastname" placeholder = "Last name" required="">
-    </div>
-      <div class="password">
-        <input type="password" name= "password" class="form-control" id="password" placeholder = "Password" required="">
-    </div>
-    <div class="email">
-      <input type="text" name= "email" class="form-control" id="email" placeholder = "Email" required="">
-  </div>
-  <div class="affiliation">
-    <input type="text" name= "affiliation" class="form-control" id="affiliation" placeholder = "Affiliation" required="">
-</div>
-<div class="interest">
-    <input type="text" name= "interest" class="form-control" id="interest" placeholder = "Interest" required="">
-</div>
-<div class="pfpURL">
-    <input type="text" name= "pfpURL" class="form-control" id="pfpURL" placeholder = "Profile Picture URL" required="">
-</div>
-  
-    
-  <input type="submit" value="Submit Changes">
-  </form>
   </span>
 </body>
 </html>

@@ -54,10 +54,16 @@ var getLogout = function (req, res) {
 }
 
 var getChat = function (req, res) {
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
   res.render('chat.ejs', { "check": isVerified })
 };
 
 var getEdit = function (req, res) {
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
   res.render('edit.ejs', { "check": isVerified })
 };
 
@@ -198,7 +204,7 @@ var postNewPostAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
   if (content.length != 0 && timepost.length != 0) {
-    db.createPost(req.session.username, content, timepost, function (err, data) { });
+    db.createPost(req.session.username, content, timepost, function (err, data) {});
 
     var response = {
       "userID": req.session.username,
@@ -375,39 +381,51 @@ var getEditUserInfoAjax = function (req, res) {
 }
 
 var postUpdateUser = function (req, res) {
-  var updateInfoNameList = [];
   var updateInfoList = [];
-  
-  if(req.body.affiliation != null) {
-    updateInfoNameList.push('affiliation');
-    updateInfoList.push(req.body.affiliation);
-  }
+  updateInfoList.push(req.body.affiliation);
+  updateInfoList.push(req.body.email);
+  updateInfoList.push(req.body.firstname + " " + req.body.lastname);
+  updateInfoList.push(req.body.password);
+  updateInfoList.push(req.body.pfpURL);
 
-  if(req.body.email != null) {
-    updateInfoNameList.push('email');
-    updateInfoList.push(req.body.email);
-  }
+  var updateInfoNameList = [];
+  updateInfoNameList.push('affiliation');
+  updateInfoNameList.push('email');
+  updateInfoNameList.push('fullname');
+  updateInfoNameList.push('password');
+  updateInfoNameList.push('pfpURL');
 
-  if(req.body.fullname != null) {
-    updateInfoNameList.push('fullname');
-    updateInfoList.push(req.body.fullname);
-  }
+  console.log(updateInfoList);
+  console.log(updateInfoNameList);
 
-  if(req.body.password != null) {
-    updateInfoNameList.push('password');
-    updateInfoList.push(req.body.password);
-  }
+  res.render('editaccount.ejs', { "check": true });
 
-  if(req.body.pfpURL != null) {
-    updateInfoNameList.push('pfpURL');
-    updateInfoList.push(req.body.pfpURL);
-  }
-
-  recUpdateUser(req.session.username, updateInfoList, updateInfoNameList, 0, function(err, message) {
-    if(err) {
-      console.log(err);
+  db.getInterest(req.session.username, function (err,data) {
+    var interestSet = new Set();
+    for(let i = 0; i < data.length; i++) {
+      interestSet.add(data[i].S);
     }
-    res.send(message);
+
+    recUpdateUser(req.session.username, updateInfoList, updateInfoNameList, 0, function(err, message) {
+      if(err) {
+        console.log(err);
+      }
+      db.updateInterest(req.session.username, req.body.interest, function(err, data) {
+        if(err) {
+          console.log(err);
+        }
+        console.log(interestSet);
+        for(let i = 0; i < data.length; i++) {
+          console.log(interestSet);
+          console.log(data[i].S);
+          if(!interestSet.has(data[i].S)) {
+            var newContent = req.session.username + " is now interested in " + data[i].S;
+            var newTimepost = new Date().getTime() + "";
+            db.createPost(req.session.username, newContent, newTimepost, function(err, data){});
+          }
+        }
+      });
+    });
   });
 }
 
@@ -416,8 +434,9 @@ var recUpdateUser = function (sessionUser, recUpdateInfoList, recUpdateInfoNameL
     callback("successfully updated user");
   } else {
     db.updateUser(sessionUser, recUpdateInfoList[counter], recUpdateInfoNameList[counter], function (err, data) {
+      console.log("callback hello");
       counter++;
-      recGetAllWalls(sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback);
+      recUpdateUser(sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback);
     });
   }
 }
