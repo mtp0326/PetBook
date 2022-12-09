@@ -5,7 +5,7 @@ var isVerified = false;
 var getMain = function (req, res) {
   isVerified = false;
   res.render('main.ejs');
-};
+}
 
 //render homepage
 //NEW: getHomepage, homepage.ejs
@@ -14,7 +14,7 @@ var getHomepage = function (req, res) {
     return res.redirect('/')
   }
   res.render('homepage.ejs', { "check": isVerified })
-};
+}
 
 var getWall = function (req, res) {
   if (!req.session.username) {
@@ -22,7 +22,7 @@ var getWall = function (req, res) {
   }
   isVerified = false;
   res.render('wall.ejs', { "check": true , "isOther": false, "username": req.session.username });
-};
+}
 
 //for results if the username and password are correct
 var postResultsUser = function (req, res) {
@@ -39,7 +39,7 @@ var postResultsUser = function (req, res) {
       res.render('checklogin.ejs', { "check": false });
     }
   });
-};
+}
 
 //gets signup page
 var getSignup = function (req, res) {
@@ -58,14 +58,14 @@ var getChat = function (req, res) {
     return res.redirect('/')
   }
   res.render('chat.ejs', { "check": isVerified })
-};
+}
 
 var getEdit = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
   res.render('edit.ejs', { "check": isVerified })
-};
+}
 
 //check if new account can be created by receiving null (which means that username in db is empty)
 //and create the new account and go to restaurants or fail and go back to signup.
@@ -93,7 +93,7 @@ var postNewAccount = function (req, res) {
     }
 
   });
-};
+}
 
 //ajax: query posts of friend's userid
 //Also renders comments if exists
@@ -146,7 +146,7 @@ var getHomepagePostListAjax = function (req, res) {
       });
     });
   });
-};
+}
 
 var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) {
   if (counter >= recFriendsList.length) {
@@ -197,7 +197,7 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
 //ajax: get the creator information
 var getCreator = function (req, res) {
   res.send(JSON.stringify(req.session.username));
-};
+}
 
 //create new post in the db when all inputs exist in posts
 var postNewPostAjax = function (req, res) {
@@ -216,7 +216,7 @@ var postNewPostAjax = function (req, res) {
   } else {
     res.send(null);
   }
-};
+}
 
 //ajax: add comment in post data in posts
 var postNewCommentAjax = function (req, res) {
@@ -241,7 +241,7 @@ var postNewCommentAjax = function (req, res) {
   } else {
     res.send(null);
   }
-};
+}
 
 //ajax: get your posts and wall you receive from friends posting on yours
 //NEW
@@ -306,7 +306,7 @@ var getWallListAjax = function (req, res) {
       });
     });
   });
-};
+}
 
 var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, callback) {
   if (counter >= recFriendsList.length) {
@@ -356,7 +356,7 @@ var postNewWallAjax = function (req, res) {
   } else {
     res.send(null);
   }
-};
+}
 
 var getOtherWallPage = function (req, res) {
   if (!req.session.username) {
