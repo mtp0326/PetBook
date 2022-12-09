@@ -95,9 +95,8 @@ var myDB_getChatroom = function(chatID, callback) {
 }
 
 // Adds a new chatroom with given info
-var myDB_addChatroom = function(userID, createTime, callback) {
+var myDB_addChatroom = function(userID, chatID, callback) {
 	//otherUserIDs: set of strings
-	var chatID = userID.concat("-", createTime.toString());
 	var params = {
 		TableName: "chatrooms",
 		Item: {
@@ -112,7 +111,7 @@ var myDB_addChatroom = function(userID, createTime, callback) {
 	});
 }
 
-var myDB_deleteChatroom = function(chatID) {
+var myDB_deleteChatroom = function(chatID, callback) {
 	var params = {
 		TableName: "chatrooms",
 		Key: {
@@ -134,7 +133,6 @@ var myDB_addMessage = function(chatID, newMessage, callback) {
 		Key: {
 	      "chatID" : {S: chatID},
 		},
-		//right syntax?
 	    UpdateExpression: "SET #c = list_append(#c, :new)",
 	    ExpressionAttributeNames: {
 	      "#c": "content"
@@ -144,7 +142,6 @@ var myDB_addMessage = function(chatID, newMessage, callback) {
 	    },
 	}
 	db.updateItem(params, function(err, data) {
-	//console.log(JSON.stringify(data));
 	    if (err) {
 	      console.log("Error", err);
 	    }
@@ -163,11 +160,26 @@ var myDB_addUserToChat = function(newUserID, groupChatID, callback) {
 	    },
 	}
 	db.updateItem(params, function(err, data) {
-	//console.log(JSON.stringify(data));
 	    if (err) {
-	      callback(err, null);
-	    } else {
-	      callback(null, null);
+	      console.log("Error", err);
+	    }
+	});
+}
+
+// When a user accepts a group chat invite, add the user to the groupchat and create the chatroom on the user's chat list
+var myDB_deleteUserFromChat = function(deleteUserID, groupChatID, callback) {
+	var deleteUserIDSet = {S: deleteUserID};
+	var params = {
+		TableName: "chatrooms",
+		Key: {"chatID" : {S: groupChatID}},
+		UpdateExpression: "DELETE userIDs :deleteUserID",
+	    ExpressionAttributeValues : {
+	      ":deleteUserID": deleteUserIDSet
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
 	    }
 	});
 }
@@ -217,17 +229,21 @@ var myDB_deleteOnline = function(deleteUserID, callback) {
 
 var chatDB = { 
   getUserChatroomIDs : myDB_getUserChatrooms,
+  
   addChatIDToUser : myDB_addchatIDToUser,
   deleteChatIDFromUser : myDB_deletechatIDFromUser,
   
   getOnlineUsers : myDB_getOnlineUsers,
-  
   getChatroom : myDB_getChatroom,
+  
   addChatroom : myDB_addChatroom,
   deleteChatroom : myDB_deleteChatroom,
 
   addMessage : myDB_addMessage,
+  
   addUserToChat : myDB_addUserToChat,
+  deleteUserFromChat : myDB_deleteUserFromChat,
+  
   addUserOnline : myDB_addOnline,
   deleteUserOnline : myDB_deleteOnline,
 };
