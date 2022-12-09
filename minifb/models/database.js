@@ -7,7 +7,7 @@ var db = new AWS.DynamoDB();
    and call that function from your routes - don't just call DynamoDB directly!
    This makes it much easier to make changes to your database schema. */
 
-//gets username input and returns the password
+//gets username input and returns the password (this is just for one column)
 var myDB_getPassword = function (searchTerm, callback) {
   var params = {
     KeyConditions: {
@@ -54,22 +54,21 @@ var myDB_getUsername = function (searchTerm, language, callback) {
 //gets username input and returns the username if existing
 var myDB_userInfo = function (searchTerm, language, callback) {
   var params = {
-    KeyConditions: {
-      username: {
-        ComparisonOperator: 'EQ',
-        AttributeValueList: [{ S: searchTerm }]
+    Key: {
+      "username": {
+        S: searchTerm
       }
     },
-    TableName: "users",
-    AttributesToGet: ['username']
+    TableName: "users"
   };
-
-  db.query(params, function (err, data) {
-    console.log(data.Items);
-    if (err || data.Items.length == 0) {
+  console.log("running");
+  db.getItem(params, function (err, data) {
+    console.log(data.Item)
+    if (err || data.Item.length == 0) {
+      console.log(err);
       callback(err, null);
     } else {
-      callback(err, data.Items[0]);
+      callback(err, data.Item);
     }
   });
 }

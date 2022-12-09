@@ -9,10 +9,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Sign up </title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <style>
-    body {
+     body {
+
+height: 100%;
+
+
+
+background-color: #eeeeee;
+
+margin: 100;
+font-family: Arial, Helvetica, sans-serif;
+font-weight: 600;
+}
+    .infobody {
 
     padding-top: 200px;
     padding-bottom: 200px;
@@ -114,6 +129,216 @@ h1{
      
       font-size:20px ;
     }
+/* topnnav */
+.profile-pic {
+
+width: 60px;
+height: 60px;
+border-radius: 50%;
+object-fit: contain;
+background-color: #E0E0E0;
+display: inline-block;
+}
+
+.profile-pic-nav {
+float: left;
+width: 40px;
+height: 40px;
+margin-top: 5px;
+margin-bottom: 5px;
+margin-left: 5px;
+margin-right: 5px;
+border-radius: 50%;
+object-fit: contain;
+background-color: #E0E0E0;
+display: inline-block;
+}
+
+h3 {
+display: inline-block;
+padding-bottom: 0px;
+padding-left: 20px;
+}
+
+textarea.posttext {
+padding: 10px 10px;
+
+border-radius: 10px;
+box-sizing: border-box;
+color: #000000;
+border: 1px solid #F5F5F5;
+font-size: 16px;
+letter-spacing: 1px;
+height: 200px;
+width: 100%;
+
+}
+
+textarea.comment {
+
+padding: 10px 0px;
+margin-left: 450px;
+margin-top: 10px;
+margin-right: 0px;
+border-radius: 10px;
+box-sizing: border-box;
+color: #585858;
+border: 1px solid #F5F5F5;
+font-size: 16px;
+letter-spacing: 1px;
+height: 40px !important;
+width: 420px;
+display: inline-block;
+
+}
+
+textarea:focus {
+-moz-box-shadow: none !important;
+-webkit-box-shadow: none !important;
+box-shadow: none !important;
+border: 1px solid #ffffff !important;
+outline-width: 0 !important;
+}
+
+select {
+border: none;
+font-size: 15px;
+background-color: #fff !important;
+}
+
+select:focus {
+-moz-box-shadow: none !important;
+-webkit-box-shadow: none !important;
+box-shadow: none !important;
+outline-width: 0 !important;
+}
+
+::placeholder {
+color: #BDBDBD;
+}
+
+:-ms-input-placeholder {
+color: #BDBDBD;
+}
+
+::-ms-input-placeholder {
+color: #BDBDBD;
+}
+
+.btn-success {
+border-radius: 50px;
+padding: 4px 40px;
+}
+
+.options {
+font-size: 23px;
+color: #757575;
+cursor: pointer;
+}
+
+.options:hover {
+color: #000;
+}
+
+.topnav {
+overflow: hidden;
+background-color: #ffffff;
+}
+
+.topnav a {
+float: left;
+display: block;
+color: black;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+font-size: 17px;
+}
+
+.topnav a:hover {
+background-color: #d1d1d1;
+color: black;
+}
+
+.topnav a.active {
+background-color: #0668E1;
+color: rgb(255, 255, 255);
+}
+
+.topnav .search-container {
+float: right;
+}
+
+.topnav input[type=text1] {
+padding: 6px;
+margin-top: 8px;
+font-size: 17px;
+border: none;
+}
+
+.topnav .search-container button {
+float: right;
+padding: 6px 10px;
+margin-top: 8px;
+margin-right: 16px;
+background: rgb(166, 166, 167);
+font-size: 17px;
+border: none;
+cursor: pointer;
+}
+
+.topnav .search-container button:hover {
+background: rgb(148, 147, 147);
+}
+
+@media screen and (max-width: 600px) {
+.topnav .search-container {
+  float: none;
+}
+
+.topnav a,
+.topnav input[type=text],
+.topnav .search-container button {
+  float: none;
+  display: block;
+  text-align: left;
+  width: 100%;
+  margin: 0;
+  padding: 14px;
+}
+
+.topnav input[type=text] {
+  border: 1px solid #ccc;
+}
+}
+
+button[type=comment] {
+appearance: none;
+-webkit-appearance: none;
+padding-left: 10px;
+padding-right: 10px;
+padding-top: 20px;
+text-align: top;
+border: 0;
+box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+background-color: #0668E1;
+color: #fff;
+border-radius: 5px;
+display: inline-block;
+
+}
+
+button[type=post] {
+appearance: none;
+-webkit-appearance: none;
+padding: 10px;
+margin: 10px 0;
+border: 0;
+box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+background-color: #0b994d;
+color: #fff;
+border-radius: 5px;
+}
 
   </style>
 
@@ -121,71 +346,121 @@ h1{
 </script>
 <script type="text/javascript">
       window.onload = function(){
-       document.getElementById('firstnameT').value = "chapini";
+        // document.getElementById('firstnameT').value = "cha";
+         getUserInfo();
+        
       }
+      function getUserInfo(){
       $(document).ready(function() {
-        // document.getElementById('firstname').value ="chapini" ;
 			$.getJSON('/getEditUserInfoAjax', function(data) {
                 console.log(data);
-                var firstnameUpd = data.fullname.S;
-                var lastnameUpd = data.fullname.S;
+                var interestArr = [];
+                var interestUpd = "";
+                var fullname = data.fullname.S;
+                var fullnameArr = fullname.split(" ");
+                var firstnameUpd = fullnameArr[0];
+                var lastnameUpd = fullnameArr[1];
                 var passwordUpd = data.password.S;
                 var emailUpd = data.email.S;
                 var affiliationUpd = data.affiliation.S;
-                var interestUpd = data.interest.L;
+                interestArr = data.interest.L;
                 var pfpURLUpd = data.pfpURL.S;
-                document.getElementById('firstname').value = data.fullname.S ;
+
+                if(interestArr.length >=1){
+                  for(let i = 0; i < interestArr.length-1; i++){
+                  interestUpd +=interestArr[i].S + ","
+                }
+                interestUpd +=interestArr[interestArr.length-1].S;
+                }
+
+                createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd, interestUpd);
+                
+                
+               
 			});
 			
 	    });
+    }
 
+    function createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd, interestUpd){
+      
+      test_el = document.createElement('div');
+    
+
+test_el.innerHTML =
+'<form action="/postUpdateUser" method="post">'
++   '<div class="firstname">'
++'<input type="text" name="firstname" class="form-control" id="firstnameT" placeholder = "First name" required=""' 
++'value='+firstnameUpd+'></div>'
++ '<div class="lastname">'
++'<input type="text" name= "lastname" class="form-control" id="lastname" placeholder = "Last name" required=""'
++'value='+lastnameUpd+'></div>'
+
++     '<div class="password">'
++        '<input type="password" name= "password" class="form-control" id="password" placeholder = "Password" required=""'
++'value='+passwordUpd+'></div>'
++    '</div>'
++    '<div class="email">'
++    '<input type="text" name= "email" class="form-control" id="email" placeholder = "Email" required=""'
++'value='+emailUpd+'></div>'
++ '</div>'
++    '<div class="affiliation">'
++    '<input type="text" name= "affiliation" class="form-control" id="affiliation" placeholder = "Affiliation" required=""'
++'value='+affiliationUpd+'></div>'
++ '</div>'
++ '<div class="interest">'
++    '<input type="text" name= "interest" class="form-control" id="interest" placeholder = "Interest" required=""'
++'value='+interestUpd+'></div>'
++ '</div>'
+
++ '<div class="pfpURL">'
++    '<input type="text" name= "pfpURL" class="form-control" id="pfpURL" placeholder = "Profile Picture URL" required=""'
++'value='+pfpURLUpd+'></div>'
++ '</div>'
+
++  '<input type="submit" value="Submit Changes">'
++ '</form>';
+document.body.appendChild(test_el);
+var cardDiv = document.getElementById('title');
+cardDiv.after(test_el);
+    }
+   
 
      
   </script>
 
 
   </head>
-  <div class="card" id ="cardID">
 
+  <body >
+  <div class="topnav">
+    <img class="profile-pic-nav"
+      src="data:image/jpeg;base64,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">
+
+    <a  href="/homepage">Home</a>
+    <a href="/wall">Wall</a>
+    <a href="/chat">Chat</a>
+    <a href="/news">News</a>
+    <a href="/visualizer">Visualizer</a>
+    <a class="active"href="/edit">Edit</a>
+    <a href="/logout">Logout</a>
+    <div class="search-container">
+      <form action="/getOtherWallPage">
+        <input type="text1" placeholder="Search.." name="search">
+        <button type="search" >
+          <i class="fa fa-search"></i>
+        </button>
+      </form>
+    </div>
   </div>
-
-<body class="p-3 m-0 border-0 bd-example">
 	
-  
+ <div class = infobody>
   <span class="info">
+    <div id = title>
     <h1>Edit Personal Information</h1>
-  <form action="/postUpdateUser" method="post">
-   <div class="firstname">
-      
-        <input type="text" name="firstname" class="form-control" id="firstnameT" placeholder = "First name" required="" value="">
-    </div>
-   <div class="lastname">
-        <input type="text" name= "lastname" class="form-control" id="lastname" placeholder = "Last name" required="">
     </div>
 
-      <div class="password">
-        <input type="password" name= "password" class="form-control" id="password" placeholder = "Password" required="">
-    </div>
-    <div class="email">
-      <input type="text" name= "email" class="form-control" id="email" placeholder = "Email" required="">
-  </div>
-  <div class="affiliation">
-    <input type="text" name= "affiliation" class="form-control" id="affiliation" placeholder = "Affiliation" required="">
-</div>
-
-<div class="interest">
-    <input type="text" name= "interest" class="form-control" id="interest" placeholder = "Interest" required="">
-</div>
-
-<div class="pfpURL">
-    <input type="text" name= "pfpURL" class="form-control" id="pfpURL" placeholder = "Profile Picture URL" required="">
-</div>
-
-  
-    
-
-  <input type="submit" value="Submit Changes">
-  </form>
   </span>
+</div>
 </body>
 </html>

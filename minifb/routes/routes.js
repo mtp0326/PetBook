@@ -367,6 +367,7 @@ var getOtherWallPage = function (req, res) {
 }
 
 var getEditUserInfoAjax = function (req, res) {
+  console.log("getUser");
   db.getUserInfo(req.session.username, "username", function (err, data) {
     console.log(data);
     res.send(data);
