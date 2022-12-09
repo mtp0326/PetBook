@@ -85,6 +85,11 @@ var getOtherWallPageAjax = function (req, res) {
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
     if (data === req.session.currWall) {
       res.render('wall.ejs', { "check": true, "isOther": true, "username": req.session.currWall });
+      db.getUserInfo(req.session.currWall, "username", function(err, data) {
+        console.log("otherUserWallAjax");
+        console.log(data);
+        res.send(data);
+      })
     }
   });
 }
