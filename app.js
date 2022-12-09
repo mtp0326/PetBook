@@ -97,9 +97,6 @@ app.post('/addmessage', chats.add_message);
 app.get('/getchatrooms', chats.get_chatrooms);
 app.post('/logoutchat', chats.log_out);
 
-
-
-
 /* Run the server */
 
 console.log('Author: Jiwoong Matt Park (mtp0326)');
