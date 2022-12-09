@@ -1,5 +1,5 @@
 var AWS = require('aws-sdk');
-AWS.config.update({region:'us-east-1'});
+AWS.config.update({ region: 'us-east-1' });
 var db = new AWS.DynamoDB();
 
 /* The function below is an example of a database method. Whenever you need to 
@@ -8,19 +8,19 @@ var db = new AWS.DynamoDB();
    This makes it much easier to make changes to your database schema. */
 
 //gets username input and returns the password
-var myDB_getPassword = function(searchTerm, callback) {
+var myDB_getPassword = function (searchTerm, callback) {
   var params = {
-      KeyConditions: {
-        username: {
-          ComparisonOperator: 'EQ',
-          AttributeValueList: [ { S: searchTerm } ]
-        }
-      },
-      TableName: "users",
-      AttributesToGet: [ 'password' ]
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [{ S: searchTerm }]
+      }
+    },
+    TableName: "users",
+    AttributesToGet: ['password']
   };
 
-  db.query(params, function(err, data) {
+  db.query(params, function (err, data) {
     if (err || data.Items.length == 0) {
       callback(err, null);
     } else {
@@ -30,19 +30,19 @@ var myDB_getPassword = function(searchTerm, callback) {
 }
 
 //gets username input and returns the username if existing
-var myDB_getUsername = function(searchTerm, language, callback) {
+var myDB_getUsername = function (searchTerm, language, callback) {
   var params = {
-      KeyConditions: {
-        username: {
-          ComparisonOperator: 'EQ',
-          AttributeValueList: [ { S: searchTerm } ]
-        }
-      },
-      TableName: "users",
-      AttributesToGet: [ 'username' ]
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [{ S: searchTerm }]
+      }
+    },
+    TableName: "users",
+    AttributesToGet: ['username']
   };
 
-  db.query(params, function(err, data) {
+  db.query(params, function (err, data) {
     if (err || data.Items.length == 0) {
       callback(err, null);
     } else {
@@ -51,13 +51,36 @@ var myDB_getUsername = function(searchTerm, language, callback) {
   });
 }
 
+//gets username input and returns the username if existing
+var myDB_userInfo = function (searchTerm, language, callback) {
+  var params = {
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [{ S: searchTerm }]
+      }
+    },
+    TableName: "users",
+    AttributesToGet: ['username']
+  };
+
+  db.query(params, function (err, data) {
+    console.log(data.Items);
+    if (err || data.Items.length == 0) {
+      callback(err, null);
+    } else {
+      callback(err, data.Items[0]);
+    }
+  });
+}
+
 //NEW
 //create a new account with the right db parameters
 var myDB_createAccount =
-  function(newUsername, newPassword, newFullname, newAffiliation,
+  function (newUsername, newPassword, newFullname, newAffiliation,
     newEmail, newBirthday, newInterest, newPfpURL, callback) {
 
-      console.log(newUsername
+    console.log(newUsername
       + " " + newPassword
       + " " + newFullname
       + " " + newAffiliation
@@ -66,57 +89,57 @@ var myDB_createAccount =
       + " " + newInterest
       + " " + newPfpURL);
 
-      var interestArr =[];
-      for(let i = 0; i < newInterest.length; i++){
-        var newIt =
-        {
-          "S" : newInterest[i]
-        }
-        interestArr.push(newIt);
+    var interestArr = [];
+    for (let i = 0; i < newInterest.length; i++) {
+      var newIt =
+      {
+        "S": newInterest[i]
       }
-
-      var params = {
-        TableName: "users",
-        Item : {
-          "username": { S: newUsername },
-          "affiliation": { S: newAffiliation },
-          "birthday": { S: newBirthday },
-          "chatID": { L: [] },
-          "email": { S: newEmail },
-          "friends": { L: [] },
-          "fullname": { S: newFullname },
-          "interest": { L: interestArr },
-          "password": { S: newPassword },
-          "pfpURL": { S: newPfpURL }
-        }
-      };
-
-  db.putItem(params, function(err, data) {
-    console.log(data);
-    if (err) {
-      console.log("error");
-		  console.log(err)
+      interestArr.push(newIt);
     }
-  });
-}
+
+    var params = {
+      TableName: "users",
+      Item: {
+        "username": { S: newUsername },
+        "affiliation": { S: newAffiliation },
+        "birthday": { S: newBirthday },
+        "chatID": { L: [] },
+        "email": { S: newEmail },
+        "friends": { L: [] },
+        "fullname": { S: newFullname },
+        "interest": { L: interestArr },
+        "password": { S: newPassword },
+        "pfpURL": { S: newPfpURL }
+      }
+    };
+
+    db.putItem(params, function (err, data) {
+      console.log(data);
+      if (err) {
+        console.log("error");
+        console.log(err)
+      }
+    });
+  }
 
 //NEW
 //outputs friends
-var myDB_getFriends = (function(username, callback) {
+var myDB_getFriends = (function (username, callback) {
   var params = {
-  TableName: "users",
+    TableName: "users",
     KeyConditions: {
       username: {
         ComparisonOperator: 'EQ',
-        AttributeValueList: [ { S: username } ]
+        AttributeValueList: [{ S: username }]
       }
     },
     TableName: "users",
-    AttributesToGet: [ 'friends' ]
+    AttributesToGet: ['friends']
   };
 
-  db.query(params, function(err, data) {
-    if(err) {
+  db.query(params, function (err, data) {
+    if (err) {
       console.log(err);
     } else {
       callback(err, data.Items[0].friends.L);
@@ -126,7 +149,7 @@ var myDB_getFriends = (function(username, callback) {
 
 //NEW
 //outputs all posts from user into an array
-var myDB_allPosts = (function(userID, callback) {
+var myDB_allPosts = (function (userID, callback) {
   var params = {
     TableName: "posts",
     KeyConditionExpression: "userID = :a",
@@ -135,8 +158,8 @@ var myDB_allPosts = (function(userID, callback) {
     }
   };
 
-  db.query(params, function(err, data) {
-    if(err) {
+  db.query(params, function (err, data) {
+    if (err) {
       console.log(err);
     } else { //not sure if data.Items is all the items that has the key of userID???
       // data.Items.sort((a, b) => (a.timepost.S).localeCompare(b.timepost.S)).reverse();
@@ -146,101 +169,101 @@ var myDB_allPosts = (function(userID, callback) {
 });
 
 // Update user email
-var myDB_updateEmail = function(username, newEmail, callback) {
-	var params = {
-		TableName: "users",
-  		Item: {
-			'username': {S: username},
-			'email': {S: newEmail},
-		}
-	};
-	
-	db.putItem(params, function(err, data) {
-	    if (err) {
-	      callback(err, null);
-	    } else if (username.length == 0 || newEmail.length == 0) {
-		  callback("Field cannot be left blank", null);
-		} else {
-	      callback(err, "Updated");
-	    }
-    });
+var myDB_updateEmail = function (username, newEmail, callback) {
+  var params = {
+    TableName: "users",
+    Item: {
+      'username': { S: username },
+      'email': { S: newEmail },
+    }
+  };
+
+  db.putItem(params, function (err, data) {
+    if (err) {
+      callback(err, null);
+    } else if (username.length == 0 || newEmail.length == 0) {
+      callback("Field cannot be left blank", null);
+    } else {
+      callback(err, "Updated");
+    }
+  });
 }
 
 // Update user password
-var myDB_updatepw = function(username, newPw, callback) {
-	var params = {
-		TableName: "users",
-  		Item: {
-			'username': {S: username},
-			'password': {S: newPw},
-		}
-	};
-	
-	db.putItem(params, function(err, data) {
-	    if (err) {
-	      callback(err, null);
-	    } else if (username.length == 0 || newPw.length == 0) {
-		  callback("Field cannot be left blank", null);
-		} else {
-	      callback(err, "Updated");
-	    }
-    });
+var myDB_updatepw = function (username, newPw, callback) {
+  var params = {
+    TableName: "users",
+    Item: {
+      'username': { S: username },
+      'password': { S: newPw },
+    }
+  };
+
+  db.putItem(params, function (err, data) {
+    if (err) {
+      callback(err, null);
+    } else if (username.length == 0 || newPw.length == 0) {
+      callback("Field cannot be left blank", null);
+    } else {
+      callback(err, "Updated");
+    }
+  });
 }
 
 // Update user interest. Minimum 2???
 //client side has the list of interests => newInterests is final interests
-var myDB_updateInterest = function(username, newInterests, callback) {
-	var params = {
-		TableName: "users",
-  		Item: {
-			'username': {S: username},
-			'interest': {S: newInterests},
-		}
-	};
-	
-	db.putItem(params, function(err, data) {
-	    if (err) {
-	      callback(err, null);
-	    } else if (username.length == 0 || newPw.length == 0) {
-		  callback("Field cannot be left blank", null);
-		} else {
-	      callback(err, "Updated");
-	    }
-    });
+var myDB_updateInterest = function (username, newInterests, callback) {
+  var params = {
+    TableName: "users",
+    Item: {
+      'username': { S: username },
+      'interest': { S: newInterests },
+    }
+  };
+
+  db.putItem(params, function (err, data) {
+    if (err) {
+      callback(err, null);
+    } else if (username.length == 0 || newPw.length == 0) {
+      callback("Field cannot be left blank", null);
+    } else {
+      callback(err, "Updated");
+    }
+  });
 }
 
 //creates post with the right db parameters
-var myDB_createPost = function(userID, content, timepost, callback) {
+var myDB_createPost = function (userID, content, timepost, callback) {
   var params = {
-  TableName: "posts",
-    Item : {
-        "userID" : {
-          S: userID
-        },
-        "content": {
-          S: content
-        },
-        "timepost": {
-          S: timepost
-        },
-        "comments": {
-          L: []
-        },
-        "likes": {
-          L: []
-        }
+    TableName: "posts",
+    Item: {
+      "userID": {
+        S: userID
+      },
+      "content": {
+        S: content
+      },
+      "timepost": {
+        S: timepost
+      },
+      "comments": {
+        L: []
+      },
+      "likes": {
+        L: []
       }
-    };
+    }
+  };
 
-db.putItem(params, function(err, data) {
-  if (err) {
-  console.log(err);
-  }
-});
+  db.putItem(params, function (err, data) {
+    if (err) {
+      console.log(err);
+    }
+  });
 }
 
 //adds comment in post using userID (partition key) and timepost (sort key)
-var myDB_addComment = function(userID, timepost, comment, callback) {
+var myDB_addComment = function (userID, timepost, comment, callback) {
   console.log("userID " + userID);
   console.log("timepost " + timepost);
   console.log("comment " + comment);
@@ -253,7 +276,7 @@ var myDB_addComment = function(userID, timepost, comment, callback) {
     }
   };
 
-  db.query(paramsGet, function(err, data) {
+  db.query(paramsGet, function (err, data) {
     console.log("error :" + err);
     console.log("data: " + data);
     var tempArr = data.Items[0].comments.L;
@@ -266,11 +289,11 @@ var myDB_addComment = function(userID, timepost, comment, callback) {
 
     var paramsUpdate = {
       TableName: "posts",
-      Key : {
-        'userID' : {
+      Key: {
+        'userID': {
           S: userID
         },
-        'timepost' : {
+        'timepost': {
           S: timepost
         },
       },
@@ -280,9 +303,9 @@ var myDB_addComment = function(userID, timepost, comment, callback) {
       }
     };
 
-    db.updateItem(paramsUpdate, function(err, data) {
+    db.updateItem(paramsUpdate, function (err, data) {
       if (err) {
-      console.log(err);
+        console.log(err);
       }
     });
   });
@@ -290,7 +313,7 @@ var myDB_addComment = function(userID, timepost, comment, callback) {
 
 //NEW
 //outputs all walls from user into an array
-var myDB_allWalls = (function(receiver, callback) {
+var myDB_allWalls = (function (receiver, callback) {
   var params = {
     TableName: "walls",
     KeyConditionExpression: "receiver = :a",
@@ -299,8 +322,8 @@ var myDB_allWalls = (function(receiver, callback) {
     }
   };
 
-  db.query(params, function(err, data) {
-    if(err) {
+  db.query(params, function (err, data) {
+    if (err) {
       console.log(err);
     } else {
       console.log("myDB_allWalls");
@@ -313,7 +336,7 @@ var myDB_allWalls = (function(receiver, callback) {
 //NEW
 ///query as sender
 //outputs all walls as sender from user into an array
-var myDB_allWallsAsSender = (function(receiver, sender, callback) {
+var myDB_allWallsAsSender = (function (receiver, sender, callback) {
   console.log("receiver");
   console.log(receiver);
   console.log("sender");
@@ -328,8 +351,8 @@ var myDB_allWallsAsSender = (function(receiver, sender, callback) {
     }
   };
 
-  db.query(params, function(err, data) {
-    if(err) {
+  db.query(params, function (err, data) {
+    if (err) {
       console.log(err);
     } else {
       console.log("data.Items");
@@ -340,67 +363,95 @@ var myDB_allWallsAsSender = (function(receiver, sender, callback) {
 });
 
 //creates wall with the right db parameters
-var myDB_createWall = function(receiver, sender, content, timepost, callback) {
+var myDB_createWall = function (receiver, sender, content, timepost, callback) {
   var params = {
-  TableName: "walls",
-    Item : {
-        "receiver" : {
-          S: receiver
-        },
-        "sender" : {
-          S: sender
-        },
-        "content": {
-          S: content
-        },
-        "timepost": {
-          S: timepost
-        },
-        "comments": {
-          L: []
-        },
-        "likes": {
-          L: []
-        }
+    TableName: "walls",
+    Item: {
+      "receiver": {
+        S: receiver
+      },
+      "sender": {
+        S: sender
+      },
+      "content": {
+        S: content
+      },
+      "timepost": {
+        S: timepost
+      },
+      "comments": {
+        L: []
+      },
+      "likes": {
+        L: []
       }
-    };
+    }
+  };
 
-db.putItem(params, function(err, data) {
-  if (err) {
-  console.log(err);
-  }
-});
+  db.putItem(params, function (err, data) {
+    if (err) {
+      console.log(err);
+    }
+  });
 }
+
+//GERMAN
+var myDB_updateUser = function (username, variable, columnName, callback) {
+  var params = {
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [{ S: username }]
+      }
+    },
+    UpdateExpression: 'SET ' + columnName + ' = :c',
+    ExpressionAttributeValues: {
+      ':c': { S: variable }
+    },
+    TableName: "users",
+  };
+
+  db.updateItem(params, function (err, data) {
+    if (err || data.Items.length == 0) {
+      console.log("error");
+      console.log(err);
+    } else {
+      console.log("updated");
+      console.log(data);
+    }
+  });
+}
+
 
 //***************************************************** */
 
 
 //creates restaurant with the right db parameters
-var myDB_createRestaurant = function(name, latitude, longitude, description, creator, callback) {
-  	var params = {
+var myDB_createRestaurant = function (name, latitude, longitude, description, creator, callback) {
+  var params = {
     TableName: "restaurants",
-      Item : {
-        "name" : {
-          S: name
-        },
-        "latitude": {
-          S: latitude
-        },
-        "longitude": {
-          S: longitude
-        },
-        "description": {
-          S: description
-        },
-        "creator": {
-          S: creator
-        }
-        }
-      };
+    Item: {
+      "name": {
+        S: name
+      },
+      "latitude": {
+        S: latitude
+      },
+      "longitude": {
+        S: longitude
+      },
+      "description": {
+        S: description
+      },
+      "creator": {
+        S: creator
+      }
+    }
+  };
 
-  db.putItem(params, function(err, data) {
+  db.putItem(params, function (err, data) {
     if (err) {
-		console.log(err);
+      console.log(err);
     }
   });
 }
@@ -409,55 +460,55 @@ var myDB_createRestaurant = function(name, latitude, longitude, description, cre
 
 
 //deletes restaurant using key and tablename
-var myDB_deleteRestaurant = function(name, callback) {
+var myDB_deleteRestaurant = function (name, callback) {
   var params = {
     TableName: "restaurants",
-    Key : {
-        "name" : {
-          S: name
-        }
+    Key: {
+      "name": {
+        S: name
+      }
     }
   };
 
-  db.deleteItem(params, function(err, data) {
+  db.deleteItem(params, function (err, data) {
     if (err) {
-    console.log(err);
+      console.log(err);
     }
   });
 }
 
 //outputs all restaurants from db into an array
-var myDB_allRestaurants = function(callback) {
-  	var params = {
-		TableName: "restaurants",
-		Select: "ALL_ATTRIBUTES"
-  	};
+var myDB_allRestaurants = function (callback) {
+  var params = {
+    TableName: "restaurants",
+    Select: "ALL_ATTRIBUTES"
+  };
 
-  	db.scan(params, function(err, data) {
-	if(err) {
-		console.log(err);
-	} else {
-		callback(err, data.Items);
-	}
+  db.scan(params, function (err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      callback(err, data.Items);
+    }
   });
 }
 
 //GERMAN
-var myDB_lookup = function(searchTerm, language, callback) {
-  console.log('Looking up: ' + searchTerm); 
+var myDB_lookup = function (searchTerm, language, callback) {
+  console.log('Looking up: ' + searchTerm);
 
   var params = {
-      KeyConditions: {
-        keyword: {
-          ComparisonOperator: 'EQ',
-          AttributeValueList: [ { S: searchTerm } ]
-        }
-      },
-      TableName: "words",
-      AttributesToGet: [ 'German' ]
+    KeyConditions: {
+      keyword: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [{ S: searchTerm }]
+      }
+    },
+    TableName: "words",
+    AttributesToGet: ['German']
   };
 
-  db.query(params, function(err, data) {
+  db.query(params, function (err, data) {
     if (err || data.Items.length == 0) {
       callback(err, null);
     } else {
@@ -474,32 +525,32 @@ var myDB_lookup = function(searchTerm, language, callback) {
 
 // TODO Don't forget to add any new functions to this class, so app.js can call them. (The name before the colon is the name you'd use for the function in app.js; the name after the colon is the name the method has here, in this file.)
 
-var database = { 
+var database = {
   lookup: myDB_lookup,
   passwordLookup: myDB_getPassword,
   usernameLookup: myDB_getUsername,
   createAccount: myDB_createAccount,
 
   //NEW
-  getAllPosts : myDB_allPosts,
-  getFriends : myDB_getFriends,
-  createPost : myDB_createPost,
-  addComment : myDB_addComment,
-  getAllWalls : myDB_allWalls,
-  getAllWallsAsSender : myDB_allWallsAsSender,
-  createWall : myDB_createWall,
+  getAllPosts: myDB_allPosts,
+  getFriends: myDB_getFriends,
+  createPost: myDB_createPost,
+  addComment: myDB_addComment,
+  getAllWalls: myDB_allWalls,
+  getAllWallsAsSender: myDB_allWallsAsSender,
+  createWall: myDB_createWall,
+  getUserInfo: myDB_userInfo,
 
-  updateEmail : myDB_updateEmail,
-  updatePw : myDB_updatepw,
-  updateInterest : myDB_updateInterest,
-  
-  createRestaurant : myDB_createRestaurant,
-  getAllRestaurants : myDB_allRestaurants,
-  deleteRestaurant : myDB_deleteRestaurant
-  
+  updateEmail: myDB_updateEmail,
+  updatePw: myDB_updatepw,
+  updateInterest: myDB_updateInterest,
+  updateUser: myDB_updateUser,
 
-  
+  createRestaurant: myDB_createRestaurant,
+  getAllRestaurants: myDB_allRestaurants,
+  deleteRestaurant: myDB_deleteRestaurant
+
+
 };
 
 module.exports = database;
-                                        

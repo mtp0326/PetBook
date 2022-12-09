@@ -494,41 +494,32 @@
 
     </script>
 
-    <script>
-        $(document).ready(function () {
-          $("#search-button").click(function (e) {
-          console.log("search clicked!!");
-          $.getJSON('/getOtherWallPage', function (element) { // EDIT THIS PART
-          //   console.log("here!!!");
-          //   console.log(element);
-
-            // for (let i = 0; i < elementsArr.length; i++) {
-            //   var contentN = elementsArr[i].content;
-            //   var userIDN = elementsArr[i].userID;
-            //   var timepostN = elementsArr[i].timepost;
-            //   var likesN = elementsArr[i].likes;
-            //   var commentsN = elementsArr[i].comments;
-
-            //   var Item =
-            //   {
-            //     "content": contentN,
-            //     "comments": commentsN,
-            //     "likes": likesN,
-            //     "userID": userIDN,
-            //     "timepost": timepostN,
-
-            //   };
-            //   friendposts.push(Item);
-            // }
-            // console.log(friendposts);
-
-         
-
-
-          });
-        });
-      });
    
+    <script>
+      $(document).ready(function () {
+        $("#search-button").click(function (e) {
+          console.log("search clicked!");
+          e.preventDefault();
+          var contentUpd = document.getElementsByName("searchcontent")[0].value;
+
+          $.ajax({
+            type: "POST",
+            url: "/getOtherWallPage",
+            data: {
+              searchUsername: contentUpd
+            },
+            success: function (result) {
+              console.log(result);
+            },
+            error: function (result) {
+              console.log(data);
+              alert('search error');
+            }
+          });
+
+        });
+
+      });
     </script>
 
 
@@ -610,7 +601,7 @@
     <a href="/logout">Logout</a>
     <div class="search-container">
     
-        <input type="text" placeholder="Search.." name="search">
+        <input type="text" placeholder="Search.." name="searchcontent">
         <button type="submit" id = "search-button"><i class="fa fa-search"></i></button>
       
     </div>

@@ -21,7 +21,7 @@ var getWall = function (req, res) {
     return res.redirect('/')
   }
   isVerified = false;
-  res.render('wall.ejs',{ "check": true, "isOther": false, "username": req.session.userName });
+  res.render('wall.ejs', { "check": true , "isOther": false, "username": req.session.username });
 };
 
 //for results if the username and password are correct
@@ -55,6 +55,10 @@ var getLogout = function (req, res) {
 
 var getChat = function (req, res) {
   res.render('chat.ejs', { "check": isVerified })
+};
+
+var getEdit = function (req, res) {
+  res.render('edit.ejs', { "check": isVerified })
 };
 
 //check if new account can be created by receiving null (which means that username in db is empty)
@@ -352,18 +356,69 @@ var getOtherWallPage = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
-  console.log("print");
-  req.session.currWall = req.query.username;
-  // req.session.currWall.save();
+  console.log(req.body.searchUsername);
+  req.session.currWall = req.body.searchUsername;
+  console.log(req.session.currWall);
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
-    console.log("this is usernamelookup");
-    console.log(req.session.currWall);
-      console.log(data);
     if (data === req.session.currWall) {
-      
-      res.render('wall.ejs', { "check": true, "isOther": false, "username": req.session.currWall });
+      res.render('wall.ejs', { "check": true, "isOther": true, "username": req.session.currWall });
     }
   });
+}
+
+var getEditUserInfoAjax = function (req, res) {
+  db.getUserInfo(req.session.username, "username", function (err, data) {
+    console.log(data);
+    res.send(data);
+  });
+}
+
+var postUpdateUser = function (req, res) {
+  var updateInfoNameList = [];
+  var updateInfoList = [];
+  
+  if(req.body.affiliation != null) {
+    updateInfoNameList.push('affiliation');
+    updateInfoList.push(req.body.affiliation);
+  }
+
+  if(req.body.email != null) {
+    updateInfoNameList.push('email');
+    updateInfoList.push(req.body.email);
+  }
+
+  if(req.body.fullname != null) {
+    updateInfoNameList.push('fullname');
+    updateInfoList.push(req.body.fullname);
+  }
+
+  if(req.body.password != null) {
+    updateInfoNameList.push('password');
+    updateInfoList.push(req.body.password);
+  }
+
+  if(req.body.pfpURL != null) {
+    updateInfoNameList.push('pfpURL');
+    updateInfoList.push(req.body.pfpURL);
+  }
+
+  recUpdateUser(req.session.username, updateInfoList, updateInfoNameList, 0, function(err, message) {
+    if(err) {
+      console.log(err);
+    }
+    res.send(message);
+  });
+}
+
+var recUpdateUser = function (sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback) {
+  if (counter >= recUpdateInfoList.length) {
+    callback("successfully updated user");
+  } else {
+    db.updateUser(sessionUser, recUpdateInfoList[counter], recUpdateInfoNameList[counter], function (err, data) {
+      counter++;
+      recGetAllWalls(sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback);
+    });
+  }
 }
 
 
@@ -443,15 +498,18 @@ var routes = {
   get_chat: getChat,
   get_wall: getWall,
   get_otherWallPage: getOtherWallPage,
+  get_edit: getEdit,
 
   //NEW
   get_homepage: getHomepage,
   get_homepagePostListAjax: getHomepagePostListAjax,
   get_wallListAjax: getWallListAjax,
+  get_editUserInfoAjax: getEditUserInfoAjax,
 
   post_newPostAjax: postNewPostAjax,
   post_newCommentAjax: postNewCommentAjax,
   post_newWallAjax: postNewWallAjax,
+  post_updateUser: postUpdateUser,
 
   post_newAccount: postNewAccount,
   post_newRestaurantAjax: postNewRestaurantAjax,
