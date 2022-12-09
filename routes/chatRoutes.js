@@ -32,14 +32,22 @@ var getOnlineUsers = function(req, res) {
 						console.log(err2);
 					} else {
 						// data2: string set of userIDs	
-						data2Length = data2.length;			
+						data2Length = data2.length;
+						console.log(friendsList.includes("hello"));
+
 						data2.forEach(function(r) {
-							if (friendsList.includes(r.S)) {
-								onlineFriends.push(r.S);
-								counter++;
-								if (data2Length === counter) {
-									res.json(onlineFriends);
+							if (friendsList.includes(r)) {
+								var stringifyFriend = {
+									S: r
 								}
+								console.log("print");
+								console.log(stringifyFriend);
+								onlineFriends.push(stringifyFriend);
+							}
+							counter++;
+							if (data2Length === counter) {
+								console.log(onlineFriends);
+								res.json(onlineFriends);
 							}
 						});
 					}
@@ -48,6 +56,7 @@ var getOnlineUsers = function(req, res) {
   		});
 	}
 };
+
 
 var addOnlineUser = function(req, res) {
 	// Checks whether all fields are filled; if not, show warning message	
@@ -92,7 +101,6 @@ var getChatRooms = function(req, res) {
 		});
 	}
 };
-
 // Add a new instance of chatroom
 var addChatRoom = function(req, res) {
 	// info needed: timestamp
@@ -103,6 +111,18 @@ var addChatRoom = function(req, res) {
 		res.render('login.ejs', {message: "Not logged in"});
 	} else {
 		chatdb.addChatroom(req.session.username, timestamp, [], function(err, data) {
+			if (err) {console.log(err);}
+		});
+	}
+}
+
+var deleteChatroom = function(req, res) {
+	var chatID = req.body.chatID;
+	
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.deleteChatroom(chatID, message, [], function(err, data) {
 			if (err) {console.log(err);}
 		});
 	}
@@ -129,7 +149,6 @@ var addMessage = function(req, res) {
 	}
 }
 
-
 // Deletes session, userID from online db
 var logout = function(req, res) {
 	if (!req.session.username) {
@@ -150,6 +169,7 @@ var routes = {
     get_chatrooms: getChatRooms,
     add_online_user: addOnlineUser,
     add_chatroom: addChatRoom,
+    delete_chatroom: deleteChatroom,
     add_message: addMessage,
 
     log_out: logout,
