@@ -12,12 +12,47 @@ var myDB_getUserChatrooms = function(username, callback) {
 
   db.getItem(params, function(err, data) {
     if (err) {
-      callback(err, null);
+      console.log("Error", err);
     } else {
-      callback(null, data.Item.chatID.L);
+      callback(null, data.Item.chatID.SS);
     }
   });
-  
+}
+
+// Adds a new chatID to user db
+var myDB_addchatIDToUser = function(username, chatID, callback) {	
+  var newChatID = {S: chatID};
+  var params = {
+      TableName: "users",
+      Key: {"username" : {S: username}},
+	  UpdateExpression: "ADD chatID :newChatID",
+	  ExpressionAttributeValues : {
+	    ":newChatID": newChatID
+	  },
+  };
+  db.updateItem(params, function(err, data) {
+	  if (err) {
+	    console.log("Error", err);
+	  }
+  });
+}
+
+// Deletes a chatID from user db
+var myDB_deletechatIDFromUser = function(username, chatID, callback) {
+  var deleteChatID = {S: chatID};
+  var params = {
+      TableName: "users",
+      Key: {"username" : {S: username}},
+	  UpdateExpression: "DELETE chatID :deleteChatID",
+	  ExpressionAttributeValues : {
+	    ":deleteChatID": deleteChatID
+	  },
+  };
+  db.updateItem(params, function(err, data) {
+	  if (err) {
+	    console.log("Error", err);
+	  }
+  });
 }
 
 // Gets a list of the online users
@@ -77,7 +112,6 @@ var myDB_addChatroom = function(userID, createTime, callback) {
 	});
 }
 
-// Delete a chatroom with given chatID
 var myDB_deleteChatroom = function(chatID) {
 	var params = {
 		TableName: "chatrooms",
@@ -93,6 +127,7 @@ var myDB_deleteChatroom = function(chatID) {
 }
 
 // Adds a new message to the chatroom
+//newMessage: [timestamp, userID, content]
 var myDB_addMessage = function(chatID, newMessage, callback) {
 	var params = {
 		TableName: "chatrooms",
@@ -191,9 +226,11 @@ var myDB_deleteOnline = function(deleteUserID, callback) {
 }
 
 var chatDB = { 
-  getUserChatroomIDs: myDB_getUserChatrooms,
+  getUserChatroomIDs : myDB_getUserChatrooms,
+  addChatIDToUser : myDB_addchatIDToUser,
+  deleteChatIDFromUser : myDB_deletechatIDFromUser,
   
-  getOnlineUsers: myDB_getOnlineUsers,
+  getOnlineUsers : myDB_getOnlineUsers,
   
   getChatroom : myDB_getChatroom,
   addChatroom : myDB_addChatroom,
