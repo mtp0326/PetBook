@@ -104,17 +104,25 @@ var getChatRooms = function(req, res) {
 var addChatRoom = function(req, res) {
 	// info needed: timepost
 	var timepost = new Date().getTime();
+	var chatID = userID.concat("-", timepost.toString());
 	
 	// Checks whether all fields are filled; if not, show warning message	
 	if (!req.session.username) {
 		res.render('login.ejs', {message: "Not logged in"});
 	} else {
-		chatdb.addChatroom(req.session.username, timepost, [], function(err, data) {
-			if (err) {console.log(err);}
+		chatdb.addChatroom(req.session.username, chatID, function(err, data) {
+			if (err) {
+				console.log(err);
+			} else {
+				chatdb.addChatIDToUser(req.session.username, chatID, function(err1, data1) {
+					if (err1) {console.log(err1);}
+				});
+			}
 		});
 	}
 }
 
+/*
 var deleteChatroom = function(req, res) {
 	var chatID = req.body.chatID;
 	if (!req.session.username) {
@@ -125,6 +133,7 @@ var deleteChatroom = function(req, res) {
 		});
 	}
 }
+*/
 
 // Add a new instance of chatroom
 var addMessage = function(req, res) {
@@ -153,7 +162,13 @@ var addUserToChatroom = function(req, res) {
 		res.render('login.ejs', {message: "Not logged in"});
 	} else {
 		chatdb.addChatIDToUser(req.session.username, groupChatID, function(err, data) {
-			if (err) {console.log(err);}
+			if (err) {
+				console.log(err);
+			} else {
+				chatdb.addUserToChat(req.session.username, groupChatID,function(err, data) {
+					if (err) {console.log(err)}
+				});
+			}
 		});
 	}
 }
@@ -164,7 +179,13 @@ var deleteUserFromChatroom = function(req, res) {
 		res.render('login.ejs', {message: "Not logged in"});
 	} else {
 		chatdb.deleteChatIDFromUser(req.session.username, groupChatID, function(err, data) {
-			if (err) {console.log(err);}
+			if (err) {
+				console.log(err);
+			} else {
+				chatdb.deleteUserFromChat(req.session.username, groupChatID,function(err, data) {
+					if (err) {console.log(err)}
+				});
+			}
 		});
 	}
 }
