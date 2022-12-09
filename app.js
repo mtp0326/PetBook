@@ -73,8 +73,7 @@ app.get('/getCreator', routes.get_creator);
 //NEW
 app.get('/homepage', routes.get_homepage);
 app.get('/getPostAjax', routes.get_homepagePostListAjax);
-app.get('/getWallAjax', routes.get_wallListAjax)
-app.get('/getOtherWallPage', routes.get_otherWallPage);
+app.get('/getWallAjax', routes.get_wallListAjax);
 app.get('/getEditUserInfoAjax', routes.get_editUserInfoAjax);
 
 app.post('/createpost', routes.post_newPostAjax);
@@ -88,6 +87,7 @@ app.post('/createaccount', routes.post_newAccount);
 app.post('/addList', routes.post_newRestaurantAjax);
 app.post('/deleteList', routes.post_deleteRestaurantAjax);
 app.post('/editaccount', routes.post_updateUser);
+app.post('/getOtherWallPageAjax', routes.get_otherWallPageAjax);
 
 //chat
 app.get('/getonlineusers', chats.get_online_users);

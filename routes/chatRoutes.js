@@ -80,7 +80,6 @@ var getChatRooms = function(req, res) {
 			if (err1) {
 				console.log(err1);
 			} else {
-				
 				// data1: list of all the user's chatrooms ids
 				data1.forEach(function(r) {					
 					chatdb.getChatroom(r.S, function(err2, data2) {
@@ -103,18 +102,38 @@ var getChatRooms = function(req, res) {
 
 // Add a new instance of chatroom
 var addChatRoom = function(req, res) {
-	// info needed: timestamp
-	var timestamp = new Date().getTime();
+	// info needed: timepost
+	var timepost = new Date().getTime();
+	var chatID = userID.concat("-", timepost.toString());
 	
 	// Checks whether all fields are filled; if not, show warning message	
 	if (!req.session.username) {
 		res.render('login.ejs', {message: "Not logged in"});
 	} else {
-		chatdb.addChatroom(req.session.username, timestamp, [], function(err, data) {
+		chatdb.addChatroom(req.session.username, chatID, function(err, data) {
+			if (err) {
+				console.log(err);
+			} else {
+				chatdb.addChatIDToUser(req.session.username, chatID, function(err1, data1) {
+					if (err1) {console.log(err1);}
+				});
+			}
+		});
+	}
+}
+
+/*
+var deleteChatroom = function(req, res) {
+	var chatID = req.body.chatID;
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.deleteChatroom(chatID, function(err, data) {
 			if (err) {console.log(err);}
 		});
 	}
 }
+*/
 
 // Add a new instance of chatroom
 var addMessage = function(req, res) {
@@ -123,10 +142,10 @@ var addMessage = function(req, res) {
 	var chatID = req.body.chatID;
 	var content = req.body.message;	
 	
-	var timestamp = new Date().getTime();
+	var timepost = new Date().getTime();
 	
-	//message([timestamp, userID, content])
-	var message = [timestamp, req.session.username, content];
+	//message([timepost, userID, content])
+	var message = [timepost, req.session.username, content];
 	
 	if (!req.session.username) {
 		res.render('login.ejs', {message: "Not logged in"});
@@ -137,6 +156,39 @@ var addMessage = function(req, res) {
 	}
 }
 
+var addUserToChatroom = function(req, res) {
+	var groupChatID = req.body.chatID;
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.addChatIDToUser(req.session.username, groupChatID, function(err, data) {
+			if (err) {
+				console.log(err);
+			} else {
+				chatdb.addUserToChat(req.session.username, groupChatID,function(err, data) {
+					if (err) {console.log(err)}
+				});
+			}
+		});
+	}
+}
+
+var deleteUserFromChatroom = function(req, res) {
+	var groupChatID = req.body.chatID;
+	if (!req.session.username) {
+		res.render('login.ejs', {message: "Not logged in"});
+	} else {
+		chatdb.deleteChatIDFromUser(req.session.username, groupChatID, function(err, data) {
+			if (err) {
+				console.log(err);
+			} else {
+				chatdb.deleteUserFromChat(req.session.username, groupChatID,function(err, data) {
+					if (err) {console.log(err)}
+				});
+			}
+		});
+	}
+}
 
 // Deletes session, userID from online db
 var logout = function(req, res) {
@@ -158,7 +210,10 @@ var routes = {
     get_chatrooms: getChatRooms,
     add_online_user: addOnlineUser,
     add_chatroom: addChatRoom,
+    // delete_chatroom: deleteChatroom,
     add_message: addMessage,
+    add_user_to_chat: addUserToChatroom,
+    delete_user_from_chat: deleteUserFromChatroom,
 
     log_out: logout,
 };

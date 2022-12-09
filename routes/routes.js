@@ -3,6 +3,7 @@ var db = require('../models/database.js');
 var isVerified = false;
 // TODO The code for your own routes should go here
 var getMain = function (req, res) {
+  req.session.currWall = null;
   isVerified = false;
   res.render('main.ejs');
 }
@@ -10,6 +11,7 @@ var getMain = function (req, res) {
 //render homepage
 //NEW: getHomepage, homepage.ejs
 var getHomepage = function (req, res) {
+  req.session.currWall = null;
   if (!req.session.username) {
     return res.redirect('/')
   }
@@ -17,6 +19,7 @@ var getHomepage = function (req, res) {
 }
 
 var getWall = function (req, res) {
+  req.session.currWall = req.session.username;
   if (!req.session.username) {
     return res.redirect('/')
   }
@@ -26,6 +29,7 @@ var getWall = function (req, res) {
 
 //for results if the username and password are correct
 var postResultsUser = function (req, res) {
+  req.session.currWall = null;
   var usernameCheck = req.body.username;
   var passwordCheck = req.body.password;
   db.passwordLookup(usernameCheck, function (err, data) {
@@ -43,17 +47,20 @@ var postResultsUser = function (req, res) {
 
 //gets signup page
 var getSignup = function (req, res) {
+  req.session.currWall = null;
   res.render('signup.ejs', { "check": isVerified });
 }
 
 //gets logout page
 var getLogout = function (req, res) {
+  req.session.currWall = null;
   req.session.username = null;
   req.session.destroy();
   res.render('logout.ejs', {});
 }
 
 var getChat = function (req, res) {
+  req.session.currWall = null;
   if (!req.session.username) {
     return res.redirect('/')
   }
@@ -61,10 +68,25 @@ var getChat = function (req, res) {
 }
 
 var getEdit = function (req, res) {
+  req.session.currWall = null;
   if (!req.session.username) {
     return res.redirect('/')
   }
   res.render('edit.ejs', { "check": isVerified })
+}
+
+var getOtherWallPageAjax = function (req, res) {
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  console.log(req.body.searchcontent);
+  req.session.currWall = req.body.searchcontent;
+  console.log(req.session.currWall);
+  db.usernameLookup(req.session.currWall, "username", function (err, data) {
+    if (data === req.session.currWall) {
+      res.render('wall.ejs', { "check": true, "isOther": true, "username": req.session.currWall });
+    }
+  });
 }
 
 //check if new account can be created by receiving null (which means that username in db is empty)
@@ -249,7 +271,7 @@ var getWallListAjax = function (req, res) {
   console.log(req.session.username);
   var tempList = [];
   ///req.session.username into B's wall
-  db.getAllPosts(req.session.username, function (err, data) {
+  db.getAllPosts(req.session.currWall, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
     var commentsArr = data.map(obj => obj.comments.L);
     var likesArr = data.map(obj => obj.likes.L);
@@ -267,8 +289,9 @@ var getWallListAjax = function (req, res) {
       tempList.push(pointer);
     }
     ///req.session.username into B's wall
-    console.log("getA");
-    db.getAllWalls("A", function (err, postsList) {
+    console.log("getCurrWall");
+    console.log(req.session.currWall);
+    db.getAllWalls(req.session.currWall, function (err, postsList) {
       var contentArr = postsList.map(obj => obj.content.S);
       var commentsArr = postsList.map(obj => obj.comments.L);
       var likesArr = postsList.map(obj => obj.likes.L);
@@ -286,7 +309,7 @@ var getWallListAjax = function (req, res) {
         tempList.push(pointer);
       }
 
-      db.getFriends(req.session.username, function (err, data) {
+      db.getFriends(req.session.currWall, function (err, data) {
         var friendsList = data.map(obj => obj.S);
 
         ///recursion as friends
@@ -340,11 +363,10 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
 
 //create new wall in the db when all inputs exist in posts
 var postNewWallAjax = function (req, res) {
-  var receiver// = B's wall
   var content = req.body.content;
   var timepost = req.body.timepost;
   if (content.length != 0 && timepost.length != 0 && receiver.length != 0) {
-    db.createWall(receiver, req.session.username, content, timepost, function (err, data) { });
+    db.createWall(req.session.currWall, req.session.username, content, timepost, function (err, data) { });
 
     var response = {
       "userID": req.session.username + " to " + receiver,
@@ -356,20 +378,6 @@ var postNewWallAjax = function (req, res) {
   } else {
     res.send(null);
   }
-}
-
-var getOtherWallPage = function (req, res) {
-  if (!req.session.username) {
-    return res.redirect('/')
-  }
-  console.log(req.body.searchUsername);
-  req.session.currWall = req.body.searchUsername;
-  console.log(req.session.currWall);
-  db.usernameLookup(req.session.currWall, "username", function (err, data) {
-    if (data === req.session.currWall) {
-      res.render('wall.ejs', { "check": true, "isOther": true, "username": req.session.currWall });
-    }
-  });
 }
 
 var getEditUserInfoAjax = function (req, res) {
@@ -517,7 +525,7 @@ var routes = {
   get_creator: getCreator,
   get_chat: getChat,
   get_wall: getWall,
-  get_otherWallPage: getOtherWallPage,
+  get_otherWallPageAjax: getOtherWallPageAjax,
   get_edit: getEdit,
 
   //NEW
