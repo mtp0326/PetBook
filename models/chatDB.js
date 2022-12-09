@@ -17,6 +17,7 @@ var myDB_getUserChatrooms = function(username, callback) {
       callback(null, data.Item.chatID.L);
     }
   });
+  
 }
 
 // Gets a list of the online users
@@ -45,15 +46,17 @@ var myDB_getChatroom = function(chatID, callback) {
 	}
 	
 	db.getItem(params, function(err, data) {
-	  	if (err) {
-	      callback(err, null);
-	    } else if (chatID.length == 0) {
-		  callback("chatID cannot be empty", null);
-		} else {
-		  //data.Item - has chatID, content, userIDs
-	      callback(null, data.Item);
-	    }
-	});
+        if (err) {
+          callback(err, null);
+        } else if (chatID.length == 0) {
+          callback("chatID cannot be empty", null);
+        } else {
+            console.log("get item success");
+            console.log(data.Item);
+          //data.Item - has chatID, content, userIDs
+          callback(null, data.Item);
+        }
+    });
 }
 
 // Adds a new chatroom with given info
@@ -64,20 +67,32 @@ var myDB_addChatroom = function(userID, createTime, callback) {
 		TableName: "chatrooms",
 		Item: {
 		  'chatID' : {S: chatID},
-		  'userIDs' : {SS: {}},
+		  'userIDs' : {L: []},
 		},
 	}
 	db.putItem(params, function(err, data) {
 	    if (err) {
 	      callback(err, null);
-	    } else {
-	      callback(null, null);
-	    }
+	    } 
+	});
+}
+
+// Delete a chatroom with given chatID
+var myDB_deleteChatroom = function(chatID) {
+	var params = {
+		TableName: "chatrooms",
+		Key: {
+			"chatID" : {S: chatID},
+		},
+	}
+	db.deleteItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    } 
 	});
 }
 
 // Adds a new message to the chatroom
-//newMessage: [timestamp, userID, content]
 var myDB_addMessage = function(chatID, newMessage, callback) {
 	var params = {
 		TableName: "chatrooms",
@@ -182,7 +197,8 @@ var chatDB = {
   
   getChatroom : myDB_getChatroom,
   addChatroom : myDB_addChatroom,
-  getMessages : myDB_getChatMessages,
+  deleteChatroom : myDB_deleteChatroom,
+
   addMessage : myDB_addMessage,
   addUserToChat : myDB_addUserToChat,
   addUserOnline : myDB_addOnline,
