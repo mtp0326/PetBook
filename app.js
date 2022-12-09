@@ -80,7 +80,7 @@ app.get('/getEditUserInfoAjax', routes.get_editUserInfoAjax);
 app.post('/createpost', routes.post_newPostAjax);
 app.post('/createcomment', routes.post_newCommentAjax);
 app.post('/createwall', routes.post_newWallAjax);
-
+app.post('/postUpdateUser', routes.post_updateUser);
 
 app.post('/checklogin', routes.verifyUser);
 
