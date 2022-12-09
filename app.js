@@ -66,6 +66,7 @@ app.get('/signup', routes.get_signup);
 app.get('/logout', routes.get_logout);
 app.get('/chat', routes.get_chat);
 app.get('/wall', routes.get_wall);
+app.get('/edit', routes.get_edit);
 app.get('/getList', routes.get_restaurantList);
 app.get('/getCreator', routes.get_creator);
 
@@ -74,6 +75,7 @@ app.get('/homepage', routes.get_homepage);
 app.get('/getPostAjax', routes.get_homepagePostListAjax);
 app.get('/getWallAjax', routes.get_wallListAjax)
 app.get('/getOtherWallPage', routes.get_otherWallPage);
+app.get('/getEditUserInfoAjax', routes.get_editUserInfoAjax);
 
 app.post('/createpost', routes.post_newPostAjax);
 app.post('/createcomment', routes.post_newCommentAjax);
