@@ -120,8 +120,11 @@ h1{
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
 </script>
 <script type="text/javascript">
+      window.onload = function(){
+       document.getElementById('firstnameT').value = "chapini";
+      }
       $(document).ready(function() {
-        document.getElementById('firstname').value ="chapini" ;
+        // document.getElementById('firstname').value ="chapini" ;
 			$.getJSON('/getEditUserInfoAjax', function(data) {
                 console.log(data);
                 var firstnameUpd = data.fullname.S;
@@ -131,18 +134,20 @@ h1{
                 var affiliationUpd = data.affiliation.S;
                 var interestUpd = data.interest.L;
                 var pfpURLUpd = data.pfpURL.S;
-                document.getElementById('firstname').value =data.fullname.S ;
-               
-
-
-                
+                document.getElementById('firstname').value = data.fullname.S ;
 			});
 			
 	    });
+
+
      
   </script>
 
+
   </head>
+  <div class="card" id ="cardID">
+
+  </div>
 
 <body class="p-3 m-0 border-0 bd-example">
 	
