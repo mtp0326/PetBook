@@ -12,28 +12,32 @@ var myDB_getUserChatrooms = function(username, callback) {
 
   db.getItem(params, function(err, data) {
     if (err) {
-      console.log("Error", err);
+      console.log("Error" + err);
     } else {
+	  console.log(data.Item);
       callback(null, data.Item.chatID.SS);
     }
   });
 }
 
 // Adds a new chatID to user db
-var myDB_addchatIDToUser = function(username, chatID, callback) {	
-  var newChatID = {S: chatID};
+var myDB_addchatIDToUser = function(username, chatID, callback) {
+  var newChatID = {SS: [chatID]};
+  console.log(newChatID);
   var params = {
       TableName: "users",
       Key: {"username" : {S: username}},
-	  UpdateExpression: "ADD chatID :newChatID",
+	  UpdateExpression: "ADD chatID :n",
 	  ExpressionAttributeValues : {
-	    ":newChatID": newChatID
-	  },
+	    ":n": newChatID
+	  }
   };
   db.updateItem(params, function(err, data) {
 	  if (err) {
 	    console.log("Error", err);
 	  }
+	  console.log("success");
+	  callback(err, "success");
   });
 }
 
@@ -52,6 +56,7 @@ var myDB_deletechatIDFromUser = function(username, chatID, callback) {
 	  if (err) {
 	    console.log("Error", err);
 	  }
+	  callback(err, data);
   });
 }
 
@@ -101,13 +106,15 @@ var myDB_addChatroom = function(userID, chatID, callback) {
 		TableName: "chatrooms",
 		Item: {
 		  'chatID' : {S: chatID},
-		  'userIDs' : {SS: {S: userID}},
-		},
+		  'userIDs' : {SS: [userID]},
+		  'content' : {L: [] }
+		}
 	}
 	db.putItem(params, function(err, data) {
 	    if (err) {
 	      console.log("Error", err);
-	    } 
+	    }
+		callback(err, "success");
 	});
 }
 
@@ -121,7 +128,8 @@ var myDB_deleteChatroom = function(chatID, callback) {
 	db.deleteItem(params, function(err, data) {
 	    if (err) {
 	      console.log("Error", err);
-	    } 
+	    }
+		callback(err, data);
 	});
 }
 
@@ -145,6 +153,7 @@ var myDB_addMessage = function(chatID, newMessage, callback) {
 	    if (err) {
 	      console.log("Error", err);
 	    }
+		callback(err, data);
 	});
 }
 
@@ -163,6 +172,7 @@ var myDB_addUserToChat = function(newUserID, groupChatID, callback) {
 	    if (err) {
 	      console.log("Error", err);
 	    }
+		callback(err, data);
 	});
 }
 
@@ -181,6 +191,7 @@ var myDB_deleteUserFromChat = function(deleteUserID, groupChatID, callback) {
 	    if (err) {
 	      console.log("Error", err);
 	    }
+		callback(err, data);
 	});
 }
 
@@ -204,6 +215,7 @@ var myDB_addOnline = function(newUserID, callback) {
 	    if (err) {
 	      console.log("Error", err);
 	    }
+		callback(err, data);
 	});
 }
 
@@ -224,6 +236,7 @@ var myDB_deleteOnline = function(deleteUserID, callback) {
 	    if (err) {
 	      console.log("Error", err);
 	    }
+		callback(err, data);
 	});
 }
 
