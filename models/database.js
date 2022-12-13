@@ -104,7 +104,7 @@ var myDB_createAccount =
         "birthday": { S: newBirthday },
         "chatID": { L: [] },
         "email": { S: newEmail },
-        "friends": { L: [] },
+        "friends": { SS: [""] },
         "fullname": { S: newFullname },
         "interest": { L: interestArr },
         "password": { S: newPassword },
@@ -132,7 +132,6 @@ var myDB_getFriends = (function (username, callback) {
         AttributeValueList: [{ S: username }]
       }
     },
-    TableName: "users",
     AttributesToGet: ['friends']
   };
 
@@ -140,7 +139,8 @@ var myDB_getFriends = (function (username, callback) {
     if (err) {
       console.log(err);
     } else {
-      callback(err, data.Items[0].friends.L);
+      console.log(data.Items[0]);
+      callback(err, data.Items[0].friends.SS);
     }
   });
 });

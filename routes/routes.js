@@ -128,7 +128,11 @@ var postNewAccount = function (req, res) {
 var getHomepagePostListAjax = function (req, res) {
 
   db.getFriends(req.session.username, function (err, data) {
-    var friendsList = data.map(obj => obj.S);
+    var friendsList = [];
+    data.forEach(function (r) {
+      friendsList.push(r);
+    });
+    console.log(friendsList);
 
     var tempList = [];
     db.getAllPosts(req.session.username, function (err, data) {
@@ -315,7 +319,10 @@ var getWallListAjax = function (req, res) {
       }
 
       db.getFriends(req.session.currWall, function (err, data) {
-        var friendsList = data.map(obj => obj.S);
+        var friendsList = [];
+        data.forEach(function (r) {
+          friendsList.push(r.S);
+        });
 
         ///recursion as friends
         recGetAllWalls(friendsList, tempList, req.session.username, 0, function (postsList) {
