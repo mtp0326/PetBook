@@ -1,35 +1,42 @@
 var db = require('../models/database.js');
+var sjcl = require('sjcl');
+// var stemmer = require('stemmer');
 
 var isVerified = false;
 // TODO The code for your own routes should go here
 var getMain = function (req, res) {
+  req.session.currWall = null;
   isVerified = false;
   res.render('main.ejs');
-};
+}
 
 //render homepage
 //NEW: getHomepage, homepage.ejs
 var getHomepage = function (req, res) {
+  req.session.currWall = null;
   if (!req.session.username) {
     return res.redirect('/')
   }
   res.render('homepage.ejs', { "check": isVerified })
-};
+}
 
 var getWall = function (req, res) {
+  req.session.currWall = req.session.username;
   if (!req.session.username) {
     return res.redirect('/')
   }
   isVerified = false;
-  res.render('wall.ejs', { "check": true , "isOther": false, "username": req.session.username });
-};
+  res.render('wall.ejs', { "check": true, "isOther": false, "username": req.session.username });
+}
 
 //for results if the username and password are correct
 var postResultsUser = function (req, res) {
+  req.session.currWall = null;
   var usernameCheck = req.body.username;
   var passwordCheck = req.body.password;
+  var hashPassword = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(passwordCheck));
   db.passwordLookup(usernameCheck, function (err, data) {
-    if (data == passwordCheck && !err) {
+    if (data == hashPassword && !err) {
       req.session.username = req.body.username;
       req.session.password = req.body.password;
       isVerified = true;
@@ -39,27 +46,62 @@ var postResultsUser = function (req, res) {
       res.render('checklogin.ejs', { "check": false });
     }
   });
-};
+}
 
 //gets signup page
 var getSignup = function (req, res) {
+  req.session.currWall = null;
   res.render('signup.ejs', { "check": isVerified });
 }
 
 //gets logout page
 var getLogout = function (req, res) {
+  req.session.currWall = null;
   req.session.username = null;
   req.session.destroy();
   res.render('logout.ejs', {});
 }
 
 var getChat = function (req, res) {
+  req.session.currWall = null;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
   res.render('chat.ejs', { "check": isVerified })
-};
+}
 
 var getEdit = function (req, res) {
+  req.session.currWall = null;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
   res.render('edit.ejs', { "check": isVerified })
-};
+}
+
+var postOtherWallPageAjax = function (req, res) {
+  // if (!req.session.username) {
+  //   return res.redirect('/')
+  // }
+  // req.session.currWall = req.body.content;
+  // console.log(req.session.currWall);
+  // res.render('wall.ejs', { "check": true, "isOther": true, "username": req.session.currWall });
+  console.log("render successful");
+  
+}
+
+var getDetermineWallOwner = function (req, res) {
+  db.usernameLookup(req.session.currWall, "username", function (err, data) {
+    if (data === req.session.currWall) {
+      db.getUserInfo(req.session.currWall, "username", function (err, data) {
+        if (err) {
+          res.send(null);
+        } else {
+          res.send(data.username.S);
+        }
+      })
+    }
+  });
+}
 
 //check if new account can be created by receiving null (which means that username in db is empty)
 //and create the new account and go to restaurants or fail and go back to signup.
@@ -67,8 +109,9 @@ var postNewAccount = function (req, res) {
   var usernameNewCheck = req.body.username;
   db.usernameLookup(usernameNewCheck, "username", function (err, data) {
     if (data == null || err) {
+      var hashPassword = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(req.body.password));
       req.session.username = req.body.username;
-      req.session.password = req.body.password;
+      req.session.password = hashPassword;
       req.session.fullname = req.body.firstname + " " + req.body.lastname;
       req.session.affiliation = req.body.affiliation;
       req.session.email = req.body.email;
@@ -87,22 +130,37 @@ var postNewAccount = function (req, res) {
     }
 
   });
-};
+}
 
 //ajax: query posts of friend's userid
 //Also renders comments if exists
 //NEW: getHomepagePostList, getAllPosts
 var getHomepagePostListAjax = function (req, res) {
 
-  db.getFriends(req.session.username, function (err, data) {
-    var friendsList = data.map(obj => obj.S);
+  var tempList = [];
+  db.getAllPosts(req.session.username, function (err, data) {
+    var contentArr = data.map(obj => obj.content.S);
+    var commentsArr = data.map(obj => obj.comments.L);
+    var likesArr = data.map(obj => obj.likes.L);
+    var userIDArr = data.map(obj => obj.userID.S);
+    var timepostArr = data.map(obj => obj.timepost.S);
 
-    var tempList = [];
-    db.getAllPosts(req.session.username, function (err, data) {
+    for (let i = 0; i < userIDArr.length; i++) {
+      var pointer = {
+        "content": contentArr[i],
+        "comments": commentsArr[i],
+        "likes": likesArr[i],
+        "userID": userIDArr[i],
+        "timepost": timepostArr[i]
+      };
+      tempList.push(pointer);
+    }
+
+    db.getAllWalls(req.session.username, function (err, data) {
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
       var likesArr = data.map(obj => obj.likes.L);
-      var userIDArr = data.map(obj => obj.userID.S);
+      var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
       var timepostArr = data.map(obj => obj.timepost.S);
 
       for (let i = 0; i < userIDArr.length; i++) {
@@ -115,32 +173,23 @@ var getHomepagePostListAjax = function (req, res) {
         };
         tempList.push(pointer);
       }
-
-      db.getAllWalls(req.session.username, function (err, data) {
-        var contentArr = data.map(obj => obj.content.S);
-        var commentsArr = data.map(obj => obj.comments.L);
-        var likesArr = data.map(obj => obj.likes.L);
-        var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
-        var timepostArr = data.map(obj => obj.timepost.S);
-
-        for (let i = 0; i < userIDArr.length; i++) {
-          var pointer = {
-            "content": contentArr[i],
-            "comments": commentsArr[i],
-            "likes": likesArr[i],
-            "userID": userIDArr[i],
-            "timepost": timepostArr[i]
-          };
-          tempList.push(pointer);
-        }
-        recGetAllPosts(friendsList, tempList, 0, function (postsList) {
-          postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
-          res.send(JSON.stringify(postsList));
+      db.getFriends(req.session.username, function (err, data) {
+        var friendsList = [];
+        data.forEach(function (r) {
+          friendsList.push(r);
         });
+        if (friendsList[0] === "" && friendsList.length === 1) {
+          res.send(JSON.stringify(tempList));
+        } else {
+          recGetAllPosts(friendsList, tempList, 0, function (postsList) {
+            postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
+            res.send(JSON.stringify(postsList));
+          });
+        }
       });
     });
   });
-};
+}
 
 var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) {
   if (counter >= recFriendsList.length) {
@@ -191,7 +240,7 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
 //ajax: get the creator information
 var getCreator = function (req, res) {
   res.send(JSON.stringify(req.session.username));
-};
+}
 
 //create new post in the db when all inputs exist in posts
 var postNewPostAjax = function (req, res) {
@@ -210,7 +259,7 @@ var postNewPostAjax = function (req, res) {
   } else {
     res.send(null);
   }
-};
+}
 
 //ajax: add comment in post data in posts
 var postNewCommentAjax = function (req, res) {
@@ -235,15 +284,16 @@ var postNewCommentAjax = function (req, res) {
   } else {
     res.send(null);
   }
-};
+}
 
 //ajax: get your posts and wall you receive from friends posting on yours
 //NEW
 var getWallListAjax = function (req, res) {
-  console.log(req.session.username);
+  console.log("req.session.currWall: ");
+  console.log(req.session.currWall);
   var tempList = [];
   ///req.session.username into B's wall
-  db.getAllPosts(req.session.username, function (err, data) {
+  db.getAllPosts(req.session.currWall, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
     var commentsArr = data.map(obj => obj.comments.L);
     var likesArr = data.map(obj => obj.likes.L);
@@ -261,8 +311,9 @@ var getWallListAjax = function (req, res) {
       tempList.push(pointer);
     }
     ///req.session.username into B's wall
-    console.log("getA");
-    db.getAllWalls("A", function (err, postsList) {
+    console.log("getCurrWall");
+    console.log(req.session.currWall);
+    db.getAllWalls(req.session.currWall, function (err, postsList) {
       var contentArr = postsList.map(obj => obj.content.S);
       var commentsArr = postsList.map(obj => obj.comments.L);
       var likesArr = postsList.map(obj => obj.likes.L);
@@ -280,9 +331,12 @@ var getWallListAjax = function (req, res) {
         tempList.push(pointer);
       }
 
-      db.getFriends(req.session.username, function (err, data) {
-        var friendsList = data.map(obj => obj.S);
-
+      db.getFriends(req.session.currWall, function (err, data) {
+        var friendsList = [];
+        data.forEach(function (r) {
+          friendsList.push(r);
+        });
+        console.log(friendsList);
         ///recursion as friends
         recGetAllWalls(friendsList, tempList, req.session.username, 0, function (postsList) {
           console.log("postsList");
@@ -300,7 +354,7 @@ var getWallListAjax = function (req, res) {
       });
     });
   });
-};
+}
 
 var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, callback) {
   if (counter >= recFriendsList.length) {
@@ -334,11 +388,10 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
 
 //create new wall in the db when all inputs exist in posts
 var postNewWallAjax = function (req, res) {
-  var receiver// = B's wall
   var content = req.body.content;
   var timepost = req.body.timepost;
   if (content.length != 0 && timepost.length != 0 && receiver.length != 0) {
-    db.createWall(receiver, req.session.username, content, timepost, function (err, data) { });
+    db.createWall(req.session.currWall, req.session.username, content, timepost, function (err, data) { });
 
     var response = {
       "userID": req.session.username + " to " + receiver,
@@ -350,64 +403,64 @@ var postNewWallAjax = function (req, res) {
   } else {
     res.send(null);
   }
-};
-
-var getOtherWallPage = function (req, res) {
-  if (!req.session.username) {
-    return res.redirect('/')
-  }
-  console.log(req.body.searchUsername);
-  req.session.currWall = req.body.searchUsername;
-  console.log(req.session.currWall);
-  db.usernameLookup(req.session.currWall, "username", function (err, data) {
-    if (data === req.session.currWall) {
-      res.render('wall.ejs', { "check": true, "isOther": true, "username": req.session.currWall });
-    }
-  });
 }
 
 var getEditUserInfoAjax = function (req, res) {
   console.log("getUser");
   db.getUserInfo(req.session.username, "username", function (err, data) {
     console.log(data);
+    data.password.S = "";
     res.send(data);
   });
 }
 
 var postUpdateUser = function (req, res) {
-  var updateInfoNameList = [];
   var updateInfoList = [];
-  
-  if(req.body.affiliation != null) {
-    updateInfoNameList.push('affiliation');
-    updateInfoList.push(req.body.affiliation);
-  }
+  var hashPassword = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(req.body.password));
+  updateInfoList.push(req.body.affiliation);
+  updateInfoList.push(req.body.email);
+  updateInfoList.push(req.body.firstname + " " + req.body.lastname);
+  updateInfoList.push(hashPassword);
+  updateInfoList.push(req.body.pfpURL);
 
-  if(req.body.email != null) {
-    updateInfoNameList.push('email');
-    updateInfoList.push(req.body.email);
-  }
+  var updateInfoNameList = [];
+  updateInfoNameList.push('affiliation');
+  updateInfoNameList.push('email');
+  updateInfoNameList.push('fullname');
+  updateInfoNameList.push('password');
+  updateInfoNameList.push('pfpURL');
 
-  if(req.body.fullname != null) {
-    updateInfoNameList.push('fullname');
-    updateInfoList.push(req.body.fullname);
-  }
+  console.log(updateInfoList);
+  console.log(updateInfoNameList);
 
-  if(req.body.password != null) {
-    updateInfoNameList.push('password');
-    updateInfoList.push(req.body.password);
-  }
+  res.render('editaccount.ejs', { "check": true });
 
-  if(req.body.pfpURL != null) {
-    updateInfoNameList.push('pfpURL');
-    updateInfoList.push(req.body.pfpURL);
-  }
-
-  recUpdateUser(req.session.username, updateInfoList, updateInfoNameList, 0, function(err, message) {
-    if(err) {
-      console.log(err);
+  db.getInterest(req.session.username, function (err, data) {
+    var interestSet = new Set();
+    for (let i = 0; i < data.length; i++) {
+      interestSet.add(data[i].S);
     }
-    res.send(message);
+
+    recUpdateUser(req.session.username, updateInfoList, updateInfoNameList, 0, function (err, message) {
+      if (err) {
+        console.log(err);
+      }
+      db.updateInterest(req.session.username, req.body.interest, function (err, data) {
+        if (err) {
+          console.log(err);
+        }
+        console.log(interestSet);
+        for (let i = 0; i < data.length; i++) {
+          console.log(interestSet);
+          console.log(data[i].S);
+          if (!interestSet.has(data[i].S)) {
+            var newContent = req.session.username + " is now interested in " + data[i].S;
+            var newTimepost = new Date().getTime() + "";
+            db.createPost(req.session.username, newContent, newTimepost, function (err, data) { });
+          }
+        }
+      });
+    });
   });
 }
 
@@ -416,10 +469,28 @@ var recUpdateUser = function (sessionUser, recUpdateInfoList, recUpdateInfoNameL
     callback("successfully updated user");
   } else {
     db.updateUser(sessionUser, recUpdateInfoList[counter], recUpdateInfoNameList[counter], function (err, data) {
+      console.log("callback hello");
       counter++;
-      recGetAllWalls(sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback);
+      recUpdateUser(sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback);
     });
   }
+}
+
+var getAllUsername = function (req, res) {
+  db.getAllUsername(function (err, data) {
+    if(err) {
+      console.log(err);
+    }
+    console.log(data);
+    res.send(data);
+  });
+}
+
+var getVisualizer = function (req, res) {
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('friendvisualizer.ejs', { "check": isVerified })
 }
 
 
@@ -498,7 +569,8 @@ var routes = {
   get_creator: getCreator,
   get_chat: getChat,
   get_wall: getWall,
-  get_otherWallPage: getOtherWallPage,
+  post_otherWallPageAjax: postOtherWallPageAjax,
+  get_determineWallOwner: getDetermineWallOwner,
   get_edit: getEdit,
 
   //NEW
@@ -506,6 +578,7 @@ var routes = {
   get_homepagePostListAjax: getHomepagePostListAjax,
   get_wallListAjax: getWallListAjax,
   get_editUserInfoAjax: getEditUserInfoAjax,
+  get_allUsername: getAllUsername,
 
   post_newPostAjax: postNewPostAjax,
   post_newCommentAjax: postNewCommentAjax,
@@ -514,7 +587,9 @@ var routes = {
 
   post_newAccount: postNewAccount,
   post_newRestaurantAjax: postNewRestaurantAjax,
-  post_deleteRestaurantAjax: postDeleteRestaurantAjax
+  post_deleteRestaurantAjax: postDeleteRestaurantAjax,
+  
+  get_friend_visualizer: getVisualizer,
 
   //post_newRestaurant : postNewRestaurant
 };

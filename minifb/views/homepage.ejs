@@ -4,21 +4,14 @@
 <head>
   <title>HomePage</title>
   <% if (check) { %>
-    
-
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
       body {
-
         height: 100%;
-
-
-
         background-color: #eeeeee;
-
         margin: 100;
         font-family: Arial, Helvetica, sans-serif;
         font-weight: 600;
@@ -28,7 +21,6 @@
         border-radius: 10px;
         width: 500px;
         padding: 20px;
-
         margin-left: auto;
         margin-right: auto;
         margin-bottom: 30px;
@@ -51,7 +43,6 @@
         border-radius: 10px;
         width: 500px;
         padding: 10px;
-
         margin-left: auto;
         margin-right: auto;
         margin-bottom: 5px;
@@ -81,7 +72,6 @@
         border-radius: 10px;
         width: 100%;
         padding: 10px;
-
         margin-left: auto;
         margin-right: auto;
         margin-bottom: 0px;
@@ -90,7 +80,6 @@
       }
 
       .profile-pic {
-
         width: 60px;
         height: 60px;
         border-radius: 50%;
@@ -121,7 +110,6 @@
 
       textarea.posttext {
         padding: 10px 10px;
-
         border-radius: 10px;
         box-sizing: border-box;
         color: #000000;
@@ -130,11 +118,9 @@
         letter-spacing: 1px;
         height: 200px;
         width: 100%;
-
       }
 
       textarea.comment {
-
         padding: 10px 0px;
         margin-left: 450px;
         margin-top: 10px;
@@ -148,7 +134,6 @@
         height: 40px !important;
         width: 420px;
         display: inline-block;
-
       }
 
       textarea:focus {
@@ -284,7 +269,6 @@
         color: #fff;
         border-radius: 5px;
         display: inline-block;
-
       }
 
       button[type=post] {
@@ -299,41 +283,40 @@
         border-radius: 5px;
       }
     </style>
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
     </script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script type="text/javascript">
       var sessionCreator = "";
       window.onload = function () {
-
         getFriendsPosts();
       }
       //newly added
-
-
-   /*   function online() {
-        $(document).ready(function () {
-          console.log("prepare to add online user");
-          console.log(sessionCreator);
-          $.ajax({
-            type: "POST",
-            url: "/addonlineuser",
-            data: {
-              username: sessionCreator
-            },
-            success: function (result) {
-              alert('added');
-              console.log(result);
-            },
-            error: function (result) {
-              alert('error');
-            }
-          });
-
-        });
-      }
-      */
-
-
+      /*   function online() {
+           $(document).ready(function () {
+             console.log("prepare to add online user");
+             console.log(sessionCreator);
+             $.ajax({
+               type: "POST",
+               url: "/addonlineuser",
+               data: {
+                 username: sessionCreator
+               },
+               success: function (result) {
+                 alert('added');
+                 console.log(result);
+               },
+               error: function (result) {
+                 alert('error');
+               }
+             });
+           });
+         }
+         */
       //calls ajax with /getList that retreives restaraut data from db
       function getFriendsPosts() {
         var friendposts = [];
@@ -343,14 +326,12 @@
           $.getJSON('/getPostAjax', function (elementsArr) {
             console.log("here!!!");
             console.log(elementsArr);
-
             for (let i = 0; i < elementsArr.length; i++) {
               var contentN = elementsArr[i].content;
               var userIDN = elementsArr[i].userID;
               var timepostN = elementsArr[i].timepost;
               var likesN = elementsArr[i].likes;
               var commentsN = elementsArr[i].comments;
-
               var Item =
               {
                 "content": contentN,
@@ -358,47 +339,42 @@
                 "likes": likesN,
                 "userID": userIDN,
                 "timepost": timepostN,
-
               };
               friendposts.push(Item);
             }
             console.log(friendposts);
-
             for (let i = friendposts.length - 1; i >= 0; i--) {
               createPostDiv(friendposts[i]);
             };
-
-
           });
         });
       }
-
+      function tagUsernames(availableTags) {
+        $(function () {
+          $("#tags").autocomplete({
+            source: availableTags
+          });
+        });
+      }
       function createPostDiv(friendpost) {
         test_el = document.createElement('div');
-
-
         var test = new Date(parseInt(friendpost.timepost));
-
         var time = (new Date(test)).toLocaleDateString()
           +
           " "
           +
           (new Date(test)).toLocaleTimeString();
-
         test_el.innerHTML =
           '<div class="post"><div class= "user">'
           + friendpost.userID +
           '</div>' +
           '<div class="time" >'
           + time +
-
           '</div>' +
           '<div class="content" >'
           + friendpost.content +
           '</div></div>'
-
           ;
-
         var commentsArr = (friendpost.comments).map(obj => obj.S);
         for (let i = 0; i < commentsArr.length; i++) {
           test_el.innerHTML +=
@@ -407,25 +383,20 @@
             '</div>';
         }
         var commentID = "comment-button-" + friendpost.userID + "-" + friendpost.timepost
-
+        var commentBarID = "comment-bar-" + friendpost.userID + "-" + friendpost.timepost
         var commentContent = "commentcontent-" + friendpost.userID + "-" + friendpost.timepost
         test_el.innerHTML +=
-
-          '<div class="row px-3 form-group"><textarea class="comment" placeholder="say something..." name=' + commentContent + '></textarea>'
+          '<div class=' + commentBarID + ' id = ' + commentBarID + '><textarea class="comment" placeholder="say something..." name=' + commentContent + '></textarea>'
           +
           '<button type = "comment" id = ' + commentID + '>Comment</button></div>'
-
-
         document.body.appendChild(test_el);
         var cardDiv = document.getElementById('cardID');
         cardDiv.after(test_el);
-        var commentIDWithHash = "#" + commentID;
-        commentButtons(commentIDWithHash, commentContent, friendpost.timepost, friendpost.userID);
+        commentButtons(commentID, commentContent, friendpost.timepost, friendpost.userID, commentBarID);
       }
-
-      function commentButtons(commentID, commentCon, time, postUserID) {
-
+      function commentButtons(commentIDBefore, commentCon, time, postUserID, commentBarID) {
         $(document).ready(function () {
+          commentID = "#" + commentIDBefore;
           $(commentID).click(function (e) {
             console.log("comment clicked!");
             e.preventDefault();
@@ -441,27 +412,31 @@
                 userID: postUserID,
                 timepost: time // EDIT THIS PART
               },
-
-
               success: function (result) {
 
-                alert('added');
+
                 console.log(result);
 
+                test_el = document.createElement('div');
+                test_el.innerHTML +=
+                  '<div class="comments" >'
+                  + contentWithUser +
+                  '</div>';
+                document.body.appendChild(test_el);
+                console.log(commentBarID);
+                var cardDiv = document.getElementById(commentBarID);
+                cardDiv.before(test_el);
+                var commentBarWithHash = "#" + commentBarID;
+                console.log(commentBarWithHash)
+                $(commentBarWithHash).val('');
               },
               error: function (result) {
-
                 alert('error');
               }
             });
-
           });
-
         });
-
-
       }
-
       $(document).ready(function () {
         $.getJSON('/getCreator', function (creator) {
           sessionCreator = creator;
@@ -469,22 +444,21 @@
           $("#currUser").html(sessionCreator);
           online();
         });
-
       });
 
-
-
+      $(document).ready(function () {
+        $.getJSON('/getAllUsername', function (usernameArr) { // EDIT THIS PART
+          var tagArr = usernameArr.map(obj => obj.username.S);
+          tagUsernames(tagArr);
+        });
+      });
     </script>
-
-
-
     <script>
       $(document).ready(function () {
         $("#post-button").click(function (e) {
           console.log("post clicked!");
           e.preventDefault();
           var contentUpd = document.getElementsByName("postcontent")[0].value;
-
           $.ajax({
             type: "POST",
             url: "/createpost",
@@ -493,13 +467,8 @@
               userID: sessionCreator,
               timepost: new Date().getTime()
             },
-
-
             success: function (result) {
-
-
               console.log(result);
-
               var Item =
               {
                 "content": result.content,
@@ -507,28 +476,19 @@
                 "likes": [],
                 "userID": result.userID,
                 "timepost": result.timepost,
-
               };
               // friendposts.push(Item);
               // console.log(friendposts);
               createPostDiv(Item);
-
-
             },
             error: function (result) {
               console.log(data);
               alert('error');
             }
           });
-
         });
-
       });
     </script>
-
-
-
-
     <!-- <script>
   $(document).ready(function(){
     $("button").click(function(e){
@@ -550,7 +510,6 @@
        
           alert('added');
     console.log(result);
-
       },
       error: function(result) {
         console.log(data);
@@ -559,30 +518,46 @@
   });
     
     });
-
   });
   </script> -->
 
+  <script>
+     $(document).ready(function () {
 
-
-
-
+          $("#search-btn").click(function (e) {
+            console.log("search clicked!");
+            e.preventDefault();
+            var searchContent = document.getElementsByName("search")[0].value;
+            console.log(searchContent);
+            
+            $.ajax({
+              type: "POST",
+              url: "/postOtherWallPageAjax",
+              data: {
+                content: searchContent,
+              },
+              success: function (result) {
+                console.log("search success");
+              },
+              error: function (result) {
+                alert('error');
+              }
+            });
+          });
+        });
+  </script>
     <% } else { %>
       <script>
         alert("login required")
       </script>
       <meta http-equiv="refresh" content="1; url='/'" />
       <% } %>
-
-
 </head>
 
 <body>
-
   <div class="topnav">
     <img class="profile-pic-nav"
       src="data:image/jpeg;base64,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">
-
     <a class="active" href="/homepage">Home</a>
     <a href="/wall">Wall</a>
     <a href="/chat">Chat</a>
@@ -590,52 +565,36 @@
     <a href="/visualizer">Visualizer</a>
     <a href="/edit">Edit</a>
     <a href="/logout">Logout</a>
+    <!-- <div class="ui-widget">
+      <label for="tags">Tags: </label>
+      <input id="tags">
+    </div> -->
     <div class="search-container">
-      <form action="/getOtherWallPage">
-        <input type="text" placeholder="Search.." name="search">
-        <button type="search" >
+      <div class = "ui-widget">
+      
+        <input type="text" placeholder="Search.." name="search" id = "tags">
+        <button  id = "search-btn">
           <i class="fa fa-search"></i>
         </button>
-      </form>
+
+    
+    </div>
     </div>
   </div>
-
-
-
-
-
-
   <div class="card" id="cardID">
 
     <div class="userInfo">
       <img class="profile-pic"
         src="data:image/jpeg;base64,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">
-
       <h3>
         <div id="currUser"></div>
       </h3>
     </div>
-
-
     <div class="row px-3 form-group">
       <textarea class="posttext" placeholder="what's on your mind today?" name="postcontent"></textarea>
     </div>
-    <button type="post" id="post-button" >Post</button>
-
-
-
-
-
+    <button type="post" id="post-button">Post</button>
   </div>
-
-
-
-
-
-
-
-
-
 </body>
 
 </html>

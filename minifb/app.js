@@ -32,7 +32,9 @@
             console.log("null room");
          }
          else {
-            io.to(obj.room).emit("chat message", obj);
+            console.log(obj.room);
+            
+            io.sockets.in(obj.room).emit("chat message", obj);
             console.log("emitted");
          }
    
@@ -41,11 +43,13 @@
    
       socket.on("join room", function (obj) {
          console.log("join");
+         console.log(obj.room);
          socket.join(obj.room);
       });
    
       socket.on("leave room", function (obj) {
          console.log("leave");
+         console.log(obj.room)
          socket.leave(obj.room);
       });
    });
@@ -60,49 +64,54 @@
    
    
    
-   app.get('/', routes.get_main);
-   app.get('/restaurants', routes.get_restaurants);
-   app.get('/signup', routes.get_signup);
-   app.get('/logout', routes.get_logout);
-   app.get('/chat', routes.get_chat);
-   app.get('/wall', routes.get_wall);
-   app.get('/edit', routes.get_edit);
-   app.get('/getList', routes.get_restaurantList);
-   app.get('/getCreator', routes.get_creator);
-   
-   //NEW
-   app.get('/homepage', routes.get_homepage);
-   app.get('/getPostAjax', routes.get_homepagePostListAjax);
-   app.get('/getWallAjax', routes.get_wallListAjax)
-   app.get('/getOtherWallPage', routes.get_otherWallPage);
-   app.get('/getEditUserInfoAjax', routes.get_editUserInfoAjax);
-   
-   app.post('/createpost', routes.post_newPostAjax);
-   app.post('/createcomment', routes.post_newCommentAjax);
-   app.post('/createwall', routes.post_newWallAjax);
-   app.post('/postUpdateUser', routes.post_updateUser);
-   
-   app.post('/checklogin', routes.verifyUser);
-   
-   app.post('/createaccount', routes.post_newAccount);
-   app.post('/search', routes.get_otherWallPage);
-   app.post('/addList', routes.post_newRestaurantAjax);
-   app.post('/deleteList', routes.post_deleteRestaurantAjax);
-   
-   //chat
-   app.get('/getonlineusers', chats.get_online_users);
-   app.get('/getchat', chats.get_chat);
-   app.post('/addchatroom', chats.add_chatroom);
-   app.post('/addonlineuser', chats.add_online_user);
-   app.post('/addmessage', chats.add_message);
-   app.get('/getchatrooms', chats.get_chatrooms);
-   app.post('/logoutchat', chats.log_out);
-   
-   /* Run the server */
-   
-   console.log('Author: Jiwoong Matt Park (mtp0326)');
-   // app.listen(8080);
-   http.listen(8080, () => {
-      console.log('listening on 8080');
-   });
-   console.log('HTTP server started on port 8080');
+      app.get('/', routes.get_main);
+      app.get('/restaurants', routes.get_restaurants);
+      app.get('/signup', routes.get_signup);
+      app.get('/logout', routes.get_logout);
+      app.get('/chat', routes.get_chat);
+      app.get('/wall', routes.get_wall);
+      app.get('/edit', routes.get_edit);
+      app.get('/getList', routes.get_restaurantList);
+      app.get('/getCreator', routes.get_creator);
+      
+      //NEW
+      app.get('/homepage', routes.get_homepage);
+      app.get('/getPostAjax', routes.get_homepagePostListAjax);
+      app.get('/getWallAjax', routes.get_wallListAjax);
+      app.get('/getEditUserInfoAjax', routes.get_editUserInfoAjax);
+      app.get('/getAllUsername', routes.get_allUsername);
+      
+      app.post('/createpost', routes.post_newPostAjax);
+      app.post('/createcomment', routes.post_newCommentAjax);
+      app.post('/createwall', routes.post_newWallAjax);
+      app.post('/postUpdateUser', routes.post_updateUser);
+      
+      app.post('/checklogin', routes.verifyUser);
+      
+      app.post('/createaccount', routes.post_newAccount);
+      app.post('/addList', routes.post_newRestaurantAjax);
+      app.post('/deleteList', routes.post_deleteRestaurantAjax);
+      app.post('/editaccount', routes.post_updateUser);
+      app.post('/postOtherWallPageAjax', routes.post_otherWallPageAjax);
+      app.get('/getDetermineWallOwner', routes.get_determineWallOwner),
+      
+      //chat
+      app.get('/getonlineusers', chats.get_online_users);
+      app.get('/getchat', chats.get_chat);
+      app.post('/addchatroom', chats.add_chatroom);
+      app.post('/addonlineuser', chats.add_online_user);
+      app.post('/addmessage', chats.add_message);
+      app.get('/getchatrooms', chats.get_chatrooms);
+      app.post('/logoutchat', chats.log_out);
+      
+      //visualizer
+      app.get('/visualizer', routes.get_friend_visualizer);
+      
+      /* Run the server */
+      
+      console.log('Author: Jiwoong Matt Park (mtp0326)');
+      // app.listen(8080);
+      http.listen(8080, () => {
+         console.log('listening on 8080');
+      });
+      console.log('HTTP server started on port 8080');

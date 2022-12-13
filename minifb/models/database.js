@@ -63,7 +63,6 @@ var myDB_userInfo = function (searchTerm, language, callback) {
   };
   console.log("running");
   db.getItem(params, function (err, data) {
-    console.log(data.Item)
     if (err || data.Item.length == 0) {
       console.log(err);
       callback(err, null);
@@ -105,7 +104,7 @@ var myDB_createAccount =
         "birthday": { S: newBirthday },
         "chatID": { L: [] },
         "email": { S: newEmail },
-        "friends": { L: [] },
+        "friends": { SS: [""] },
         "fullname": { S: newFullname },
         "interest": { L: interestArr },
         "password": { S: newPassword },
@@ -133,7 +132,6 @@ var myDB_getFriends = (function (username, callback) {
         AttributeValueList: [{ S: username }]
       }
     },
-    TableName: "users",
     AttributesToGet: ['friends']
   };
 
@@ -141,7 +139,8 @@ var myDB_getFriends = (function (username, callback) {
     if (err) {
       console.log(err);
     } else {
-      callback(err, data.Items[0].friends.L);
+      console.log(data.Items[0]);
+      callback(err, data.Items[0].friends.SS);
     }
   });
 });
@@ -394,14 +393,12 @@ var myDB_createWall = function (receiver, sender, content, timepost, callback) {
   });
 }
 
-//GERMAN
+//update the userinfo
 var myDB_updateUser = function (username, variable, columnName, callback) {
+  console.log(variable);
   var params = {
-    KeyConditions: {
-      username: {
-        ComparisonOperator: 'EQ',
-        AttributeValueList: [{ S: username }]
-      }
+    Key:{
+      "username": {S: username}
     },
     UpdateExpression: 'SET ' + columnName + ' = :c',
     ExpressionAttributeValues: {
@@ -411,13 +408,83 @@ var myDB_updateUser = function (username, variable, columnName, callback) {
   };
 
   db.updateItem(params, function (err, data) {
-    if (err || data.Items.length == 0) {
+    console.log("updateUser")
+    if (err) {
       console.log("error");
       console.log(err);
     } else {
       console.log("updated");
-      console.log(data);
+      callback("updated");
     }
+  });
+}
+
+var myDB_updateInterest = function (username, interest, callback) {
+  console.log(interest);
+  var interestArr = [];
+  intArr = interest.split(",");
+  for(let i = 0; i < intArr.length; i++) {
+    var stringifyInterest = {
+      S: intArr[i]
+    }
+    interestArr.push(stringifyInterest);
+  }
+
+  var paramsUpdate = {
+    Key:{
+      "username": {S: username}
+    },
+    UpdateExpression: 'SET interest = :c',
+    ExpressionAttributeValues: {
+      ':c': { L: interestArr }
+    },
+    TableName: "users",
+  };
+
+
+  db.updateItem(paramsUpdate, function (err, data) {
+    console.log("updateInterest")
+    console.log(data);
+    if (err) {
+      console.log("error");
+      console.log(err);
+    } else {
+      console.log("updatedInterest");
+      
+      var paramsGet = {
+        KeyConditions: {
+          username: {
+            ComparisonOperator: 'EQ',
+            AttributeValueList: [{ S: username }]
+          }
+        },
+        TableName: 'users',
+        AttributesToGet: ['interest']
+      };
+      
+      db.query(paramsGet, function (err,data) {
+        console.log(data.Items[0].interest.L);
+        callback(err, data.Items[0].interest.L);
+      });
+    }
+  });
+}
+
+var myDB_getInterest = function (username, callback) {
+  var paramsGet = {
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [{ S: username }]
+      }
+    },
+    TableName: 'users',
+    AttributesToGet: ['interest']
+  };
+  
+  db.query(paramsGet, function (err,data) {
+    console.log(data.Items[0].interest.L);
+    callback(err, data.Items[0].interest.L);
   });
 }
 
@@ -539,11 +606,13 @@ var database = {
   getAllWallsAsSender: myDB_allWallsAsSender,
   createWall: myDB_createWall,
   getUserInfo: myDB_userInfo,
+  getInterest: myDB_getInterest,
 
   updateEmail: myDB_updateEmail,
   updatePw: myDB_updatepw,
   updateInterest: myDB_updateInterest,
   updateUser: myDB_updateUser,
+  updateInterest : myDB_updateInterest,
 
   createRestaurant: myDB_createRestaurant,
   getAllRestaurants: myDB_allRestaurants,
