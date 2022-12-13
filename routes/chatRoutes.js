@@ -25,7 +25,10 @@ var getOnlineUsers = function (req, res) {
 			if (err1) {
 				console.log(err1);
 			} else {
-				friendsList = data1.map(obj => obj.S);
+				var friendsList = [];
+				data1.forEach(function (r) {
+					friendsList.push(r);
+				});
 				//console.log("friend: " + friendsList);
 				chatdb.getOnlineUsers(function (err2, data2) {
 					if (err2) {
