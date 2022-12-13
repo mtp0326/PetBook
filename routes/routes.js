@@ -466,6 +466,13 @@ var recUpdateUser = function (sessionUser, recUpdateInfoList, recUpdateInfoNameL
   }
 }
 
+var getVisualizer = function (req, res) {
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('friendvisualizer.ejs', { "check": isVerified })
+}
+
 
 //***************************************************** */
 
@@ -558,7 +565,9 @@ var routes = {
 
   post_newAccount: postNewAccount,
   post_newRestaurantAjax: postNewRestaurantAjax,
-  post_deleteRestaurantAjax: postDeleteRestaurantAjax
+  post_deleteRestaurantAjax: postDeleteRestaurantAjax,
+  
+  get_friend_visualizer: getVisualizer,
 
   //post_newRestaurant : postNewRestaurant
 };
