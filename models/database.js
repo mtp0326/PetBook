@@ -397,8 +397,8 @@ var myDB_createWall = function (receiver, sender, content, timepost, callback) {
 var myDB_updateUser = function (username, variable, columnName, callback) {
   console.log(variable);
   var params = {
-    Key:{
-      "username": {S: username}
+    Key: {
+      "username": { S: username }
     },
     UpdateExpression: 'SET ' + columnName + ' = :c',
     ExpressionAttributeValues: {
@@ -423,7 +423,7 @@ var myDB_updateInterest = function (username, interest, callback) {
   console.log(interest);
   var interestArr = [];
   intArr = interest.split(",");
-  for(let i = 0; i < intArr.length; i++) {
+  for (let i = 0; i < intArr.length; i++) {
     var stringifyInterest = {
       S: intArr[i]
     }
@@ -431,8 +431,8 @@ var myDB_updateInterest = function (username, interest, callback) {
   }
 
   var paramsUpdate = {
-    Key:{
-      "username": {S: username}
+    Key: {
+      "username": { S: username }
     },
     UpdateExpression: 'SET interest = :c',
     ExpressionAttributeValues: {
@@ -450,7 +450,7 @@ var myDB_updateInterest = function (username, interest, callback) {
       console.log(err);
     } else {
       console.log("updatedInterest");
-      
+
       var paramsGet = {
         KeyConditions: {
           username: {
@@ -461,8 +461,8 @@ var myDB_updateInterest = function (username, interest, callback) {
         TableName: 'users',
         AttributesToGet: ['interest']
       };
-      
-      db.query(paramsGet, function (err,data) {
+
+      db.query(paramsGet, function (err, data) {
         console.log(data.Items[0].interest.L);
         callback(err, data.Items[0].interest.L);
       });
@@ -481,8 +481,8 @@ var myDB_getInterest = function (username, callback) {
     TableName: 'users',
     AttributesToGet: ['interest']
   };
-  
-  db.query(paramsGet, function (err,data) {
+
+  db.query(paramsGet, function (err, data) {
     console.log(data.Items[0].interest.L);
     callback(err, data.Items[0].interest.L);
   });
@@ -612,7 +612,7 @@ var database = {
   updatePw: myDB_updatepw,
   updateInterest: myDB_updateInterest,
   updateUser: myDB_updateUser,
-  updateInterest : myDB_updateInterest,
+  updateInterest: myDB_updateInterest,
 
   createRestaurant: myDB_createRestaurant,
   getAllRestaurants: myDB_allRestaurants,

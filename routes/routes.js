@@ -1,4 +1,6 @@
 var db = require('../models/database.js');
+var sjcl = require('sjcl');
+// var stemmer = require('stemmer');
 
 var isVerified = false;
 // TODO The code for your own routes should go here
@@ -32,8 +34,9 @@ var postResultsUser = function (req, res) {
   req.session.currWall = null;
   var usernameCheck = req.body.username;
   var passwordCheck = req.body.password;
+  var hashPassword = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(passwordCheck));
   db.passwordLookup(usernameCheck, function (err, data) {
-    if (data == passwordCheck && !err) {
+    if (data == hashPassword && !err) {
       req.session.username = req.body.username;
       req.session.password = req.body.password;
       isVerified = true;
@@ -100,8 +103,9 @@ var postNewAccount = function (req, res) {
   var usernameNewCheck = req.body.username;
   db.usernameLookup(usernameNewCheck, "username", function (err, data) {
     if (data == null || err) {
+      var hashPassword = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(req.body.password));
       req.session.username = req.body.username;
-      req.session.password = req.body.password;
+      req.session.password = hashPassword;
       req.session.fullname = req.body.firstname + " " + req.body.lastname;
       req.session.affiliation = req.body.affiliation;
       req.session.email = req.body.email;
@@ -402,10 +406,11 @@ var getEditUserInfoAjax = function (req, res) {
 
 var postUpdateUser = function (req, res) {
   var updateInfoList = [];
+  var hashPassword = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(req.body.password));
   updateInfoList.push(req.body.affiliation);
   updateInfoList.push(req.body.email);
   updateInfoList.push(req.body.firstname + " " + req.body.lastname);
-  updateInfoList.push(req.body.password);
+  updateInfoList.push(hashPassword);
   updateInfoList.push(req.body.pfpURL);
 
   var updateInfoNameList = [];

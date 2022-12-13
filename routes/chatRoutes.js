@@ -25,7 +25,6 @@ var getOnlineUsers = function (req, res) {
 			if (err1) {
 				console.log(err1);
 			} else {
-				var friendsList = [];
 				data1.forEach(function (r) {
 					friendsList.push(r);
 				});
