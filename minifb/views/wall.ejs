@@ -293,8 +293,49 @@
       <script type="text/javascript">
         var sessionCreator = "";
         window.onload = function () {
-          getFriendsPosts();
+          const urlParams = new URLSearchParams(window.location.search);
+          const currWallUser = urlParams.get('search');
+          console.log("search results: ");
+          console.log(currWallUser);
+          $(document).ready(function () {
+          
+
+        });
+         
           // getUserInfo();
+        }
+        // function redirectHome(){
+          
+        //   console.log("redirect homepage");
+        //   $(document).ready(function () {
+        //     $.ajax({
+        //       type: "POST",
+        //       url: "/homepage",
+        //       success: function (result) {
+        //       },
+        //       error: function (result) {
+        //         alert('error');
+        //       }
+        //     });
+        // });
+        // }
+
+        function getwallownerinfo(){
+          $(document).ready(function () {
+           
+          $.getJSON('/getDetermineWallOwner', function (data) {
+            console.log(data);
+            console.log("get determine wall owner")
+            if(data === null) {
+              alert("user does not exist");
+              window.location.replace('/homepage');
+            } else {
+              console.log("success");
+              console.log(data);
+              getFriendsPosts();
+            }
+          });
+        });
         }
         //calls ajax with /getList that retreives restaraut data from db
         function getFriendsPosts() {

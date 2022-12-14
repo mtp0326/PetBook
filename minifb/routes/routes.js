@@ -79,27 +79,32 @@ var getEdit = function (req, res) {
 }
 
 var postOtherWallPageAjax = function (req, res) {
-  // if (!req.session.username) {
-  //   return res.redirect('/')
-  // }
-  // req.session.currWall = req.body.content;
-  // console.log(req.session.currWall);
-  // res.render('wall.ejs', { "check": true, "isOther": true, "username": req.session.currWall });
-  console.log("render successful");
-  
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  req.session.currWall = req.body.currWall;
+  console.log(req.session.currWall);
+  res.send("success");
+  console.log("posting currWall successful");
 }
 
 var getDetermineWallOwner = function (req, res) {
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
-    if (data === req.session.currWall) {
+    console.log("WALL OTHER");
+    console.log(data);
+   
+    if (data === null) {
+      req.session.currWall = null;
+      console.log("bruh")
+      res.send("null");
+    } else {
       db.getUserInfo(req.session.currWall, "username", function (err, data) {
-        if (err) {
-          res.send(null);
-        } else {
-          res.send(data.username.S);
-        }
+        console.log("WALL DATA");
+        console.log(data);
+        res.send(data);
       })
     }
+
   });
 }
 

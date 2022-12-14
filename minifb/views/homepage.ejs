@@ -351,7 +351,7 @@
       }
       function tagUsernames(availableTags) {
         $(function () {
-          $("#tags").autocomplete({
+          $("#search").autocomplete({
             source: availableTags
           });
         });
@@ -521,7 +521,7 @@
   });
   </script> -->
 
-  <script>
+  <!-- <script>
      $(document).ready(function () {
 
           $("#search-btn").click(function (e) {
@@ -545,7 +545,7 @@
             });
           });
         });
-  </script>
+  </script> -->
     <% } else { %>
       <script>
         alert("login required")
@@ -565,19 +565,14 @@
     <a href="/visualizer">Visualizer</a>
     <a href="/edit">Edit</a>
     <a href="/logout">Logout</a>
-    <!-- <div class="ui-widget">
-      <label for="tags">Tags: </label>
-      <input id="tags">
-    </div> -->
+   
     <div class="search-container">
       <div class = "ui-widget">
-      
-        <input type="text" placeholder="Search.." name="search" id = "tags">
-        <button  id = "search-btn">
+      <form action = "/wall" method = "get">
+        <input type="text" placeholder="Search.." name="search" id = "search">
+        <button type = "submit" id = "search-btn">
           <i class="fa fa-search"></i>
-        </button>
-
-    
+        </button>   
     </div>
     </div>
   </div>
