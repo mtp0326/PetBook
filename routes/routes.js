@@ -532,6 +532,10 @@ var getIsWallAFriend = function (req, res) {
     }
     console.log(data);
     var isFriend;
+    if(req.session.username === req.session.currWall) {
+      isFriend = {BOOL: true};
+      res.send(isFriend);
+    }
     data.forEach(function (r) {
       if(r === req.session.currWall) {
         isFriend = {BOOL: true};
