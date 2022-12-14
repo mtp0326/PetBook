@@ -104,6 +104,11 @@
       app.post('/addmessage', chats.add_message);
       app.get('/getchatrooms', chats.get_chatrooms);
       app.post('/logoutchat', chats.log_out);
+
+      app.post('/inviteuser', chats.invite_user);
+      app.post('/rejectinvite', chats.reject_invite);
+      app.post('/acceptinvite', chats.accept_invite);
+
       
       //visualizer
       app.get('/visualizer', routes.get_friend_visualizer);

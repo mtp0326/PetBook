@@ -216,6 +216,58 @@ var deleteUserFromChatroom = function (req, res) {
 	}
 }
 
+// Invite user to a chat
+var inviteUser = function(req, res) {
+	var groupChatID = req.body.chatID;
+	var invitedUser = req.body.invitedUser;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		chatdb.addInvite(invitedUser, groupChatID, function(err, data) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}
+}
+
+// User rejects chat invite
+var rejectInvite = function(req, res) {
+	var groupChatID = req.body.chatID;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		chatdb.deleteInvite(req.session.username, groupChatID, function(err, data) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}
+}
+
+// User accepts chat invite
+var acceptInvite = function(req, res) {
+	var groupChatID = req.body.chatID;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		chatdb.deleteInvite(req.session.username, groupChatID, function(err1, data) {
+			if (err1) {console.log(err1);
+			} else {
+				chatdb.addChatIDToUser(req.session.username, groupChatID, function (err2, data) {
+					if (err2) {console.log(err2);
+					} else {
+						chatdb.addUserToChat(req.session.username, groupChatID, function (err3, data) {
+							if (err3) { console.log(err3) }
+						});
+					}
+				});
+			}
+		});
+	}
+}
+
+
 // Deletes session, userID from online db
 var logout = function (req, res) {
 	if (!req.session.username) {
@@ -232,6 +284,7 @@ var logout = function (req, res) {
 
 var routes = {
 	get_chat: getChat,
+	
 	get_online_users: getOnlineUsers,
 	get_chatrooms: getChatRooms,
 	add_online_user: addOnlineUser,
@@ -240,8 +293,11 @@ var routes = {
 	add_message: addMessage,
 	add_user_to_chat: addUserToChatroom,
 	delete_user_from_chat: deleteUserFromChatroom,
+	reject_invite: rejectInvite,
+	accept_invite: acceptInvite,
+	invite_user: inviteUser,
 
-	log_out: logout,
+	log_out: logout
 };
 
 module.exports = routes;

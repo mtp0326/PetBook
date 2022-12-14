@@ -210,7 +210,9 @@ var myDB_updatepw = function (username, newPw, callback) {
 
 // Update user interest. Minimum 2???
 //client side has the list of interests => newInterests is final interests
-var myDB_updateInterest = function (username, newInterests, callback) {
+var myDB_updateInterest = function (username, newInterest1, newInterest2, newInterest3, callback) {
+  var newInterests = [];
+  newInterests = [newInterest1, newInterest2, newInterest3]
   var params = {
     TableName: "users",
     Item: {
@@ -459,13 +461,13 @@ var myDB_updateUser = function (username, variable, columnName, callback) {
   });
 }
 
-var myDB_updateInterest = function (username, interest, callback) {
-  console.log(interest);
+var myDB_updateInterest = function (username,  newInterest1, newInterest2, newInterest3, callback) {
+
   var interestArr = [];
-  intArr = interest.split(",");
-  for (let i = 0; i < intArr.length; i++) {
+  interestArr = [ newInterest1, newInterest2, newInterest3]
+  for (let i = 0; i < interestArr.length; i++) {
     var stringifyInterest = {
-      S: intArr[i]
+      S: interestArr[i]
     }
     interestArr.push(stringifyInterest);
   }

@@ -128,8 +128,11 @@ var postNewAccount = function (req, res) {
       req.session.affiliation = req.body.affiliation;
       req.session.email = req.body.email;
       req.session.birthday = req.body.birthday;
-
-      var interestList = (req.body.interest.toLowerCase()).split(", ");
+      req.session.interest1 = req.body.interest1;
+      req.session.interest2 = req.body.interest2;
+      req.session.interest3 = req.body.interest3;
+      
+      var interestList = [req.session.interest1,req.session.interest2,req.session.interest3];
       req.session.interest = interestList;
       req.session.pfpURL = req.body.pfpURL;
       db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
@@ -477,7 +480,7 @@ var postUpdateUser = function (req, res) {
       if (err) {
         console.log(err);
       }
-      db.updateInterest(req.session.username, req.body.interest, function (err, data) {
+      db.updateInterest(req.session.username, req.body.interest1, req.body.interest2, req.body.interest3, function (err, data) {
         if (err) {
           console.log(err);
         }

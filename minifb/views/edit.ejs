@@ -191,6 +191,18 @@ width: 420px;
 display: inline-block;
 
 }
+select {
+ 
+ padding:10px;
+ margin:10px 0; 
+ border: 3px;;
+ background: white;
+ border-color: gray;
+  color: rgb(0, 0, 0);
+ border-radius:5px;
+ text-align: left;
+width: 100%;
+}
 
 textarea:focus {
 -moz-box-shadow: none !important;
@@ -275,6 +287,12 @@ margin-top: 8px;
 font-size: 17px;
 border: none;
 }
+.interest{
+  text-align: left;
+  width: 100%;
+  padding: 10px;
+  
+}
 
 .topnav .search-container button {
 float: right;
@@ -355,7 +373,9 @@ border-radius: 5px;
 			$.getJSON('/getEditUserInfoAjax', function(data) {
                 console.log(data);
                 var interestArr = [];
-                var interestUpd = "";
+                var interest1 = "";
+                var interest2 = "";
+                var interest3 = "";
                 var fullname = data.fullname.S;
                 var fullnameArr = fullname.split(" ");
                 var firstnameUpd = fullnameArr[0];
@@ -365,15 +385,19 @@ border-radius: 5px;
                 var affiliationUpd = data.affiliation.S;
                 interestArr = data.interest.L;
                 var pfpURLUpd = data.pfpURL.S;
+                var interest1 = interestArr[0].S
+                var interest2 = interestArr[1].S
+                var interest3 = interestArr[2].S
+                console.log(interest1);
 
-                if(interestArr.length >=1){
-                  for(let i = 0; i < interestArr.length-1; i++){
-                  interestUpd +=interestArr[i].S + ","
-                }
-                interestUpd +=interestArr[interestArr.length-1].S;
-                }
+                // if(interestArr.length >=1){
+                //   for(let i = 0; i < interestArr.length-1; i++){
+                //   interestUpd +=interestArr[i].S + ","
+                // }
+                // interestUpd +=interestArr[interestArr.length-1].S;
+                // }
 
-                createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd, interestUpd);
+                createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd, interest1, interest2, interest3);
                 
                 
                
@@ -382,7 +406,7 @@ border-radius: 5px;
 	    });
     }
 
-    function createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd, interestUpd){
+    function createDiv(firstnameUpd, lastnameUpd, passwordUpd, emailUpd, affiliationUpd, pfpURLUpd,  interest1, interest2, interest3){
       
       test_el = document.createElement('div');
     
@@ -408,18 +432,85 @@ test_el.innerHTML =
 +    '<input type="text" name= "affiliation" class="form-control" id="affiliation" placeholder = "Affiliation" required=""'
 +'value='+affiliationUpd+'></div>'
 + '</div>'
-+ '<div class="interest">'
-+    '<input type="text" name= "interest" class="form-control" id="interest" placeholder = "Interest" required=""'
-+'value='+interestUpd+'></div>'
-+ '</div>'
+
 
 + '<div class="pfpURL">'
 +    '<input type="text" name= "pfpURL" class="form-control" id="pfpURL" placeholder = "Profile Picture URL" required=""'
 +'value='+pfpURLUpd+'></div>'
 + '</div>'
 
-+  '<input type="submit" value="Submit Changes">'
+
++'<div class="interest">'
+  
++ ' <label for="interest1">interest 1:</label>'
++  '<select name="interest1" id="interest1">'
+  + '<option value="value" selected disabled hidden>'+ interest1 + '</option>'
+ +  ' <option value="politics">politics</option>'
+  +  '<option value="wellness">wellness</option>'
+  +'<option value="entertainment">entertainment</option>'
+  + '<option value="travel">travel</option>'
+  + '<option value="style & beauty">style & beauty</option>'
+   + '<option value="parenting">parenting</option>'
+   +'<option value="healthy living">healthy living</option>'
+   +'<option value="queer voices">queer voices</option>'
+   +'<option value="food & drink">food & drink</option>'
+    +'<option value="business">business</option>'
+    +'<option value="comedy">comedy</option>'
+    +   '<option value="sports">sports</option>'
+    +'<option value="black voices">black voices</option>'
+    +'<option value="home & living">home & living</option>'
+    +'<option value="parents">parents</option>'
+    +'</select>'
+    +'</div>'
+
+    +'<div class="interest">'
+  
+  + ' <label for="interest2">interest 2:</label>'
+  +  '<select name="interest2" id="interest2">'
+    + '<option value="value" selected disabled hidden>'+ interest2 + '</option>'
+   +  ' <option value="politics">politics</option>'
+    +  '<option value="wellness">wellness</option>'
+    +'<option value="entertainment">entertainment</option>'
+    + '<option value="travel">travel</option>'
+    + '<option value="style & beauty">style & beauty</option>'
+     + '<option value="parenting">parenting</option>'
+     +'<option value="healthy living">healthy living</option>'
+     +'<option value="queer voices">queer voices</option>'
+     +'<option value="food & drink">food & drink</option>'
+      +'<option value="business">business</option>'
+      +'<option value="comedy">comedy</option>'
+      +   '<option value="sports">sports</option>'
+      +'<option value="black voices">black voices</option>'
+      +'<option value="home & living">home & living</option>'
+      +'<option value="parents">parents</option>'
+      +'</select>'
+      +'</div>'
+
+      +'<div class="interest">'
+  
+  + ' <label for="interest3">interest 3:</label>'
+  +  '<select name="interest3" id="interest3">'
+    + '<option value="value" selected disabled hidden>'+ interest3 + '</option>'
+   +  ' <option value="politics">politics</option>'
+    +  '<option value="wellness">wellness</option>'
+    +'<option value="entertainment">entertainment</option>'
+    + '<option value="travel">travel</option>'
+    + '<option value="style & beauty">style & beauty</option>'
+     + '<option value="parenting">parenting</option>'
+     +'<option value="healthy living">healthy living</option>'
+     +'<option value="queer voices">queer voices</option>'
+     +'<option value="food & drink">food & drink</option>'
+      +'<option value="business">business</option>'
+      +'<option value="comedy">comedy</option>'
+      +   '<option value="sports">sports</option>'
+      +'<option value="black voices">black voices</option>'
+      +'<option value="home & living">home & living</option>'
+      +'<option value="parents">parents</option>'
+      +'</select>'
+      +'</div>'
+      +  '<input type="submit" value="Submit Changes">'
 + '</form>';
+
 document.body.appendChild(test_el);
 var cardDiv = document.getElementById('title');
 cardDiv.after(test_el);
@@ -459,6 +550,8 @@ cardDiv.after(test_el);
     <div id = title>
     <h1>Edit Personal Information</h1>
     </div>
+
+   
 
   </span>
 </div>

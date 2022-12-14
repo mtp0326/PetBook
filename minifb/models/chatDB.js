@@ -251,6 +251,46 @@ var myDB_deleteOnline = function(deleteUserID, callback) {
 	});
 }
 
+// Adds a chatID to user's invites list
+var myDB_addInvite = function(username, chatID, callback) {
+	console.log(username + " invited to " + chatID);
+
+	var newChatIDSet = {S: chatID};
+	var params = {
+		TableName: "users",
+		Key: {"username" : {S: username}},
+		UpdateExpression: "ADD invites :newChatID",
+	    ExpressionAttributeValues : {
+	      ":newChatID": newChatIDSet
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+		callback(err, data);
+	});
+}
+
+// Deletes a chatID from user's invite list
+var myDB_deleteInvite = function(username, chatID, callback) {
+  	var deleteChatIDSet = {S: chatID};
+  	var params = {
+    	TableName: "users",
+        Key: {"username" : {S: username}},
+	    UpdateExpression: "DELETE invites :deleteChatID",
+	    ExpressionAttributeValues : {
+	      ":deleteChatID": deleteChatIDSet
+	    },
+    };
+    db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+	    callback(err, data);
+    });
+}
+
 var chatDB = { 
   getUserChatroomIDs : myDB_getUserChatrooms,
   
@@ -270,6 +310,9 @@ var chatDB = {
   
   addUserOnline : myDB_addOnline,
   deleteUserOnline : myDB_deleteOnline,
+
+  addInvite: myDB_addInvite,
+  deletInvite: myDB_deleteInvite
 };
 
 module.exports = chatDB;
