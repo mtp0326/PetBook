@@ -43,7 +43,7 @@ var myDB_addchatIDToUser = function(username, chatID, callback) {
 
 // Deletes a chatID from user db
 var myDB_deletechatIDFromUser = function(username, chatID, callback) {
-  var deleteChatID = {S: chatID};
+  var deleteChatID = {SS: [chatID]};
   var params = {
       TableName: "users",
       Key: {"username" : {S: username}},
@@ -170,7 +170,7 @@ var myDB_addMessage = function(chatID, newMessage, callback) {
 
 // When a user accepts a group chat invite, add the user to the groupchat and create the chatroom on the user's chat list
 var myDB_addUserToChat = function(newUserID, groupChatID, callback) {
-	var newUserIDSet = {S: newUserID};
+	var newUserIDSet = {SS: [newUserID]};
 	var params = {
 		TableName: "chatrooms",
 		Key: {"chatID" : {S: groupChatID}},
@@ -189,7 +189,7 @@ var myDB_addUserToChat = function(newUserID, groupChatID, callback) {
 
 // When a user accepts a group chat invite, add the user to the groupchat and create the chatroom on the user's chat list
 var myDB_deleteUserFromChat = function(deleteUserID, groupChatID, callback) {
-	var deleteUserIDSet = {S: deleteUserID};
+	var deleteUserIDSet = {SS: [deleteUserID]};
 	var params = {
 		TableName: "chatrooms",
 		Key: {"chatID" : {S: groupChatID}},
@@ -206,20 +206,22 @@ var myDB_deleteUserFromChat = function(deleteUserID, groupChatID, callback) {
 	});
 }
 
-// Adds a logged-in user to online DB
-var myDB_addOnline = function(newUserID, callback) {
-	var newUserIDSet = {S: newUserID};
+
+
+
+
+// Deletes a logged-out user from online DB
+var myDB_deleteOnline = function(deleteUserID, callback) {
+	console.log("delete");
+	var deleteUserIDSet =  {SS: [deleteUserID]};
 	var params = {
 		TableName: "online",
 		Key: {
 	      "users" : {S: "online"},
 		},
-	    UpdateExpression: "ADD #c :new",
-	    ExpressionAttributeNames: {
-	      "#c": "userIDs"
-	    },
+	    UpdateExpression: "DELETE userIDs :d",
 	    ExpressionAttributeValues : {
-	      ":new": newUserIDSet
+	      ":d": deleteUserIDSet
 	    },
 	}
 	db.updateItem(params, function(err, data) {
@@ -230,17 +232,15 @@ var myDB_addOnline = function(newUserID, callback) {
 	});
 }
 
-// Deletes a logged-out user from online DB
-var myDB_deleteOnline = function(deleteUserID, callback) {
-	var deleteUserIDSet = {S: deleteUserID};
+// Adds a logged-in user to online DB
+var myDB_addOnline = function(newUserID, callback) {
+	var newUserIDSet = {SS: [newUserID]};
 	var params = {
 		TableName: "online",
-		Key: {
-	      "users" : {S: "online"},
-		},
-	    UpdateExpression: "DELETE userIDs :new",
+		Key: {"users" : {S: "online"}},
+	    UpdateExpression: "ADD userIDs :new",
 	    ExpressionAttributeValues : {
-	      ":d": deleteUserIDSet
+	      ":new": newUserIDSet
 	    },
 	}
 	db.updateItem(params, function(err, data) {
@@ -255,7 +255,7 @@ var myDB_deleteOnline = function(deleteUserID, callback) {
 var myDB_addInvite = function(username, chatID, callback) {
 	console.log(username + " invited to " + chatID);
 
-	var newChatIDSet = {S: chatID};
+	var newChatIDSet = {SS: [chatID]};
 	var params = {
 		TableName: "users",
 		Key: {"username" : {S: username}},
@@ -268,13 +268,14 @@ var myDB_addInvite = function(username, chatID, callback) {
 	    if (err) {
 	      console.log("Error", err);
 	    }
+		console.log("added");
 		callback(err, data);
 	});
 }
 
 // Deletes a chatID from user's invite list
 var myDB_deleteInvite = function(username, chatID, callback) {
-  	var deleteChatIDSet = {S: chatID};
+  	var deleteChatIDSet ={SS: [chatID]};
   	var params = {
     	TableName: "users",
         Key: {"username" : {S: username}},

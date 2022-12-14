@@ -60,16 +60,7 @@ var getOnlineUsers = function (req, res) {
 	}
 };
 
-var addOnlineUser = function (req, res) {
-	// Checks whether all fields are filled; if not, show warning message	
-	if (!req.session.username) {
-		res.render('main.ejs', { message: "Not logged in" });
-	} else {
-		chatdb.addUserOnline(req.session.username, function (err, data) {
-			if (err) { console.log(err); }
-		});
-	}
-}
+
 
 // Send user's chatroom info to chat page
 var getChatRooms = function (req, res) {
@@ -216,8 +207,20 @@ var deleteUserFromChatroom = function (req, res) {
 	}
 }
 
+var addOnlineUser = function (req, res) {
+	// Checks whether all fields are filled; if not, show warning message	
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		chatdb.addUserOnline(req.session.username, function (err, data) {
+			if (err) { console.log(err); }
+		});
+	}
+}
+
 // Invite user to a chat
 var inviteUser = function(req, res) {
+	console.log("in invite");
 	var groupChatID = req.body.chatID;
 	var invitedUser = req.body.invitedUser;
 	if (!req.session.username) {
@@ -270,6 +273,7 @@ var acceptInvite = function(req, res) {
 
 // Deletes session, userID from online db
 var logout = function (req, res) {
+	console.log("logging out");
 	if (!req.session.username) {
 		res.render('main.ejs', { message: "Not logged in" });
 	} else {

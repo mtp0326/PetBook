@@ -1,4 +1,5 @@
 var db = require('../models/database.js');
+var chatdb = require('../models/chatDB.js');
 var sjcl = require('sjcl');
 // var stemmer = require('stemmer');
 
@@ -63,10 +64,15 @@ var getSignup = function (req, res) {
 //gets logout page
 var getLogout = function (req, res) {
   req.session.currWall = null;
-  req.session.username = null;
   req.session.isVerified = false;
-  req.session.destroy();
-  res.render('logout.ejs', {});
+  console.log("logging out");
+  res.render('main.ejs', {});
+	
+		chatdb.deleteUserOnline(req.session.username, function (err, data) {
+			if (err) { console.log(err); }
+      req.session.username = null;
+	  req.session.destroy();
+		})
 }
 
 var getChat = function (req, res) {

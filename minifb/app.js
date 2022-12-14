@@ -101,6 +101,7 @@
       app.get('/getchat', chats.get_chat);
       app.post('/addchatroom', chats.add_chatroom);
       app.post('/addonlineuser', chats.add_online_user);
+      app.post('/addonlineuser', chats.add_online_user);
       app.post('/addmessage', chats.add_message);
       app.get('/getchatrooms', chats.get_chatrooms);
       app.post('/logoutchat', chats.log_out);
@@ -108,6 +109,7 @@
       app.post('/inviteuser', chats.invite_user);
       app.post('/rejectinvite', chats.reject_invite);
       app.post('/acceptinvite', chats.accept_invite);
+      app.get('/chatlogout', chats.log_out);
 
       
       //visualizer

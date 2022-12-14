@@ -395,23 +395,23 @@
             console.log(onlinefriend);
             e.preventDefault();
 
-            //         $.ajax({
-            //           type: "POST",
-            //           url: "/addUserToChat",
-            //           data:{ 
-            //               chatID : roomID,
-            //               username: onlinefriend,
-            //           },
+                    $.ajax({
+                      type: "POST",
+                      url: "/inviteuser",
+                      data:{ 
+                          chatID : roomID,
+                          invitedUser: onlinefriend,
+                      },
 
-            //         success: function(result) {
-            //         alert('added');
-            //         console.log(result);
+                    success: function(result) {
+                    alert('added');
+                    console.log(result);
 
-            //         },
-            //     error: function(result) {
-            //         alert('error');
-            //     }
-            // });
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
           }
           else {
             alert("select a chatroom first");
