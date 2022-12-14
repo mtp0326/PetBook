@@ -231,7 +231,7 @@ var myDB_updateInterest = function (username, newInterests, callback) {
 }
 
 //creates post with the right db parameters
-var myDB_createPost = function (userID, content, timepost, callback) {
+var myDB_createPost = function (userID, content, timepost, postType, callback) {
   var params = {
     TableName: "posts",
     Item: {
@@ -243,6 +243,9 @@ var myDB_createPost = function (userID, content, timepost, callback) {
       },
       "timepost": {
         S: timepost
+      },
+      "postType": {
+        S: postType
       },
       "comments": {
         L: []
@@ -261,22 +264,41 @@ var myDB_createPost = function (userID, content, timepost, callback) {
 }
 
 //adds comment in post using userID (partition key) and timepost (sort key)
-var myDB_addComment = function (userID, timepost, comment, callback) {
+var myDB_addComment = function (userID, timepost, comment, table, callback) {
   console.log("userID " + userID);
   console.log("timepost " + timepost);
   console.log("comment " + comment);
-  var paramsGet = {
-    TableName: 'posts',
-    KeyConditionExpression: 'userID = :a and timepost = :b',
-    ExpressionAttributeValues: {
-      ':a': { S: userID },
-      ':b': { S: timepost }
-    }
-  };
+  console.log("table " + table);
+  var paramsGet;
+
+  if(table === "posts") {
+    paramsGet = {
+      TableName: table,
+      KeyConditionExpression: 'userID = :a and timepost = :b',
+      ExpressionAttributeValues: {
+        ':a': { S: userID },
+        ':b': { S: timepost }
+      }
+    };
+  } else {
+    var userIDArray = [];
+    userIDArray = userID.split(" ");
+    var receiver = userIDArray[2];
+    console.log(userIDArray);
+    console.log(receiver);
+    paramsGet = {
+      TableName: table,
+      KeyConditionExpression: 'receiver = :a and timepost = :b',
+      ExpressionAttributeValues: {
+        ':a': { S: receiver },
+        ':b': { S: timepost }
+      }
+    };
+  }
 
   db.query(paramsGet, function (err, data) {
     console.log("error :" + err);
-    console.log("data: " + data);
+    console.log("data: " + data.Items[0]);
     var tempArr = data.Items[0].comments.L;
     var stringifyComment = {
       S: comment
@@ -285,21 +307,40 @@ var myDB_addComment = function (userID, timepost, comment, callback) {
     tempArr.push(stringifyComment);
     console.log(tempArr);
 
-    var paramsUpdate = {
-      TableName: "posts",
-      Key: {
-        'userID': {
-          S: userID
+    var paramsUpdate;
+    if(table === "posts") {
+      paramsUpdate = {
+        TableName: table,
+        Key: {
+          'userID': {
+            S: userID
+          },
+          'timepost': {
+            S: timepost
+          },
         },
-        'timepost': {
-          S: timepost
+        UpdateExpression: 'SET comments = :c',
+        ExpressionAttributeValues: {
+          ':c': { L: tempArr }
+        }
+      };
+    } else {
+      paramsUpdate = {
+        TableName: table,
+        Key: {
+          'receiver': {
+            S: receiver
+          },
+          'timepost': {
+            S: timepost
+          },
         },
-      },
-      UpdateExpression: 'SET comments = :c',
-      ExpressionAttributeValues: {
-        ':c': { L: tempArr }
-      }
-    };
+        UpdateExpression: 'SET comments = :c',
+        ExpressionAttributeValues: {
+          ':c': { L: tempArr }
+        }
+      };
+    }
 
     db.updateItem(paramsUpdate, function (err, data) {
       if (err) {
@@ -357,7 +398,7 @@ var myDB_allWallsAsSender = (function (receiver, sender, callback) {
 });
 
 //creates wall with the right db parameters
-var myDB_createWall = function (receiver, sender, content, timepost, callback) {
+var myDB_createWall = function (receiver, sender, content, timepost, postType, callback) {
   var params = {
     TableName: "walls",
     Item: {
@@ -372,6 +413,9 @@ var myDB_createWall = function (receiver, sender, content, timepost, callback) {
       },
       "timepost": {
         S: timepost
+      },
+      "postType": {
+        S: postType
       },
       "comments": {
         L: []

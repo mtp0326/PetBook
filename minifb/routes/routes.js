@@ -2,11 +2,10 @@ var db = require('../models/database.js');
 var sjcl = require('sjcl');
 // var stemmer = require('stemmer');
 
-var isVerified = false;
 // TODO The code for your own routes should go here
 var getMain = function (req, res) {
   req.session.currWall = null;
-  isVerified = false;
+  req.session.isVerified = false;
   res.render('main.ejs');
 }
 
@@ -17,7 +16,7 @@ var getHomepage = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
-  res.render('homepage.ejs', { "check": isVerified })
+  res.render('homepage.ejs', { "check": req.session.isVerified })
 }
 
 var getWall = function (req, res) {
@@ -25,8 +24,15 @@ var getWall = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
-  isVerified = false;
-  res.render('wall.ejs', { "check": true, "isOther": false, "username": req.session.username });
+  res.render('wall.ejs', { "check": req.session.isVerified, "isOther": false, "username": req.session.username});
+}
+
+var getOtherWall = function (req, res) {
+  req.session.currWall = req.session.username;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('wall.ejs', { "check": req.session.isVerified, "isOther": true, "username": "other"});
 }
 
 //for results if the username and password are correct
@@ -39,11 +45,11 @@ var postResultsUser = function (req, res) {
     if (data == hashPassword && !err) {
       req.session.username = req.body.username;
       req.session.password = req.body.password;
-      isVerified = true;
-      res.render('checklogin.ejs', { "check": true });
+      req.session.isVerified = true;
+      res.render('checklogin.ejs', { "check": req.session.isVerified });
     } else {
-      isVerified = false;
-      res.render('checklogin.ejs', { "check": false });
+      req.session.isVerified = false;
+      res.render('checklogin.ejs', { "check": req.session.isVerified });
     }
   });
 }
@@ -51,13 +57,14 @@ var postResultsUser = function (req, res) {
 //gets signup page
 var getSignup = function (req, res) {
   req.session.currWall = null;
-  res.render('signup.ejs', { "check": isVerified });
+  res.render('signup.ejs', { "check": req.session.isVerified });
 }
 
 //gets logout page
 var getLogout = function (req, res) {
   req.session.currWall = null;
   req.session.username = null;
+  req.session.isVerified = false;
   req.session.destroy();
   res.render('logout.ejs', {});
 }
@@ -67,7 +74,7 @@ var getChat = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
-  res.render('chat.ejs', { "check": isVerified })
+  res.render('chat.ejs', { "check": req.session.isVerified })
 }
 
 var getEdit = function (req, res) {
@@ -75,7 +82,7 @@ var getEdit = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
-  res.render('edit.ejs', { "check": isVerified })
+  res.render('edit.ejs', { "check": req.session.isVerified })
 }
 
 var postOtherWallPageAjax = function (req, res) {
@@ -127,11 +134,11 @@ var postNewAccount = function (req, res) {
       req.session.pfpURL = req.body.pfpURL;
       db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
         req.session.interest, req.session.pfpURL, function (err, data) { });
-      isVerified = true;
-      res.render('createaccount.ejs', { "check": true });
+        req.session.isVerified = true;
+      res.render('createaccount.ejs', { "check": req.session.isVerified });
     } else {
-      isVerified = false;
-      res.render('createaccount.ejs', { "check": false });
+      req.session.isVerified = false;
+      res.render('createaccount.ejs', { "check": req.session.isVerified });
     }
 
   });
@@ -149,6 +156,7 @@ var getHomepagePostListAjax = function (req, res) {
     var likesArr = data.map(obj => obj.likes.L);
     var userIDArr = data.map(obj => obj.userID.S);
     var timepostArr = data.map(obj => obj.timepost.S);
+    var postTypeArr = data.map(obj => obj.postType.S);
 
     for (let i = 0; i < userIDArr.length; i++) {
       var pointer = {
@@ -156,7 +164,8 @@ var getHomepagePostListAjax = function (req, res) {
         "comments": commentsArr[i],
         "likes": likesArr[i],
         "userID": userIDArr[i],
-        "timepost": timepostArr[i]
+        "timepost": timepostArr[i],
+        "postType": postTypeArr[i]
       };
       tempList.push(pointer);
     }
@@ -167,6 +176,7 @@ var getHomepagePostListAjax = function (req, res) {
       var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
       var timepostArr = data.map(obj => obj.timepost.S);
+      var postTypeArr = data.map(obj => obj.postType.S);
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
@@ -174,7 +184,8 @@ var getHomepagePostListAjax = function (req, res) {
           "comments": commentsArr[i],
           "likes": likesArr[i],
           "userID": userIDArr[i],
-          "timepost": timepostArr[i]
+          "timepost": timepostArr[i],
+          "postType": postTypeArr[i]
         };
         tempList.push(pointer);
       }
@@ -206,6 +217,7 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
       var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
       var timepostArr = data.map(obj => obj.timepost.S);
+      var postTypeArr = data.map(obj => obj.postType.S);
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
@@ -213,7 +225,8 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
           "comments": commentsArr[i],
           "likes": likesArr[i],
           "userID": userIDArr[i],
-          "timepost": timepostArr[i]
+          "timepost": timepostArr[i],
+          "postType": postTypeArr[i]
         };
         recPostsList.push(pointer);
       }
@@ -224,6 +237,7 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
         var likesArr = data.map(obj => obj.likes.L);
         var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
         var timepostArr = data.map(obj => obj.timepost.S);
+        var postTypeArr = data.map(obj => obj.postType.S);
 
         for (let i = 0; i < userIDArr.length; i++) {
           var pointer = {
@@ -231,7 +245,8 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
             "comments": commentsArr[i],
             "likes": likesArr[i],
             "userID": userIDArr[i],
-            "timepost": timepostArr[i]
+            "timepost": timepostArr[i],
+            "postType": postTypeArr[i]
           };
           recPostsList.push(pointer);
         }
@@ -251,13 +266,15 @@ var getCreator = function (req, res) {
 var postNewPostAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
+  var postType = "posts";
   if (content.length != 0 && timepost.length != 0) {
-    db.createPost(req.session.username, content, timepost, function (err, data) { });
+    db.createPost(req.session.username, content, timepost, postType, function (err, data) { });
 
     var response = {
       "userID": req.session.username,
       "content": content,
-      "timepost": timepost
+      "timepost": timepost,
+      "postType" : postType
     };
 
     res.send(response);
@@ -271,13 +288,15 @@ var postNewCommentAjax = function (req, res) {
   var userID = req.body.userID;
   var timepost = req.body.timepost;
   var comment = req.body.comment;
+  var table = req.body.table;
   console.log("userID " + userID);
   console.log("timepost " + timepost);
   console.log("comment " + comment);
+  console.log("table " + table);
 
   if (userID.length != 0 && timepost.length != 0 && comment.length != 0) {
     console.log("passing");
-    db.addComment(userID, timepost, comment, function (err, data) { });
+    db.addComment(userID, timepost, comment, table, function (err, data) { });
 
     var response = {
       "userID": userID,
@@ -304,6 +323,7 @@ var getWallListAjax = function (req, res) {
     var likesArr = data.map(obj => obj.likes.L);
     var userIDArr = data.map(obj => obj.userID.S);
     var timepostArr = data.map(obj => obj.timepost.S);
+    var postTypeArr = data.map(obj => obj.postType.S);
 
     for (let i = 0; i < userIDArr.length; i++) {
       var pointer = {
@@ -311,7 +331,8 @@ var getWallListAjax = function (req, res) {
         "comments": commentsArr[i],
         "likes": likesArr[i],
         "userID": userIDArr[i],
-        "timepost": timepostArr[i]
+        "timepost": timepostArr[i],
+        "postType": postTypeArr[i]
       };
       tempList.push(pointer);
     }
@@ -324,6 +345,7 @@ var getWallListAjax = function (req, res) {
       var likesArr = postsList.map(obj => obj.likes.L);
       var userIDArr = postsList.map(obj => obj.sender.S + " to " + obj.receiver.S);
       var timepostArr = postsList.map(obj => obj.timepost.S);
+      var postTypeArr = data.map(obj => obj.postType.S);
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
@@ -331,7 +353,8 @@ var getWallListAjax = function (req, res) {
           "comments": commentsArr[i],
           "likes": likesArr[i],
           "userID": userIDArr[i],
-          "timepost": timepostArr[i]
+          "timepost": timepostArr[i],
+          "postType": postTypeArr[i]
         };
         tempList.push(pointer);
       }
@@ -374,6 +397,7 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
       var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
       var timepostArr = data.map(obj => obj.timepost.S);
+      var postTypeArr = data.map(obj => obj.postType.S);
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
@@ -381,7 +405,8 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
           "comments": commentsArr[i],
           "likes": likesArr[i],
           "userID": userIDArr[i],
-          "timepost": timepostArr[i]
+          "timepost": timepostArr[i],
+          "postType": postTypeArr[i]
         };
         recWallsList.push(pointer);
       }
@@ -395,13 +420,15 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
 var postNewWallAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  if (content.length != 0 && timepost.length != 0 && receiver.length != 0) {
-    db.createWall(req.session.currWall, req.session.username, content, timepost, function (err, data) { });
+  var postType = "walls"
+  if (content.length != 0 && timepost.length != 0) {
+    db.createWall(req.session.currWall, req.session.username, content, timepost, postType, function (err, data) { });
 
     var response = {
-      "userID": req.session.username + " to " + receiver,
+      "userID": req.session.username + " to " + req.session.currWall,
       "content": content,
-      "timepost": timepost
+      "timepost": timepost,
+      "postType" : postType
     };
 
     res.send(response);
@@ -495,7 +522,7 @@ var getVisualizer = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
   }
-  res.render('friendvisualizer.ejs', { "check": isVerified })
+  res.render('friendvisualizer.ejs', { "check": req.session.isVerified })
 }
 
 
@@ -503,7 +530,7 @@ var getVisualizer = function (req, res) {
 
 //get all restaurants and login verification and put in restaurants
 var getRestaurants = function (req, res) {
-  res.render('restaurants.ejs', { "isVerified": isVerified })
+  res.render('restaurants.ejs', { "isVerified": req.session.isVerified })
 };
 
 
@@ -577,6 +604,7 @@ var routes = {
   post_otherWallPageAjax: postOtherWallPageAjax,
   get_determineWallOwner: getDetermineWallOwner,
   get_edit: getEdit,
+  get_otherwall: getOtherWall,
 
   //NEW
   get_homepage: getHomepage,

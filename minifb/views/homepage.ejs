@@ -332,6 +332,7 @@
               var timepostN = elementsArr[i].timepost;
               var likesN = elementsArr[i].likes;
               var commentsN = elementsArr[i].comments;
+              var postTypeN = elementsArr[i].postType;
               var Item =
               {
                 "content": contentN,
@@ -339,6 +340,7 @@
                 "likes": likesN,
                 "userID": userIDN,
                 "timepost": timepostN,
+                "postType":postTypeN
               };
               friendposts.push(Item);
             }
@@ -357,6 +359,7 @@
         });
       }
       function createPostDiv(friendpost) {
+        
         test_el = document.createElement('div');
         var test = new Date(parseInt(friendpost.timepost));
         var time = (new Date(test)).toLocaleDateString()
@@ -382,9 +385,9 @@
             + commentsArr[i] +
             '</div>';
         }
-        var commentID = "comment-button-" + friendpost.userID + "-" + friendpost.timepost
-        var commentBarID = "comment-bar-" + friendpost.userID + "-" + friendpost.timepost
-        var commentContent = "commentcontent-" + friendpost.userID + "-" + friendpost.timepost
+        var commentID = "comment-button-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+        var commentBarID = "comment-bar-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+        var commentContent = "commentcontent-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
         test_el.innerHTML +=
           '<div class=' + commentBarID + ' id = ' + commentBarID + '><textarea class="comment" placeholder="say something..." name=' + commentContent + '></textarea>'
           +
@@ -392,9 +395,9 @@
         document.body.appendChild(test_el);
         var cardDiv = document.getElementById('cardID');
         cardDiv.after(test_el);
-        commentButtons(commentID, commentContent, friendpost.timepost, friendpost.userID, commentBarID);
+        commentButtons(commentID, commentContent, friendpost.timepost, friendpost.userID, commentBarID, friendpost.postType);
       }
-      function commentButtons(commentIDBefore, commentCon, time, postUserID, commentBarID) {
+      function commentButtons(commentIDBefore, commentCon, time, postUserID, commentBarID, postType) {
         $(document).ready(function () {
           commentID = "#" + commentIDBefore;
           $(commentID).click(function (e) {
@@ -410,7 +413,8 @@
               data: {
                 comment: contentWithUser,
                 userID: postUserID,
-                timepost: time // EDIT THIS PART
+                timepost: time, // EDIT THIS PART
+                table: postType
               },
               success: function (result) {
 
@@ -521,31 +525,7 @@
   });
   </script> -->
 
-  <!-- <script>
-     $(document).ready(function () {
-
-          $("#search-btn").click(function (e) {
-            console.log("search clicked!");
-            e.preventDefault();
-            var searchContent = document.getElementsByName("search")[0].value;
-            console.log(searchContent);
-            
-            $.ajax({
-              type: "POST",
-              url: "/postOtherWallPageAjax",
-              data: {
-                content: searchContent,
-              },
-              success: function (result) {
-                console.log("search success");
-              },
-              error: function (result) {
-                alert('error');
-              }
-            });
-          });
-        });
-  </script> -->
+  
     <% } else { %>
       <script>
         alert("login required")
@@ -568,7 +548,7 @@
    
     <div class="search-container">
       <div class = "ui-widget">
-      <form action = "/wall" method = "get">
+      <form action = "/otherwall" method = "get">
         <input type="text" placeholder="Search.." name="search" id = "search">
         <button type = "submit" id = "search-btn">
           <i class="fa fa-search"></i>
@@ -576,6 +556,19 @@
     </div>
     </div>
   </div>
+  <div class="card" id="cardID">
+
+    <div class="userInfo">
+      <img class="profile-pic"
+        src="data:image/jpeg;base64,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">
+      <h3>
+        <div id="currUser"></div>
+      </h3>
+    </div>
+   
+  </div>
+
+
   <div class="card" id="cardID">
 
     <div class="userInfo">

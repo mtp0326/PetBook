@@ -70,6 +70,7 @@
       app.get('/logout', routes.get_logout);
       app.get('/chat', routes.get_chat);
       app.get('/wall', routes.get_wall);
+      app.get('/otherwall', routes.get_otherwall);
       app.get('/edit', routes.get_edit);
       app.get('/getList', routes.get_restaurantList);
       app.get('/getCreator', routes.get_creator);
