@@ -95,7 +95,7 @@
       app.post('/editaccount', routes.post_updateUser);
       app.post('/postOtherWallPageAjax', routes.post_otherWallPageAjax);
       app.get('/getDetermineWallOwner', routes.get_determineWallOwner),
-      app.gget('/getIsWallAFriend', routes.get_isWallAFriend),
+      app.get('/getIsWallAFriend', routes.get_isWallAFriend),
       
       //chat
       app.get('/getonlineusers', chats.get_online_users);

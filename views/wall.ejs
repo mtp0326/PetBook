@@ -493,6 +493,12 @@
             });
 
             $(document).ready(function () {
+              $.getJSON('/getIsWallAFriend', function (friend) {
+                console.log(friend);
+              });
+            });
+
+            $(document).ready(function () {
               $.getJSON('/getAllUsername', function (usernameArr) { // EDIT THIS PART
                 var tagArr = usernameArr.map(obj => obj.username.S);
                 tagUsernames(tagArr);

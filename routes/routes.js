@@ -532,13 +532,14 @@ var getIsWallAFriend = function (req, res) {
     }
     console.log(data);
     var isFriend;
-    if(data.has(req.session.currWall)) {
-      isFriend = {BOOL: true};
-      res.send(isFriend);
-    } else {
-      isFriend = {BOOL: false};
-      res.send(isFriend);
-    }
+    data.forEach(function (r) {
+      if(r === req.session.currWall) {
+        isFriend = {BOOL: true};
+        res.send(isFriend);
+      }
+    })
+    isFriend = {BOOL: false};
+    res.send(isFriend);
   });
 }
 
