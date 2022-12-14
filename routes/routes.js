@@ -99,6 +99,8 @@ var getDetermineWallOwner = function (req, res) {
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
     console.log("WALL OTHER");
     console.log(data);
+
+    console.log(req.session);
    
     if (data === null) {
       req.session.currWall = null;
@@ -531,19 +533,24 @@ var getIsWallAFriend = function (req, res) {
       console.log(err);
     }
     console.log(data);
-    var isFriend;
+    var isFriend = {BOOL: false};
+    console.log(req.session);
     if(req.session.username === req.session.currWall) {
       isFriend = {BOOL: true};
       res.send(isFriend);
-    }
-    data.forEach(function (r) {
-      if(r === req.session.currWall) {
-        isFriend = {BOOL: true};
+    } else {
+      data.forEach(function (r) {
+        console.log(r);
+        if(r === req.session.currWall) {
+          isFriend = {BOOL: true};
+          res.send(isFriend);
+        }
+      })
+      if(isFriend.BOOL === false) {
+        isFriend = {BOOL: false};
         res.send(isFriend);
       }
-    })
-    isFriend = {BOOL: false};
-    res.send(isFriend);
+    }
   });
 }
 

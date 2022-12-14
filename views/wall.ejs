@@ -357,6 +357,7 @@
                     console.log("success");
                     console.log(data);
                     getFriendsPosts();
+                    getBoolFriend();
                   }
                 });
               });
@@ -400,6 +401,14 @@
               $(function () {
                 $("#tags").autocomplete({
                   source: availableTags
+                });
+              });
+            }
+            
+            function getBoolFriend() {
+              $(document).ready(function () {
+                $.getJSON('/getIsWallAFriend', function (friend) {
+                  console.log(friend);
                 });
               });
             }
@@ -489,12 +498,6 @@
                 sessionCreator = creator;
                 console.log(sessionCreator);
                 $("#currUser").html(sessionCreator);
-              });
-            });
-
-            $(document).ready(function () {
-              $.getJSON('/getIsWallAFriend', function (friend) {
-                console.log(friend);
               });
             });
 
