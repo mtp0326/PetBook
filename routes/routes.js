@@ -311,7 +311,6 @@ var postNewPostAjax = function (req, res) {
       "timepost": timepost,
       "postType" : postType
     };
-
     res.send(response);
   } else {
     res.send(null);
