@@ -234,7 +234,7 @@ var getHomepagePostListAjax = function (req, res) {
         tempList.push(pointer);
       }
       db.getFriends(req.session.username, function (err, data) {
-        
+
         var friendsList = [];
         data.forEach(function (r) {
           friendsList.push(r);
@@ -311,11 +311,11 @@ var getCreator = function (req, res) {
 var postNewPostAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = { 
+  var postType = {
     S: "posts"
   };
   if (content.length != 0 && timepost.length != 0) {
-    db.createPost(req.session.username, content, timepost, postType, function (err, data) { });
+    db.createPost(req.session.username, content, timepost, function (err, data) { });
 
     var response = {
       "userID": req.session.username,
@@ -492,11 +492,11 @@ var getIsWallAFriend = function (req, res) {
 var postNewWallAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = { 
+  var postType = {
     S: "walls"
   };
   if (content.length != 0 && timepost.length != 0) {
-    db.createWall(req.session.currWall, req.session.username, content, timepost, postType, function (err, data) { });
+    db.createWall(req.session.currWall, req.session.username, content, timepost, function (err, data) { });
 
     var response = {
       "userID": req.session.username + " to " + req.session.currWall,
@@ -576,7 +576,7 @@ var postUpdateUser = function (req, res) {
           if (!interestSet.has(data[i].S)) {
             var newContent = req.session.username + " is now interested in " + data[i].S;
             var newTimepost = new Date().getTime() + "";
-            db.createPost(req.session.username, newContent, newTimepost, function (err, data) { });
+            db.createWall(req.session.username, req.session.username, newContent, newTimepost, function (err, data) { });
           }
         }
       });

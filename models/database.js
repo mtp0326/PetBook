@@ -237,7 +237,7 @@ var myDB_updatepw = function (username, newPw, callback) {
 // }
 
 //creates post with the right db parameters
-var myDB_createPost = function (userID, content, timepost, postType, callback) {
+var myDB_createPost = function (userID, content, timepost, callback) {
   var params = {
     TableName: "posts",
     Item: {
@@ -251,16 +251,13 @@ var myDB_createPost = function (userID, content, timepost, postType, callback) {
         S: timepost
       },
       "postType": {
-        S: postType
+        S: "posts"
       },
       "comments": {
         L: []
       },
       "likes": {
         L: []
-      },
-      "postType": {
-        S: "walls"
       }
     }
   };
@@ -407,7 +404,7 @@ var myDB_allWallsAsSender = (function (receiver, sender, callback) {
 });
 
 //creates wall with the right db parameters
-var myDB_createWall = function (receiver, sender, content, timepost, postType, callback) {
+var myDB_createWall = function (receiver, sender, content, timepost, callback) {
   var params = {
     TableName: "walls",
     Item: {
@@ -424,7 +421,7 @@ var myDB_createWall = function (receiver, sender, content, timepost, postType, c
         S: timepost
       },
       "postType": {
-        S: postType
+        S: "walls"
       },
       "comments": {
         L: []
