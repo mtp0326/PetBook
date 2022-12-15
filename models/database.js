@@ -293,7 +293,6 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
     }
 
     tempArr.push(stringifyComment);
-    console.log(tempArr);
 
     var paramsUpdate;
     if(table === "posts") {
