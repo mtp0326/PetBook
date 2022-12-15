@@ -560,14 +560,21 @@ var myDB_addFriend = function(user1, user2, callback) {
 }
 
 
-var myDB_addLike = function(userID, likedUser, postType, callback) {
+var myDB_addLike = function(userID, likedUser, timepost, postType, callback) {
 	var userStringSet = {SS: [likedUser]};
 
   var params;
   if(postType === "posts") {
     params = {
       TableName: "posts",
-      Key: {"username" : {S: userID}},
+      Key: {
+        'userID': {
+          S: userID
+        },
+        'timepost': {
+          S: timepost
+        },
+      },
       UpdateExpression: "ADD liked :a",
         ExpressionAttributeValues : {
           ":a": userStringSet
@@ -579,7 +586,14 @@ var myDB_addLike = function(userID, likedUser, postType, callback) {
     var receiver = userIDArray[2];
     params = {
       TableName: "walls",
-      Key: {"receiver" : {S: receiver}},
+      Key: {
+        'receiver': {
+          S: receiver
+        },
+        'timepost': {
+          S: timepost
+        },
+      },
       UpdateExpression: "ADD liked :a",
         ExpressionAttributeValues : {
           ":a": userStringSet
@@ -597,22 +611,26 @@ var myDB_addLike = function(userID, likedUser, postType, callback) {
       if(postType === "posts") {
         paramsGet = {
           TableName: "posts",
-          KeyConditions: {
-            username: {
-              ComparisonOperator: 'EQ',
-              AttributeValueList: [{ S: userID }]
-            }
+          Key: {
+            'userID': {
+              S: userID
+            },
+            'timepost': {
+              S: timepost
+            },
           },
           AttributesToGet: ['likes']
         };
       } else {
         paramsGet = {
           TableName: "walls",
-          KeyConditions: {
-            receiver: {
-              ComparisonOperator: 'EQ',
-              AttributeValueList: [{ S: receiver }]
-            }
+          Key: {
+            'receiver': {
+              S: receiver
+            },
+            'timepost': {
+              S: timepost
+            },
           },
           AttributesToGet: ['likes']
         };

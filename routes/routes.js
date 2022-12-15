@@ -627,9 +627,10 @@ var acceptFriendRequest = function(req, res) {
 var addLikesToPost = function (req, res) {
   var userID = req.body.userID;
   var postType = req.body.postType;
+  var timepost = req.body.timepost;
   var likedUser = req.session.username;
   
-  db.addLike(userID, likedUser, postType, function(err, data) {
+  db.addLike(userID, likedUser, timepost, postType, function(err, data) {
     if (err != null) {
       console.log(err);
     } else {
