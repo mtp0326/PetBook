@@ -63,10 +63,11 @@ var myDB_userInfo = function (searchTerm, language, callback) {
   };
   console.log("running");
   db.getItem(params, function (err, data) {
-    if (err || data.Item.length == 0) {
+    if (err) {
       console.log(err);
       callback(err, null);
     } else {
+      console.log(data);
       callback(err, data.Item);
     }
   });
@@ -105,6 +106,9 @@ var myDB_createAccount =
         "chatID": { L: [] },
         "email": { S: newEmail },
         "friends": { SS: [""] },
+        "invites": { SS: [""] },
+        "requests": { SS: [""] },
+        "recommended": { SS: [""] },
         "fullname": { S: newFullname },
         "interest": { L: interestArr },
         "password": { S: newPassword },
@@ -639,6 +643,65 @@ var myDB_lookup = function (searchTerm, language, callback) {
   });
 }
 
+// Adds a friend request to user's DB
+var myDB_addRequest = function(receiver, sender, callback) {
+	console.log(sender + " sent a request to " + receiver);
+
+	var newUserIDSet = {S: sender};
+	var params = {
+		TableName: "users",
+		Key: {"username" : {S: receiver}},
+		UpdateExpression: "ADD requests :newUserID",
+	    ExpressionAttributeValues : {
+	      ":newUserID": newUserIDSet
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+		callback(err, data);
+	});
+}
+
+// Deletes a friend request from user's db
+var myDB_deleteRequest = function(receiver, sender, callback) {
+  	var deleteUserIDSet = {S: sender};
+  	var params = {
+    	TableName: "users",
+        Key: {"username" : {S: receiver}},
+	    UpdateExpression: "DELETE requests :deleteUserID",
+	    ExpressionAttributeValues : {
+	      ":deleteUserID": deleteUserIDSet
+	    },
+    };
+    db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+	    callback(err, data);
+    });
+}
+
+// Add user1 to user2's friends set
+var myDB_addFriend = function(user1, user2, callback) {
+	var add1To2 = {S: user1};
+	var params = {
+		TableName: "users",
+		Key: {"username" : {S: user2}},
+		UpdateExpression: "ADD friends :newUserID",
+	    ExpressionAttributeValues : {
+	      ":newUserID": add1To2
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+		callback(err, data);
+	});
+}
+
 // TODO Your own functions for accessing the DynamoDB tables should go here
 
 /* We define an object with one field for each method. For instance, below we have
@@ -652,6 +715,9 @@ var database = {
   passwordLookup: myDB_getPassword,
   usernameLookup: myDB_getUsername,
   createAccount: myDB_createAccount,
+  addFriend : myDB_addFriend,
+  deleteRequest : myDB_deleteRequest,
+  addRequest : myDB_addRequest,
 
   //NEW
   getAllPosts: myDB_allPosts,

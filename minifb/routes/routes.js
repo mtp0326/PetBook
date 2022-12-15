@@ -121,6 +121,14 @@ var getDetermineWallOwner = function (req, res) {
   });
 }
 
+var getUserInfo = function(req, res){
+  db.getUserInfo(req.session.username,  "username", function (err, data) {
+    console.log("USER DATA");
+    console.log(data);
+    res.send(data);
+  })
+}
+
 //check if new account can be created by receiving null (which means that username in db is empty)
 //and create the new account and go to restaurants or fail and go back to signup.
 var postNewAccount = function (req, res) {
@@ -138,7 +146,16 @@ var postNewAccount = function (req, res) {
       req.session.interest2 = req.body.interest2;
       req.session.interest3 = req.body.interest3;
       
-      var interestList = [req.session.interest1,req.session.interest2,req.session.interest3];
+      var stringify1 = { 
+        S: req.session.interest1
+      };
+      var stringify2 = { 
+        S: req.session.interest2
+      };
+      var stringify3 = { 
+        S: req.session.interest3
+      };
+      var interestList = [stringify1,stringify2,stringify3];
       req.session.interest = interestList;
       req.session.pfpURL = req.body.pfpURL;
       db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
@@ -325,7 +342,6 @@ var getWallListAjax = function (req, res) {
   console.log("req.session.currWall: ");
   console.log(req.session.currWall);
   var tempList = [];
-  ///req.session.username into B's wall
   db.getAllPosts(req.session.currWall, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
     var commentsArr = data.map(obj => obj.comments.L);
@@ -345,7 +361,6 @@ var getWallListAjax = function (req, res) {
       };
       tempList.push(pointer);
     }
-    ///req.session.username into B's wall
     console.log("getCurrWall");
     console.log(req.session.currWall);
     db.getAllWalls(req.session.currWall, function (err, postsList) {
@@ -374,8 +389,7 @@ var getWallListAjax = function (req, res) {
           friendsList.push(r);
         });
         console.log(friendsList);
-        ///recursion as friends
-        recGetAllWalls(friendsList, tempList, req.session.username, 0, function (postsList) {
+        recGetAllWalls(friendsList, tempList, req.session.currWall, 0, function (postsList) {
           console.log("postsList");
           console.log(postsList);
           if (postsList.length > 1) {
@@ -429,7 +443,7 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
 var postNewWallAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = "walls"
+  var postType = "walls";
   if (content.length != 0 && timepost.length != 0) {
     db.createWall(req.session.currWall, req.session.username, content, timepost, postType, function (err, data) { });
 
@@ -486,7 +500,17 @@ var postUpdateUser = function (req, res) {
       if (err) {
         console.log(err);
       }
-      db.updateInterest(req.session.username, req.body.interest1, req.body.interest2, req.body.interest3, function (err, data) {
+
+      var stringify1 = { 
+        S: req.body.interest1
+      };
+      var stringify2 = { 
+        S: req.body.interest2
+      };
+      var stringify3 = { 
+        S: req.body.interest3
+      };
+      db.updateInterest(req.session.username, stringify1, stringify2, stringify3, function (err, data) {
         if (err) {
           console.log(err);
         }
@@ -583,20 +607,56 @@ var postDeleteRestaurantAjax = function (req, res) {
   res.send(resName);
 };
 
-//create new restaurant in the db when all inputs exist
-//var postNewRestaurant = function(req, res) {
-//  var latitude = req.body.latitude;
-//  var longitude = req.body.longitude;
-//  var resName = req.body.restaurantName;
-//  var description = req.body.description;
-//  if(latitude.length != 0 && longitude.length != 0 && resName.length != 0 && description.length != 0) {
-//	db.createRestaurant(resName, latitude, longitude, description, session.username, function(err, data){});
-//	
-//  	res.render('addrestaurant.ejs', {"allFields" : true}); //send? addrestaurant.ejs is unnecessary
-//  } else {
-//	res.render('addrestaurant.ejs', {"allFields" : false});
-//  }
-//};
+// Send friend request
+var sendFriendRequest = function(req, res) {
+	var receiver = req.body.receiver;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		db.addRequest(receiver, req.session.username, function(err, data) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}
+}
+
+// Receiver rejects friend request
+var rejectFriendRequest = function(req, res) {
+	var sender = req.body.sender;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		db.deleteRequest(req.session.username, sender, function(err, data) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}
+}
+
+// Receiver accepts friend request. Sender and receiver are both added to each other's friends set
+var acceptFriendRequest = function(req, res) {
+	var sender = req.body.sender;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		db.deleteRequest(req.session.username, sender, function(err1, data) {
+			if (err1) {console.log(err1);
+			} else {
+				db.addFriend(req.session.username, sender, function (err2, data) {
+					if (err2) {console.log(err2);
+					} else {
+						db.addFriend(sender, req.session.username, function (err3, data) {
+							if (err3) { console.log(err3) }
+						});
+					}
+				});
+			}
+		});
+	}
+}
+
 
 // TODO Don't forget to add any new functions to this class, so app.js can call them. (The name before the colon is the name you'd use for the function in app.js; the name after the colon is the name the method has here, in this file.)
 
@@ -612,8 +672,12 @@ var routes = {
   get_wall: getWall,
   post_otherWallPageAjax: postOtherWallPageAjax,
   get_determineWallOwner: getDetermineWallOwner,
+  get_userInfo: getUserInfo,
   get_edit: getEdit,
   get_otherwall: getOtherWall,
+  reject_friend_request: rejectFriendRequest, 
+  accept_friend_request: acceptFriendRequest, 
+  send_friend_request: sendFriendRequest, 
 
   //NEW
   get_homepage: getHomepage,

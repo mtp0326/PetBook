@@ -14,6 +14,7 @@ var myDB_getUserChatrooms = function(username, callback) {
     if (err) {
       console.log("Error" + err);
     } else {
+		
 	  console.log(data.Item);
       callback(null, data.Item.chatID.SS);
     }
@@ -313,7 +314,7 @@ var chatDB = {
   deleteUserOnline : myDB_deleteOnline,
 
   addInvite: myDB_addInvite,
-  deletInvite: myDB_deleteInvite
+  deleteInvite: myDB_deleteInvite
 };
 
 module.exports = chatDB;

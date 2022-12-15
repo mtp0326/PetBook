@@ -305,6 +305,7 @@
     window.onload = function () {
       getFriendsOnline();
       getChatRooms();
+      getChatInvites();
     }
 
     function getChatRooms() {
@@ -364,6 +365,109 @@
         });
       });
     }
+
+    function getChatInvites() {
+      $(document).ready(function () {
+        console.log("chat invites!!");
+        $.getJSON('/getUserInfo', function (data) {
+          console.log(data);
+          var invitesSet = data.invites.SS
+          console.log(invitesSet);
+          var chatInviteList =[];
+          invitesSet.forEach(inv => chatInviteList.push(inv));
+          for (let i = chatInviteList.length - 1; i >= 0; i--) {
+            createChatInviteDiv(chatInviteList[i]);
+          };
+         
+        });
+      });
+    }
+
+    function createChatInviteDiv(chatinvite) {
+      test_el = document.createElement('div');
+
+      test_el.innerHTML =
+        '<div class="onlinefriend"><div class= "chatInviteID">'
+        + chatinvite +
+        '</div>';
+   
+      var acceptID = "accept-invite-button-" + chatinvite
+      test_el.innerHTML +=
+        '<button type = "accept" id = ' + acceptID + '>accept</button></div>'
+
+        var rejectID = "reject-invite-button-" + chatinvite
+      test_el.innerHTML +=
+        '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+      document.body.appendChild(test_el);
+
+      var onlineFriendsDiv = document.getElementById('chatinvites');
+      onlineFriendsDiv.after(test_el);
+      var acceptIDWithHash = "#" + acceptID;
+      var rejectIDWithHash = "#" + rejectID;
+     acceptButtons( acceptIDWithHash , chatinvite);
+     rejectButtons(rejectIDWithHash, chatinvite);
+    }
+
+    function rejectButtons(acceptID, chatInvite) {
+      $(document).ready(function () {
+        $(acceptID).click(function (e) {
+            console.log("reject clicked!");
+            e.preventDefault();
+
+                    $.ajax({
+                      type: "POST",
+                      url: "/rejectinvite",
+                      data:{ 
+                          chatID : chatInvite
+                      },
+
+                    success: function(result) {
+                    alert('rejectedInvite');
+                    console.log(result);
+
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+        
+
+
+        });
+
+      });
+    }
+
+    function acceptButtons(acceptID, chatInvite) {
+      $(document).ready(function () {
+        $(acceptID).click(function (e) {
+            console.log("accept clicked!");
+            e.preventDefault();
+
+                    $.ajax({
+                      type: "POST",
+                      url: "/acceptinvite",
+                      data:{ 
+                          chatID : chatInvite
+                      },
+
+                    success: function(result) {
+                    alert('acceptedInvite');
+                    console.log(result);
+
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+        
+
+
+        });
+
+      });
+    }
+  
 
     function createOnlineFriendDiv(onlinefriend) {
       test_el = document.createElement('div');
@@ -755,6 +859,10 @@
 
             <div id="chatrooms">
               <h1> active chatrooms</h1>
+            </div>
+
+            <div id="chatinvites">
+              <h1> chat invites</h1>
             </div>
 
             <button type="chatroom-submit" class="chatroom-submit" id="chatroom-submit">

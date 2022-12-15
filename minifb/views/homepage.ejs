@@ -17,11 +17,27 @@
         font-weight: 600;
       }
 
+      .friendRequest {
+        text-align: center;
+        border-radius: 10px;
+        width: 300px;
+        height: 400px;
+        padding: 20px;
+        top: 20px;
+        left: 20px;
+        margin-top: 30px;
+        margin-left: 50px;
+        background-color: #ffffff;
+      }
+      .wholeHome{
+        display:flex;
+      }
+
       .card {
         border-radius: 10px;
         width: 500px;
         padding: 20px;
-        margin-left: auto;
+        margin-left: 80px;
         margin-right: auto;
         margin-bottom: 30px;
         margin-top: 30px;
@@ -299,7 +315,9 @@
     <script type="text/javascript">
       var sessionCreator = "";
       window.onload = function () {
+        online();
         getFriendsPosts();
+        getFriendRequest();
       }
       //newly added
          function online() {
@@ -322,6 +340,110 @@
              });
            });
          }
+
+        function getFriendRequest() {
+      $(document).ready(function () {
+        console.log("friend requests!!");
+        $.getJSON('/getUserInfo', function (data) {
+          console.log(data);
+          var requestsSet = data.requests.SS
+          console.log(requestsSet);
+          var friendRequestList =[];
+          requestsSet.forEach(re => friendRequestList.push(re));
+          for (let i = friendRequestList.length - 1; i >= 0; i--) {
+            createFriendReqDiv(friendRequestList[i]);
+          };
+         
+        });
+      });
+    }
+
+    function  createFriendReqDiv(friendReq) {
+      test_el = document.createElement('div');
+
+      test_el.innerHTML =
+        '<div class="friendReq"><div class= "friendReq">'
+        + friendReq +
+        '</div>';
+   
+      var acceptID = "accept-invite-button-" + friendReq
+      test_el.innerHTML +=
+        '<button type = "accept" id = ' + acceptID + '>accept</button></div>'
+
+        var rejectID = "reject-invite-button-" + friendReq
+      test_el.innerHTML +=
+        '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+      document.body.appendChild(test_el);
+
+      var onlineFriendsDiv = document.getElementById('frTitle');
+      onlineFriendsDiv.after(test_el);
+      var acceptIDWithHash = "#" + acceptID;
+      var rejectIDWithHash = "#" + rejectID;
+     acceptButtons(acceptIDWithHash , friendReq);
+     rejectButtons(rejectIDWithHash, friendReq);
+    }
+
+    function acceptButtons(acceptID, friendReq) {
+      $(document).ready(function () {
+        $(acceptID).click(function (e) {
+            console.log("accept clicked!");
+            e.preventDefault();
+
+                    $.ajax({
+                      type: "POST",
+                      url: "/acceptFriendRequest",
+                      data:{ 
+                          sender : friendReq
+                      },
+
+                    success: function(result) {
+                    alert('acceptedInvite');
+                    console.log(result);
+
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+        
+
+
+        });
+
+      });
+    }
+
+    function rejectButtons(rejectID, friendReq) {
+      $(document).ready(function () {
+        $(acceptID).click(function (e) {
+            console.log("reject clicked!");
+            e.preventDefault();
+
+                    $.ajax({
+                      type: "POST",
+                      url: "/rejectFriendRequest",
+                      data:{ 
+                          sender : friendReq
+                      },
+
+                    success: function(result) {
+                    alert('rejectedInvite');
+                    console.log(result);
+
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+        
+
+
+        });
+
+      });
+    }
+
+
          
       //calls ajax with /getList that retreives restaraut data from db
       function getFriendsPosts() {
@@ -399,7 +521,7 @@
           +
           '<button type = "comment" id = ' + commentID + '>Comment</button></div>'
         document.body.appendChild(test_el);
-        var cardDiv = document.getElementById('cardID');
+        var cardDiv = document.getElementById('wholeHome');
         cardDiv.after(test_el);
         commentButtons(commentID, commentContent, friendpost.timepost, friendpost.userID, commentBarID, friendpost.postType);
       }
@@ -563,7 +685,14 @@
     </div>
   </div>
  
-
+  <div id = "wholeHome" class = "wholeHome">
+    <div class="friendRequest">
+      <div class = "frTitle">
+      <h2>Friend Requests</h2>
+    </div>
+      <div class = "friendRequestLog">
+      </div>
+    </div>
 
   <div class="card" id="cardID">
 
@@ -579,7 +708,7 @@
     </div>
     <button type="post" id="post-button">Post</button>
   </div>
-
+</div>
 </body>
 
 </html>
