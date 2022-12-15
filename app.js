@@ -121,7 +121,9 @@
 
       
       //visualizer
-      app.get('/visualizer', routes.get_friend_visualizer);
+      app.get('/visualizer', visualizer.get_friend_visualizer);
+      app.get('/friendvisualization', visualizer.get_friends);
+      app.get('/getFriends/:user', visualizer.get_more_friends);
       
       /* Run the server */
       
