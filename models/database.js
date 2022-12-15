@@ -566,6 +566,79 @@ var myDB_addFriend = function(user1, user2, callback) {
 	});
 }
 
+
+var myDB_addLike = function(userID, likedUser, postType, callback) {
+	var userStringSet = {SS: [likedUser]};
+
+  var params;
+  if(postType === "posts") {
+    params = {
+      TableName: "posts",
+      Key: {"username" : {S: userID}},
+      UpdateExpression: "ADD liked :a",
+        ExpressionAttributeValues : {
+          ":a": userStringSet
+        },
+    }
+  } else {
+    var userIDArray = [];
+    userIDArray = userID.split(" ");
+    var receiver = userIDArray[2];
+    params = {
+      TableName: "walls",
+      Key: {"receiver" : {S: receiver}},
+      UpdateExpression: "ADD liked :a",
+        ExpressionAttributeValues : {
+          ":a": userStringSet
+        },
+    }
+  }
+    
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+
+      var paramsGet;
+      
+      if(postType === "posts") {
+        paramsGet = {
+          TableName: "posts",
+          KeyConditions: {
+            username: {
+              ComparisonOperator: 'EQ',
+              AttributeValueList: [{ S: userID }]
+            }
+          },
+          AttributesToGet: ['likes']
+        };
+      } else {
+        paramsGet = {
+          TableName: "walls",
+          KeyConditions: {
+            receiver: {
+              ComparisonOperator: 'EQ',
+              AttributeValueList: [{ S: receiver }]
+            }
+          },
+          AttributesToGet: ['likes']
+        };
+      }
+        
+      db.query(paramsGet, function (err, data) {
+        if (err) {
+          console.log(err);
+        } else {
+          if(data.Items[0].likes == undefined) {
+            var empty = [];
+            callback(err, empty);
+          } else {
+            callback(err, data.Items[0].likes.SS);
+          }
+        }
+      });
+	});
+}
 // TODO Your own functions for accessing the DynamoDB tables should go here
 
 /* We define an object with one field for each method. For instance, below we have
@@ -581,6 +654,7 @@ var database = {
   addFriend : myDB_addFriend,
   deleteRequest : myDB_deleteRequest,
   addRequest : myDB_addRequest,
+  addLike : myDB_addLike,
 
   //NEW
   getAllPosts: myDB_allPosts,

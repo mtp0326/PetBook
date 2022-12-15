@@ -86,9 +86,10 @@
       app.post('/createcomment', routes.post_newCommentAjax);
       app.post('/createwall', routes.post_newWallAjax);
       app.post('/postUpdateUser', routes.post_updateUser);
+      app.post('/addLikesToPost', routes.post_addLikesToPost);
       
       app.post('/checklogin', routes.verifyUser);
-      app.get('/getIsWallAFriend', routes.get_isWallAFriend),
+      app.get('/getIsWallAFriend', routes.get_isWallAFriend);
 
       
       app.post('/sendFriendRequest', routes.send_friend_request);
