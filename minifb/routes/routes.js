@@ -81,7 +81,6 @@ var getSignup = function (req, res) {
 var getLogout = function (req, res) {
   req.session.currWall = null;
   req.session.isVerified = false;
-  console.log("logging out");
   res.render('main.ejs', {});
 	
 		chatdb.deleteUserOnline(req.session.username, function (err, data) {
@@ -112,24 +111,17 @@ var postOtherWallPageAjax = function (req, res) {
     return res.redirect('/')
   }
   req.session.currWall = req.body.currWall;
-  console.log(req.session.currWall);
   res.send("success");
-  console.log("posting currWall successful");
 }
 
 var getDetermineWallOwner = function (req, res) {
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
-    console.log("WALL OTHER");
-    console.log(data);
    
     if (data === null) {
       req.session.currWall = null;
-      console.log("bruh")
       res.send("null");
     } else {
       db.getUserInfo(req.session.currWall, "username", function (err, data) {
-        console.log("WALL DATA");
-        console.log(data);
         res.send(data);
       })
     }
@@ -139,8 +131,6 @@ var getDetermineWallOwner = function (req, res) {
 
 var getUserInfo = function(req, res){
   db.getUserInfo(req.session.username,  "username", function (err, data) {
-    console.log("USER DATA");
-    console.log(data);
     res.send(data);
   })
 }
@@ -232,6 +222,7 @@ var getHomepagePostListAjax = function (req, res) {
         tempList.push(pointer);
       }
       db.getFriends(req.session.username, function (err, data) {
+
         var friendsList = [];
         data.forEach(function (r) {
           friendsList.push(r);
@@ -308,11 +299,11 @@ var getCreator = function (req, res) {
 var postNewPostAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = { 
+  var postType = {
     S: "posts"
   };
   if (content.length != 0 && timepost.length != 0) {
-    db.createPost(req.session.username, content, timepost, postType, function (err, data) { });
+    db.createPost(req.session.username, content, timepost, function (err, data) { });
 
     var response = {
       "userID": req.session.username,
@@ -333,14 +324,9 @@ var postNewCommentAjax = function (req, res) {
   var timepost = req.body.timepost;
   var comment = req.body.comment;
   var table = req.body.table;
-  console.log("userID " + userID);
-  console.log("timepost " + timepost);
-  console.log("comment " + comment);
-  console.log("table " + table);
 
   if (userID.length != 0 && timepost.length != 0 && comment.length != 0) {
-    console.log("passing");
-    db.addComment(userID, timepost, comment, table, function (err, data) { });
+    db.addComment(userID, timepost, comment, table, function (err, data) {});
 
     var response = {
       "userID": userID,
@@ -357,8 +343,6 @@ var postNewCommentAjax = function (req, res) {
 //ajax: get your posts and wall you receive from friends posting on yours
 //NEW
 var getWallListAjax = function (req, res) {
-  console.log("req.session.currWall: ");
-  console.log(req.session.currWall);
   var tempList = [];
   db.getAllPosts(req.session.currWall, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
@@ -379,8 +363,6 @@ var getWallListAjax = function (req, res) {
       };
       tempList.push(pointer);
     }
-    console.log("getCurrWall");
-    console.log(req.session.currWall);
     db.getAllWalls(req.session.currWall, function (err, postsList) {
       var contentArr = postsList.map(obj => obj.content.S);
       var commentsArr = postsList.map(obj => obj.comments.L);
@@ -406,14 +388,10 @@ var getWallListAjax = function (req, res) {
         data.forEach(function (r) {
           friendsList.push(r);
         });
-        console.log(friendsList);
         recGetAllWalls(friendsList, tempList, req.session.currWall, 0, function (postsList) {
-          console.log("postsList");
-          console.log(postsList);
           if (postsList.length > 1) {
             postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
           }
-          console.log(postsList);
           res.send(JSON.stringify(postsList));
 
           if (err) {
@@ -427,12 +405,9 @@ var getWallListAjax = function (req, res) {
 
 var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, callback) {
   if (counter >= recFriendsList.length) {
-    console.log("recWallsList");
-    console.log(recWallsList);
     callback(recWallsList);
   } else {
     db.getAllWallsAsSender(recFriendsList[counter], sender, function (err, data) {
-      console.log("asSe" + data);
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
       var likesArr = data.map(obj => obj.likes.L);
@@ -462,15 +437,12 @@ var getIsWallAFriend = function (req, res) {
     if(err) {
       console.log(err);
     }
-    console.log(data);
     var isFriend = {BOOL: false};
-    console.log(req.session);
     if(req.session.username === req.session.currWall) {
       isFriend = {BOOL: true};
       res.send(isFriend);
     } else {
       data.forEach(function (r) {
-        console.log(r);
         if(r === req.session.currWall) {
           isFriend = {BOOL: true};
           res.send(isFriend);
@@ -489,11 +461,11 @@ var getIsWallAFriend = function (req, res) {
 var postNewWallAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = { 
+  var postType = {
     S: "walls"
   };
   if (content.length != 0 && timepost.length != 0) {
-    db.createWall(req.session.currWall, req.session.username, content, timepost, postType, function (err, data) { });
+    db.createWall(req.session.currWall, req.session.username, content, timepost, function (err, data) { });
 
     var response = {
       "userID": req.session.username + " to " + req.session.currWall,
@@ -509,9 +481,7 @@ var postNewWallAjax = function (req, res) {
 }
 
 var getEditUserInfoAjax = function (req, res) {
-  console.log("getUser");
   db.getUserInfo(req.session.username, "username", function (err, data) {
-    console.log(data);
     data.password.S = "";
     res.send(data);
   });
@@ -532,9 +502,6 @@ var postUpdateUser = function (req, res) {
   updateInfoNameList.push('fullname');
   updateInfoNameList.push('password');
   updateInfoNameList.push('pfpURL');
-
-  console.log(updateInfoList);
-  console.log(updateInfoNameList);
 
   res.render('editaccount.ejs', { "check": true });
 
@@ -562,14 +529,11 @@ var postUpdateUser = function (req, res) {
         if (err) {
           console.log(err);
         }
-        console.log(interestSet);
         for (let i = 0; i < data.length; i++) {
-          console.log(interestSet);
-          console.log(data[i].S);
           if (!interestSet.has(data[i].S)) {
             var newContent = req.session.username + " is now interested in " + data[i].S;
             var newTimepost = new Date().getTime() + "";
-            db.createPost(req.session.username, newContent, newTimepost, function (err, data) { });
+            db.createWall(req.session.username, req.session.username, newContent, newTimepost, function (err, data) { });
           }
         }
       });
@@ -582,7 +546,6 @@ var recUpdateUser = function (sessionUser, recUpdateInfoList, recUpdateInfoNameL
     callback("successfully updated user");
   } else {
     db.updateUser(sessionUser, recUpdateInfoList[counter], recUpdateInfoNameList[counter], function (err, data) {
-      console.log("callback hello");
       counter++;
       recUpdateUser(sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback);
     });
@@ -594,7 +557,6 @@ var getAllUsername = function (req, res) {
     if(err) {
       console.log(err);
     }
-    console.log(data);
     res.send(data);
   });
 }
@@ -606,54 +568,12 @@ var getVisualizer = function (req, res) {
   res.render('friendvisualizer.ejs', { "check": req.session.isVerified })
 }
 
-
-//***************************************************** */
-
-//get all restaurants and login verification and put in restaurants
-var getRestaurants = function (req, res) {
-  res.render('restaurants.ejs', { "isVerified": req.session.isVerified })
-};
-
-
-
-//ajax: get all data of restaurants
-var getRestaurantList = function (req, res) {
-  db.getAllRestaurants(function (err, data) {
-    res.send(JSON.stringify(data))
-  });
-};
-
-
-
-//create new restaurant in the db when all inputs exist
-var postNewRestaurantAjax = function (req, res) {
-  var latitude = req.body.latitude;
-  var longitude = req.body.longitude;
-  var resName = req.body.name;
-  var description = req.body.description;
-  if (latitude.length != 0 && longitude.length != 0 && resName.length != 0 && description.length != 0) {
-    db.createRestaurant(resName, latitude, longitude, description, req.session.username, function (err, data) { });
-
-    var response = {
-      "name": resName,
-      "latitude": latitude,
-      "longitude": longitude,
-      "description": description,
-      "creator": req.session.username
-    };
-
-    res.send(response);
-  } else {
-    res.send(null);
-  }
-};
-
 //ajax: deletes the restaurant data in db
-var postDeleteRestaurantAjax = function (req, res) {
-  var resName = req.body.name;
-  db.deleteRestaurant(resName, function (err, data) { });
-  res.send(resName);
-};
+// var postDeleteRestaurantAjax = function (req, res) {
+//   var resName = req.body.name;
+//   db.deleteRestaurant(resName, function (err, data) { });
+//   res.send(resName);
+// };
 
 // Send friend request
 var sendFriendRequest = function(req, res) {
@@ -711,8 +631,6 @@ var acceptFriendRequest = function(req, res) {
 var routes = {
   get_main: getMain,
   verifyUser: postResultsUser,
-  get_restaurants: getRestaurants,
-  get_restaurantList: getRestaurantList,
   get_signup: getSignup,
   get_logout: getLogout,
   get_creator: getCreator,
@@ -744,9 +662,6 @@ var routes = {
   
 
   post_newAccount: postNewAccount,
-  post_newRestaurantAjax: postNewRestaurantAjax,
-  post_deleteRestaurantAjax: postDeleteRestaurantAjax,
-  
   get_friend_visualizer: getVisualizer,
 
   //post_newRestaurant : postNewRestaurant

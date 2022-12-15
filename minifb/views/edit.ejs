@@ -373,9 +373,6 @@ border-radius: 5px;
 			$.getJSON('/getEditUserInfoAjax', function(data) {
                 console.log(data);
                 var interestArr = [];
-                var interest1 = "";
-                var interest2 = "";
-                var interest3 = "";
                 var fullname = data.fullname.S;
                 var fullnameArr = fullname.split(" ");
                 var firstnameUpd = fullnameArr[0];
@@ -385,9 +382,9 @@ border-radius: 5px;
                 var affiliationUpd = data.affiliation.S;
                 interestArr = data.interest.L;
                 var pfpURLUpd = data.pfpURL.S;
-                var interest1 = interestArr[0].S
-                var interest2 = interestArr[1].S
-                var interest3 = interestArr[2].S
+                var interest1 = interestArr[0].S;
+                var interest2 = interestArr[1].S;
+                var interest3 = interestArr[2].S;
                 console.log(interest1);
 
                 // if(interestArr.length >=1){
@@ -444,7 +441,7 @@ test_el.innerHTML =
   
 + ' <label for="interest1">interest 1:</label>'
 +  '<select name="interest1" id="interest1">'
-  + '<option value="value" selected disabled hidden>'+ interest1 + '</option>'
+  + '<option value='+interest1+'>'+ interest1 + '</option>'
  +  ' <option value="politics">politics</option>'
   +  '<option value="wellness">wellness</option>'
   +'<option value="entertainment">entertainment</option>'
@@ -467,7 +464,7 @@ test_el.innerHTML =
   
   + ' <label for="interest2">interest 2:</label>'
   +  '<select name="interest2" id="interest2">'
-    + '<option value="value" selected disabled hidden>'+ interest2 + '</option>'
+    + '<option value='+interest2+'>'+ interest2 + '</option>'
    +  ' <option value="politics">politics</option>'
     +  '<option value="wellness">wellness</option>'
     +'<option value="entertainment">entertainment</option>'
@@ -485,12 +482,11 @@ test_el.innerHTML =
       +'<option value="parents">parents</option>'
       +'</select>'
       +'</div>'
-
       +'<div class="interest">'
   
   + ' <label for="interest3">interest 3:</label>'
   +  '<select name="interest3" id="interest3">'
-    + '<option value="value" selected disabled hidden>'+ interest3 + '</option>'
+    + '<option value='+interest3+'>'+ interest3 + '</option>'
    +  ' <option value="politics">politics</option>'
     +  '<option value="wellness">wellness</option>'
     +'<option value="entertainment">entertainment</option>'

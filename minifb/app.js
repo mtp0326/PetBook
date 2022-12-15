@@ -65,7 +65,7 @@
    
    
       app.get('/', routes.get_main);
-      app.get('/restaurants', routes.get_restaurants);
+
       app.get('/signup', routes.get_signup);
       app.get('/logout', routes.get_logout);
       app.get('/chat', routes.get_chat);
@@ -74,7 +74,6 @@
       app.get('/edit', routes.get_edit);
       app.get('/news', routes.get_news);
       app.get('/newsSearch', routes.get_news_search);
-      app.get('/getList', routes.get_restaurantList);
       app.get('/getCreator', routes.get_creator);
       
       //NEW
@@ -101,8 +100,7 @@
      
       
       app.post('/createaccount', routes.post_newAccount);
-      app.post('/addList', routes.post_newRestaurantAjax);
-      app.post('/deleteList', routes.post_deleteRestaurantAjax);
+
       app.post('/editaccount', routes.post_updateUser);
       app.post('/postOtherWallPageAjax', routes.post_otherWallPageAjax);
       app.get('/getDetermineWallOwner', routes.get_determineWallOwner),

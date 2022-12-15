@@ -376,7 +376,10 @@
           var chatInviteList =[];
           invitesSet.forEach(inv => chatInviteList.push(inv));
           for (let i = chatInviteList.length - 1; i >= 0; i--) {
-            createChatInviteDiv(chatInviteList[i]);
+            if(chatInviteList[i]!==""){
+              createChatInviteDiv(chatInviteList[i]);
+            }
+            
           };
          
         });
