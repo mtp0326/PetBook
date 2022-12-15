@@ -16,6 +16,10 @@
         font-family: Arial, Helvetica, sans-serif;
         font-weight: 600;
       }
+      .like{
+        margin-top: 22px;
+        margin-left: 10px;
+      }
 
       .friendRequest {
         text-align: center;
@@ -42,6 +46,11 @@
 
       .wholeHome {
         display: flex;
+      }
+
+      .likesection {
+        display: flex;
+        color: white;
       }
 
       .card {
@@ -633,17 +642,17 @@
         getChatInvites();
       }
 
-      var refreshTime = function () {
-        getFriendsPosts();
-        getFriendRequest();
-        getFriendsOnline();
-        getChatRooms();
-        getChatInvites();
-        setTimeout(refreshTime, 5000);
-      };
-      $(document).ready(function () {
-        setTimeout(refreshTime, 5000);
-      });
+      // var refreshTime = function () {
+      //   getFriendsPosts();
+      //   getFriendRequest();
+      //   getFriendsOnline();
+      //   getChatRooms();
+      //   getChatInvites();
+      //   setTimeout(refreshTime, 5000);
+      // };
+      // $(document).ready(function () {
+      //   setTimeout(refreshTime, 5000);
+      // });
       //newly added
       function online() {
         $(document).ready(function () {
@@ -807,6 +816,7 @@
               var likesN = elementsArr[i].likes;
               var commentsN = elementsArr[i].comments;
               var postTypeN = elementsArr[i].postType;
+              var likesCount =elementsArr[i].likes;
               var Item =
               {
                 "content": contentN,
@@ -814,9 +824,11 @@
                 "likes": likesN,
                 "userID": userIDN,
                 "timepost": timepostN,
-                "postType": postTypeN
+                "postType": postTypeN,
+                "likesCount" : likesCount
               };
               friendposts.push(Item);
+              console.log(Item);
           
             }
            
@@ -857,6 +869,7 @@
         });
       }
       function createPostDiv(friendpost) {
+        console.log(friendpost.likesCount)
 
         test_el = document.createElement('div');
         var test = new Date(parseInt(friendpost.timepost));
@@ -866,6 +879,7 @@
           +
           (new Date(test)).toLocaleTimeString();
           var likeID =   "like-btn-"+ friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+          var likeCount = "like-cnt-"+ friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
         test_el.innerHTML =
           '<div class="post"><div class= "userPost">'
           + friendpost.userID +
@@ -876,9 +890,12 @@
           '<div class="content" >'
           + friendpost.content +
           '</div>'+
-          '<button type="like" class="like" id='+likeID+'>'
-         +' <img src="https://img.icons8.com/material-sharp/24/FFFFFF/facebook-like--v1.png"/>'
-        +'</button></div>'
+          '<div class = "likesection">'
+          +'<button type="like"  id='+likeID+'>'
+         +' <img src="https://img.icons8.com/material-sharp/24/FFFFFF/facebook-like--v1.png"/></button>'+
+         '<div class="like" id ='+likeCount+'>'+friendpost.likesCount+'</div></div>'
+         +'</div>'
+       
 
         var commentsArr = (friendpost.comments).map(obj => obj.S);
         for (let i = 0; i < commentsArr.length; i++) {
@@ -887,7 +904,8 @@
             + commentsArr[i] +
             '</div>';
         }
-        var commentID = "comment-button-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+        var commentID = "comment-button-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost;
+        
         var commentBarID = "comment-bar-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
         var commentContent = "commentcontent-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
         test_el.innerHTML +=
@@ -898,15 +916,17 @@
         var cardDiv = document.getElementById('wholeHome');
         cardDiv.after(test_el);
         commentButtons(commentID, commentContent, friendpost.timepost, friendpost.userID, commentBarID, friendpost.postType);
-        likeButton(likeID, friendpost.userID, friendpost.postType);
+        likeButton( friendpost.userID, friendpost.postType, friendpost.timepost);
       }
       //need time post???
 
-      function likeButton(likeID, userID, postType) {
-                hashLikeID = "#"+likeID;
+      function likeButton( userID, postType, timepost) {
+        var hashlikeID =   "#like-btn-"+ userID.split(" ").join("") + "-" + timepost
+        var likeID ="like-btn-"+ userID.split(" ").join("") + "-" + timepost
         $(document).ready(function () {
-          $(hashLikeID).click(function (e) {
+          $(hashlikeID).click(function (e) {
             console.log("like clicked!");
+            console.log(hashlikeID);
             e.preventDefault();
 
             $.ajax({
@@ -914,11 +934,16 @@
               url: "/addLikesToPost",
               data: {
                 userID: userID,
-                postType: postType
+                postType: postType,
+                timepost: timepost
               },
 
               success: function (result) {
-                alert('liked');
+               console.log(result);
+               var string = "like-cnt-"+ userID.split(" ").join("") + "-" + timepost;
+
+               document.getElementById(string).innerHTML= result.S;
+               
               
               },
               error: function (result) {

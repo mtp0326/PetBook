@@ -185,19 +185,25 @@ var getHomepagePostListAjax = function (req, res) {
   db.getAllPosts(req.session.username, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
     var commentsArr = data.map(obj => obj.comments.L);
-    var likesArr = data.map(obj => obj.likes.L);
     var userIDArr = data.map(obj => obj.userID.S);
     var timepostArr = data.map(obj => obj.timepost.S);
     var postTypeArr = data.map(obj => obj.postType.S);
+    var likesArr = data.map(function(obj) {
+      if(obj.likes == undefined) {
+        return "0";
+      } else {
+        return obj.likes.SS.length+"";
+      }
+    })
 
     for (let i = 0; i < userIDArr.length; i++) {
       var pointer = {
         "content": contentArr[i],
         "comments": commentsArr[i],
-        "likes": likesArr[i],
         "userID": userIDArr[i],
         "timepost": timepostArr[i],
-        "postType": postTypeArr[i]
+        "postType": postTypeArr[i],
+        "likes": likesArr[i]
       };
       tempList.push(pointer);
     }
@@ -205,19 +211,25 @@ var getHomepagePostListAjax = function (req, res) {
     db.getAllWalls(req.session.username, function (err, data) {
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
-      var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
       var timepostArr = data.map(obj => obj.timepost.S);
       var postTypeArr = data.map(obj => obj.postType.S);
+      var likesArr = data.map(function(obj) {
+        if(obj.likes == undefined) {
+          return "0";
+        } else {
+          return obj.likes.SS.length+"";
+        }
+      })
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
           "content": contentArr[i],
           "comments": commentsArr[i],
-          "likes": likesArr[i],
           "userID": userIDArr[i],
           "timepost": timepostArr[i],
-          "postType": postTypeArr[i]
+          "postType": postTypeArr[i],
+          "likes": likesArr[i]
         };
         tempList.push(pointer);
       }
@@ -247,19 +259,25 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
     db.getAllPosts(recFriendsList[counter], function (err, data) {
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
-      var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.userID.S);
       var timepostArr = data.map(obj => obj.timepost.S);
       var postTypeArr = data.map(obj => obj.postType.S);
+      var likesArr = data.map(function(obj) {
+      if(obj.likes == undefined) {
+        return "0";
+      } else {
+        return obj.likes.SS.length+"";
+      }
+    })
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
           "content": contentArr[i],
           "comments": commentsArr[i],
-          "likes": likesArr[i],
           "userID": userIDArr[i],
           "timepost": timepostArr[i],
-          "postType": postTypeArr[i]
+          "postType": postTypeArr[i],
+          "likes": likesArr[i]
         };
         recPostsList.push(pointer);
       }
@@ -267,19 +285,25 @@ var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) 
       db.getAllWalls(recFriendsList[counter], function (err, data) {
         var contentArr = data.map(obj => obj.content.S);
         var commentsArr = data.map(obj => obj.comments.L);
-        var likesArr = data.map(obj => obj.likes.L);
         var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
         var timepostArr = data.map(obj => obj.timepost.S);
         var postTypeArr = data.map(obj => obj.postType.S);
+        var likesArr = data.map(function(obj) {
+          if(obj.likes == undefined) {
+            return "0";
+          } else {
+            return obj.likes.SS.length+"";
+          }
+        })
 
         for (let i = 0; i < userIDArr.length; i++) {
           var pointer = {
             "content": contentArr[i],
             "comments": commentsArr[i],
-            "likes": likesArr[i],
             "userID": userIDArr[i],
             "timepost": timepostArr[i],
-            "postType": postTypeArr[i]
+            "postType": postTypeArr[i],
+            "likes": likesArr[i]
           };
           recPostsList.push(pointer);
         }
@@ -346,38 +370,50 @@ var getWallListAjax = function (req, res) {
   db.getAllPosts(req.session.currWall, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
     var commentsArr = data.map(obj => obj.comments.L);
-    var likesArr = data.map(obj => obj.likes.L);
     var userIDArr = data.map(obj => obj.userID.S);
     var timepostArr = data.map(obj => obj.timepost.S);
     var postTypeArr = data.map(obj => obj.postType.S);
+    var likesArr = data.map(function(obj) {
+      if(obj.likes == undefined) {
+        return "0";
+      } else {
+        return obj.likes.SS.length+"";
+      }
+    })
 
     for (let i = 0; i < userIDArr.length; i++) {
       var pointer = {
         "content": contentArr[i],
         "comments": commentsArr[i],
-        "likes": likesArr[i],
         "userID": userIDArr[i],
         "timepost": timepostArr[i],
-        "postType": postTypeArr[i]
+        "postType": postTypeArr[i],
+        "likes": likesArr[i]
       };
       tempList.push(pointer);
     }
     db.getAllWalls(req.session.currWall, function (err, postsList) {
       var contentArr = postsList.map(obj => obj.content.S);
       var commentsArr = postsList.map(obj => obj.comments.L);
-      var likesArr = postsList.map(obj => obj.likes.L);
       var userIDArr = postsList.map(obj => obj.sender.S + " to " + obj.receiver.S);
       var timepostArr = postsList.map(obj => obj.timepost.S);
       var postTypeArr = data.map(obj => obj.postType.S);
+      var likesArr = data.map(function(obj) {
+        if(obj.likes == undefined) {
+          return "0";
+        } else {
+          return obj.likes.SS.length+"";
+        }
+      })
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
           "content": contentArr[i],
           "comments": commentsArr[i],
-          "likes": likesArr[i],
           "userID": userIDArr[i],
           "timepost": timepostArr[i],
-          "postType": postTypeArr[i]
+          "postType": postTypeArr[i],
+          "likes": likesArr[i]
         };
         tempList.push(pointer);
       }
@@ -409,19 +445,25 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
     db.getAllWallsAsSender(recFriendsList[counter], sender, function (err, data) {
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
-      var likesArr = data.map(obj => obj.likes.L);
       var userIDArr = data.map(obj => obj.sender.S + " to " + obj.receiver.S);
       var timepostArr = data.map(obj => obj.timepost.S);
       var postTypeArr = data.map(obj => obj.postType.S);
+      var likesArr = data.map(function(obj) {
+        if(obj.likes == undefined) {
+          return "0";
+        } else {
+          return obj.likes.SS.length+"";
+        }
+      })
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
           "content": contentArr[i],
           "comments": commentsArr[i],
-          "likes": likesArr[i],
           "userID": userIDArr[i],
           "timepost": timepostArr[i],
-          "postType": postTypeArr[i]
+          "postType": postTypeArr[i],
+          "likes": likesArr[i]
         };
         recWallsList.push(pointer);
       }
@@ -627,16 +669,15 @@ var acceptFriendRequest = function(req, res) {
 var addLikesToPost = function (req, res) {
   var userID = req.body.userID;
   var postType = req.body.postType;
+  var timepost = req.body.timepost;
   var likedUser = req.session.username;
   
-  db.addLike(userID, likedUser, postType, function(err, data) {
+  db.addLike(userID, likedUser, timepost, postType, function(err, data) {
     if (err != null) {
       console.log(err);
     } else {
-      console.log(data);
-      console.log(data.size);
       var likedNumber = {
-        N: data.size
+        S: data.length
       }
       res.send(likedNumber);
     }
