@@ -65,7 +65,6 @@
    
    
       app.get('/', routes.get_main);
-
       app.get('/signup', routes.get_signup);
       app.get('/logout', routes.get_logout);
       app.get('/chat', routes.get_chat);
@@ -87,9 +86,10 @@
       app.post('/createcomment', routes.post_newCommentAjax);
       app.post('/createwall', routes.post_newWallAjax);
       app.post('/postUpdateUser', routes.post_updateUser);
+      app.post('/addLikesToPost', routes.post_addLikesToPost);
       
       app.post('/checklogin', routes.verifyUser);
-      app.get('/getIsWallAFriend', routes.get_isWallAFriend),
+      app.get('/getIsWallAFriend', routes.get_isWallAFriend);
 
       
       app.post('/sendFriendRequest', routes.send_friend_request);
@@ -100,7 +100,6 @@
      
       
       app.post('/createaccount', routes.post_newAccount);
-
       app.post('/editaccount', routes.post_updateUser);
       app.post('/postOtherWallPageAjax', routes.post_otherWallPageAjax);
       app.get('/getDetermineWallOwner', routes.get_determineWallOwner),

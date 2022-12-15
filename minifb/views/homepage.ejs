@@ -29,6 +29,16 @@
         margin-left: 50px;
         background-color: #ffffff;
       }
+      button[type=like] {
+     
+     padding-top: 20px;
+     background-color: #5e97dc;
+     color: #fff;
+     border-radius: 0px;
+     border: 0;
+     box-shadow:0;
+     display: inline-block;
+   }
 
       .wholeHome {
         display: flex;
@@ -855,6 +865,7 @@
           " "
           +
           (new Date(test)).toLocaleTimeString();
+          var likeID =   "like-btn-"+ friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
         test_el.innerHTML =
           '<div class="post"><div class= "userPost">'
           + friendpost.userID +
@@ -864,8 +875,11 @@
           '</div>' +
           '<div class="content" >'
           + friendpost.content +
-          '</div></div>'
-          ;
+          '</div>'+
+          '<button type="like" class="like" id='+likeID+'>'
+         +' <img src="https://img.icons8.com/material-sharp/24/FFFFFF/facebook-like--v1.png"/>'
+        +'</button></div>'
+
         var commentsArr = (friendpost.comments).map(obj => obj.S);
         for (let i = 0; i < commentsArr.length; i++) {
           test_el.innerHTML +=
@@ -884,6 +898,39 @@
         var cardDiv = document.getElementById('wholeHome');
         cardDiv.after(test_el);
         commentButtons(commentID, commentContent, friendpost.timepost, friendpost.userID, commentBarID, friendpost.postType);
+        likeButton(likeID, friendpost.userID, friendpost.postType);
+      }
+      //need time post???
+
+      function likeButton(likeID, userID, postType) {
+                hashLikeID = "#"+likeID;
+        $(document).ready(function () {
+          $(hashLikeID).click(function (e) {
+            console.log("like clicked!");
+            e.preventDefault();
+
+            $.ajax({
+              type: "POST",
+              url: "/addLikesToPost",
+              data: {
+                userID: userID,
+                postType: postType
+              },
+
+              success: function (result) {
+                alert('liked');
+              
+              },
+              error: function (result) {
+                alert('accept friend error');
+              }
+            });
+
+
+
+          });
+
+        });
       }
       function commentButtons(commentIDBefore, commentCon, time, postUserID, commentBarID, postType) {
         $(document).ready(function () {

@@ -297,6 +297,18 @@
         display: inline-block;
       }
 
+      button[type=like] {
+     
+        padding-top: 20px;
+        background-color: #5e97dc;
+        color: #fff;
+        border-radius: 0px;
+        border: 0;
+        box-shadow:0;
+        display: inline-block;
+      }
+
+
       button[type=post] {
         appearance: none;
         -webkit-appearance: none;
@@ -321,11 +333,11 @@
     $(document).ready(function () {
          
          $.getJSON('/getUserInfo', function (data) {
+            console.log(data);
 
-         
              var pfp= data.pfpURL.S
+             var news = data.recommended.SS
             
-         
             pfpFinalnav = 
             '<img class="profile-pic-nav"src='+ pfp+'>';
             pfpFinalpro = 
@@ -335,15 +347,63 @@
 
              document.getElementById("navpicdiv").innerHTML = pfpFinalnav;
 
-             document.getElementById("profilepicurl").innerHTML = pfpFinalpro;
+             for(let i = 0 ; i < news.length; i++){
+                createNewsDiv(news[0]);
+             }
 
-            
 
-         
 
+    
 
          });
        });
+
+       function createNewsDiv(news) {
+              test_el = document.createElement('div');
+              var newsDash = news.replace(/\s+/g, '-').toLowerCase();
+                likeID = "like-btn-"+newsDash;
+              test_el.innerHTML =
+                '<div class="post">'
+                +'<div class="content" >'
+                + news +
+                '</div>'+ 
+                '<button type="like" class="like" id='+likeID+'>'
+         +' <img src="https://img.icons8.com/material-sharp/24/FFFFFF/facebook-like--v1.png"/>'
+        +'</button></div>'
+              document.body.appendChild(test_el);
+
+              likeButton(likeID);
+            }
+
+            function likeButton(likeID) {
+                hashLikeID = "#"+likeID;
+        // $(document).ready(function () {
+        //   $(hashLikeID).click(function (e) {
+        //     console.log("like clicked!");
+        //     e.preventDefault();
+
+        //     $.ajax({
+        //       type: "POST",
+        //       url: "/addLikesToPost",
+        //       data: {
+        //         sender: friendReq
+        //       },
+
+        //       success: function (result) {
+        //         alert('liked');
+              
+        //       },
+        //       error: function (result) {
+        //         alert('accept friend error');
+        //       }
+        //     });
+
+
+
+        //   });
+
+        // });
+      }
 
 </script>
 
