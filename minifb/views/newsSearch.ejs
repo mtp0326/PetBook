@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>News</title>
+ 
+  <% if (check) { %>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+      body {
+        height: 100%;
+        background-color: #eeeeee;
+        margin: 100;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 600;
+      }
+
+      
+
+      .card {
+        border-radius: 10px;
+        width: 500px;
+        padding: 20px;
+        margin-left: 80px;
+        margin-right: auto;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        
+        background-color: #ffffff;
+      }
+
+      .profile {
+        text-align: center;
+        border-radius: 10px;
+        width: 300px;
+        height: 400px;
+        padding: 20px;
+        top: 20px;
+        left: 20px;
+        margin-top: 30px;
+        margin-left: 50px;
+        background-color: #ffffff;
+      }
+      .whole{
+        display:flex;
+      }
+      .wallPic {
+        width: 150px;
+        height: 150px;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
+      }
+
+      .post {
+        border-radius: 10px;
+        width: 500px;
+        padding: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-top: 30px;
+        background-color: #5e97dc;
+      }
+
+      .comments {
+        border-radius: 10px;
+        width: 500px;
+        padding: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 5px;
+        margin-top: 5px;
+        border-color: #3681de;
+        border-width: 10px;
+        background-color: #ffffff;
+      }
+
+      /* post */
+      .user {
+        font-size: 20px;
+        padding-right: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        display: inline-block;
+        color: white;
+      }
+
+      .time {
+        font-size: 10px;
+        display: inline-block;
+        color: white;
+      }
+
+      .content {
+        border-radius: 10px;
+        width: 100%;
+        padding: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        background-color: #ffffff;
+      }
+
+      .profile-pic {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
+      }
+
+      .profile-pic-nav {
+        float: left;
+        width: 40px;
+        height: 40px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        border-radius: 50%;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
+      }
+
+      h3 {
+        display: inline-block;
+        padding-bottom: 0px;
+        padding-left: 20px;
+      }
+
+      textarea.posttext {
+        padding: 10px 10px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        color: #000000;
+        border: 1px solid #F5F5F5;
+        font-size: 16px;
+        letter-spacing: 1px;
+        height: 200px;
+        width: 100%;
+      }
+
+      textarea.comment {
+        padding: 10px 0px;
+        margin-left: 450px;
+        margin-top: 10px;
+        margin-right: 0px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        color: #585858;
+        border: 1px solid #F5F5F5;
+        font-size: 16px;
+        letter-spacing: 1px;
+        height: 40px !important;
+        width: 420px;
+        display: inline-block;
+      }
+
+      textarea:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        border: 1px solid #ffffff !important;
+        outline-width: 0 !important;
+      }
+
+      select {
+        border: none;
+        font-size: 15px;
+        background-color: #fff !important;
+      }
+
+      select:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        outline-width: 0 !important;
+      }
+
+      ::placeholder {
+        color: #BDBDBD;
+      }
+
+      :-ms-input-placeholder {
+        color: #BDBDBD;
+      }
+
+      ::-ms-input-placeholder {
+        color: #BDBDBD;
+      }
+
+      .btn-success {
+        border-radius: 50px;
+        padding: 4px 40px;
+      }
+
+      .options {
+        font-size: 23px;
+        color: #757575;
+        cursor: pointer;
+      }
+
+      .options:hover {
+        color: #000;
+      }
+
+      .topnav {
+        overflow: hidden;
+        background-color: #ffffff;
+      }
+
+      .topnav a {
+        float: left;
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+
+      .topnav a:hover {
+        background-color: #d1d1d1;
+        color: black;
+      }
+
+      .topnav a.active {
+        background-color: #0668E1;
+        color: rgb(255, 255, 255);
+      }
+
+      .topnav .search-container {
+        float: right;
+      }
+
+      .topnav input[type=text] {
+        padding: 6px;
+        margin-top: 8px;
+        font-size: 17px;
+        border: none;
+      }
+
+      .topnav .search-container button {
+        float: right;
+        padding: 6px 10px;
+        margin-top: 8px;
+        margin-right: 16px;
+        background: rgb(166, 166, 167);
+        font-size: 17px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .topnav .search-container button:hover {
+        background: rgb(148, 147, 147);
+      }
+
+      @media screen and (max-width: 600px) {
+        .topnav .search-container {
+          float: none;
+        }
+
+        .topnav a,
+        .topnav input[type=text],
+        .topnav .search-container button {
+          float: none;
+          display: block;
+          text-align: left;
+          width: 100%;
+          margin: 0;
+          padding: 14px;
+        }
+
+        .topnav input[type=text] {
+          border: 1px solid #ccc;
+        }
+      }
+
+      button[type=comment] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 20px;
+        text-align: top;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0668E1;
+        color: #fff;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
+      button[type=post] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 10px;
+        margin: 10px 0;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0b994d;
+        color: #fff;
+        border-radius: 5px;
+      }
+    </style>
+     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    </script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+         
+         $.getJSON('/getUserInfo', function (data) {
+
+         
+             var pfp= data.pfpURL.S
+            
+         
+            pfpFinalnav = 
+            '<img class="profile-pic-nav"src='+ pfp+'>';
+            pfpFinalpro = 
+            '<img class="profile-pic"src='+ pfp+'>';
+           
+   
+
+             document.getElementById("navpicdiv").innerHTML = pfpFinalnav;
+
+             document.getElementById("profilepicurl").innerHTML = pfpFinalpro;
+
+            
+
+         
+
+
+         });
+       });
+
+</script>
+
+<% } else { %>
+    <script>
+      alert("login required")
+    </script>
+    <% } %>
+  
+
+</head>
+
+
+
+<html>
+
+<body>
+  <div class="topnav">
+    <div id = "navpicdiv">
+    </div>
+    <a href="/homepage">Home</a>
+    <a href="/wall">Wall</a>
+    <a href="/news">News</a>
+    <a class="active" href="/newsSearch">Search News</a>
+    <a href="/visualizer">Visualizer</a>
+    <a href="/edit">Edit</a>
+    <a href="/logout">Logout</a>
+
+ 
+  </div>
+ 
+</body>
+
+</html>

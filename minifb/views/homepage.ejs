@@ -691,19 +691,16 @@
 
       function createFriendReqDiv(friendReq) {
         test_el = document.createElement('div');
-
-        test_el.innerHTML =
-          '<div class="friendReq"><div class= "friendReq">'
-          + friendReq +
-          '</div>';
+        var string = "friendReq-"+friendReq
+       
 
         var acceptID = "accept-invite-button-" + friendReq
-        test_el.innerHTML +=
-          '<button type = "accept" id = ' + acceptID + '>accept</button></div>'
-
         var rejectID = "reject-invite-button-" + friendReq
         test_el.innerHTML +=
-          '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+        '<div id='+string+'>'
+          + friendReq+'<button type = "accept" id = ' + acceptID + '>accept</button>'
+
+         + '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
         document.body.appendChild(test_el);
 
         var onlineFriendsDiv = document.getElementById('frTitle');
@@ -718,6 +715,10 @@
         $(document).ready(function () {
           $(acceptID).click(function (e) {
             console.log("accept clicked!");
+       
+                var string = "friendReq-"+friendReq;
+                console.log(string);
+                document.getElementById(string).innerHTML= "";
             e.preventDefault();
 
             $.ajax({
@@ -729,7 +730,9 @@
 
               success: function (result) {
                 alert('acceptedInvite');
-                console.log(result);
+              
+
+
 
               },
               error: function (result) {
@@ -748,6 +751,10 @@
         $(document).ready(function () {
           $(rejectID).click(function (e) {
             console.log("reject clicked!");
+         
+                var string = "friendReq-"+friendReq;
+                console.log(string);
+                document.getElementById(string).innerHTML= "";
             e.preventDefault();
 
             $.ajax({
@@ -759,7 +766,7 @@
 
               success: function (result) {
                 alert('rejectedInvite');
-                console.log(result);
+               
 
               },
               error: function (result) {
@@ -886,6 +893,8 @@
             e.preventDefault();
             var contentUpd = document.getElementsByName(commentCon)[0].value;
             document.getElementsByName(commentCon)[0].value = "";
+            
+            
            
             var contentWithUser = sessionCreator + ": " + contentUpd;
         
@@ -1111,18 +1120,20 @@
       function createChatInviteDiv(chatinvite) {
         test_el = document.createElement('div');
 
-        test_el.innerHTML =
-          '<div class="onlinefriend"><div class= "chatInviteID">'
-          + chatinvite +
-          '</div>';
+        var string = "chatInvite-"+chatinvite
+       
 
-        var acceptID = "accept-invite-button-" + chatinvite
-        test_el.innerHTML +=
-          '<button type = "accept" id = ' + acceptID + '>accept</button></div>'
+       var acceptID = "accept-invite-button-" + chatinvite
+       var rejectID = "reject-invite-button-" + chatinvite
+       test_el.innerHTML +=
+       '<div id='+string+'>'
+         + chatinvite+'<button type = "accept" id = ' + acceptID + '>accept</button>'
 
-        var rejectID = "reject-invite-button-" + chatinvite
-        test_el.innerHTML +=
-          '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+        + '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+
+        
+
+       
         document.body.appendChild(test_el);
 
         var onlineFriendsDiv = document.getElementById('chatinvites');
@@ -1137,6 +1148,9 @@
         $(document).ready(function () {
           $(acceptID).click(function (e) {
             console.log("reject clicked!");
+            var string = "chatInvite-"+chatInvite;
+                console.log(string);
+                document.getElementById(string).innerHTML= "";
             e.preventDefault();
 
             $.ajax({
@@ -1167,6 +1181,9 @@
         $(document).ready(function () {
           $(acceptID).click(function (e) {
             console.log("accept clicked!");
+            var string = "chatInvite-"+chatInvite;
+                console.log(string);
+                document.getElementById(string).innerHTML= "";
             e.preventDefault();
 
             $.ajax({
@@ -1200,14 +1217,17 @@
     
 
         var onlinefriendname = onlinefriend.name.S;
-        test_el.innerHTML =
-          '<div class="onlinefriend"><div class= "user">'
-          + onlinefriendname +
-          '</div>';
-    
+
+        var string = "onlinefriend-" + onlinefriendname
+       
+
         var inviteID = "invite-button-" + onlinefriendname
-        test_el.innerHTML +=
-          '<button type = "invite" id = ' + inviteID + '>invite</button></div>'
+       test_el.innerHTML +=
+       '<div id='+string+'>'
+         + onlinefriendname+'<button type = "accept" id = ' + inviteID + '>invite</button>'
+
+       
+
         document.body.appendChild(test_el);
         var onlineFriendsDiv = document.getElementById('online-friends');
         onlineFriendsDiv.after(test_el);
@@ -1420,7 +1440,7 @@
                 "users": result.userIDs
               };
         
-              createChatRoomButton(Item);
+             
             },
             error: function (result) {
               console.log(result);
@@ -1566,6 +1586,7 @@
     <a class="active" href="/homepage">Home</a>
     <a href="/wall">Wall</a>
     <a href="/news">News</a>
+    <a href="/newsSearch">Search News</a>
     <a href="/visualizer">Visualizer</a>
     <a href="/edit">Edit</a>
     <a href="/logout">Logout</a>
