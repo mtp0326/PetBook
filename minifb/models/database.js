@@ -646,6 +646,25 @@ var myDB_addLike = function(userID, likedUser, timepost, postType, callback) {
       });
 	});
 }
+
+// Deletes a friend
+var myDB_deleteFriend = function(username, friend, callback) {
+  var friendSet = {SS: [friend]};
+  var params = {
+    TableName: "users",
+    Key: {"username" : {S: username}},
+    UpdateExpression: "DELETE friends :a",
+    ExpressionAttributeValues : {
+      ":a": friendSet
+    },
+  };
+  db.updateItem(params, function(err, data) {
+    if (err) {
+      console.log("Error", err);
+    }
+    callback(err, data);
+  });
+}
 // TODO Your own functions for accessing the DynamoDB tables should go here
 
 /* We define an object with one field for each method. For instance, below we have
@@ -678,7 +697,8 @@ var database = {
   updateEmail: myDB_updateEmail,
   updatePw: myDB_updatepw,
   updateInterest: myDB_updateInterest,
-  updateUser: myDB_updateUser
+  updateUser: myDB_updateUser,
+  deleteFriend: myDB_deleteFriend
 
 
 };

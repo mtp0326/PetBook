@@ -625,6 +625,7 @@ var sendFriendRequest = function(req, res) {
 		db.addRequest(receiver, req.session.username, function(err, data) {
 			if (err) {
 				console.log(err);
+        res.send({ S: "sent friend request"});
 			}
 		});
 	}
@@ -684,6 +685,20 @@ var addLikesToPost = function (req, res) {
   })
 }
 
+var postDeleteFriend = function(req, res){
+  var friend = req.body.friend;
+  db.deleteFriend(req.session.username, friend, function (err, data) {
+    res.send({S: "deleted friend"});
+  })
+}
+
+var getFriendList = function(req, res){
+  db.getFriends(req.session.username, function (err, data) {
+    console.log({L : data});
+    res.send({L : data});
+  })
+}
+
 // TODO Don't forget to add any new functions to this class, so app.js can call them. (The name before the colon is the name you'd use for the function in app.js; the name after the colon is the name the method has here, in this file.)
 
 var routes = {
@@ -722,6 +737,8 @@ var routes = {
 
   post_newAccount: postNewAccount,
   get_friend_visualizer: getVisualizer,
+  post_deleteFriend: postDeleteFriend,
+  get_friendList: getFriendList
 
   //post_newRestaurant : postNewRestaurant
 };

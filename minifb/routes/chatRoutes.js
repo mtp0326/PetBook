@@ -198,6 +198,7 @@ var addOnlineUser = function (req, res) {
 	} else {
 		chatdb.addUserOnline(req.session.username, function (err, data) {
 			if (err) { console.log(err); }
+			res.send({S : "added online user"});
 		});
 	}
 }
@@ -218,9 +219,9 @@ var inviteUser = function(req, res) {
 }
 
 // User rejects chat invite
-var rejectInvite = function(req, res) {
+var rejectInvite = function(req, res) {    
 	var groupChatID = req.body.chatID;
-	if (!req.session.username) {
+	if (!req.session.username)   {
 		res.render('main.ejs', { message: "Not logged in" });
 	} else {
 		chatdb.deleteInvite(req.session.username, groupChatID, function(err, data) {

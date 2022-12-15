@@ -102,8 +102,10 @@
       app.post('/createaccount', routes.post_newAccount);
       app.post('/editaccount', routes.post_updateUser);
       app.post('/postOtherWallPageAjax', routes.post_otherWallPageAjax);
-      app.get('/getDetermineWallOwner', routes.get_determineWallOwner),
-      app.get('/getUserInfo', routes.get_userInfo),
+      app.get('/getDetermineWallOwner', routes.get_determineWallOwner);
+      app.get('/getUserInfo', routes.get_userInfo);
+      app.post('/deleteFriend', routes.post_deleteFriend); //TRY THIS!
+      app.get('/getFriendList', routes.get_friendList); //TRY THIS!!
       //chat
       app.get('/getonlineusers', chats.get_online_users);
       app.get('/getchat', chats.get_chat);

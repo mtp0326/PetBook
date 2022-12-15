@@ -470,23 +470,22 @@ setTimeout(refreshTime, 5000);
                   friend = friendBool.BOOL;
 
                   console.log(friend);
-                  test_el = document.createElement('div');
+                
               
                   if(friend){
                     console.log("is friend");
-                    test_el.innerHTML +=
-                '<div class = "isfriend" id = isfriend>friend</div>'
-                document.body.appendChild(test_el);
-                var cardDiv = document.getElementById('wallInterest');
-                cardDiv.after(test_el);
+                     var test_el= '<button type = "removefriend" id = "removefriend">remove friend</button></div>'
+         
+                var cardDiv = document.getElementById('friendBoolButton').innerHTML = test_el;
+               
+                removeFriendButtons();
                   }
                   else{
                     console.log("is not friend");
-                    test_el.innerHTML +=
+                    var test_el =
                 '<button type = "addfriend" id = "addfriend">add friend</button></div>'
-                document.body.appendChild(test_el);
-                var cardDiv = document.getElementById('wallInterest');
-                cardDiv.after(test_el);
+             
+                var cardDiv = document.getElementById('friendBoolButton').innerHTML = test_el;
                 addFriendButtons();
                   }
                 });
@@ -510,6 +509,37 @@ setTimeout(refreshTime, 5000);
 
                     success: function(result) {
                     alert('friend request sent');
+
+                    },
+                error: function(result) {
+                    alert('friend request error');
+                }
+            });
+    
+
+        });
+
+      });
+    }
+
+    function removeFriendButtons() {
+      $(document).ready(function () {
+        $("#removefriend").click(function (e) {
+      
+            console.log("remove clicked!");
+            console.log(wallOwner);
+           
+            e.preventDefault();
+                    $.ajax({
+                      type: "POST",
+                      url: "/deleteFriend",
+                      data:{ 
+                          friend : wallOwner
+                      },
+
+                    success: function(result) {
+                    alert('friend deleted');
+                    getBoolFriend();
 
                     },
                 error: function(result) {
@@ -770,6 +800,8 @@ setTimeout(refreshTime, 5000);
         <h4>
           <div id="wallInterest"></div>
         </h4>
+        <div id = "friendBoolButton">
+        </div>
   
       </div>
      

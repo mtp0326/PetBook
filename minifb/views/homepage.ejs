@@ -33,6 +33,19 @@
         margin-left: 50px;
         background-color: #ffffff;
       }
+
+      .friendList {
+        text-align: center;
+        border-radius: 10px;
+        width: 300px;
+        height: 400px;
+        padding: 20px;
+        top: 20px;
+        left: 20px;
+        margin-top: 30px;
+       
+        background-color: #ffffff;
+      }
       button[type=like] {
      
      padding-top: 20px;
@@ -58,7 +71,8 @@
         width: 500px;
         padding: 20px;
         margin-left: 80px;
-        margin-right: auto;
+        margin-right: 80px;
+        
         margin-bottom: 30px;
         margin-top: 30px;
         background-color: #ffffff;
@@ -596,6 +610,7 @@
       var activegc = [];
       var globalPostList = [];
       var globalRequestList = [];
+      var globalFriendList = [];
       var globalOnlineList = [];
       var globalRoomList = [];
       var globalInviteList = [];
@@ -640,19 +655,21 @@
         getFriendsOnline();
         getChatRooms();
         getChatInvites();
+        getFriendList();
       }
 
-      // var refreshTime = function () {
-      //   getFriendsPosts();
-      //   getFriendRequest();
-      //   getFriendsOnline();
-      //   getChatRooms();
-      //   getChatInvites();
-      //   setTimeout(refreshTime, 5000);
-      // };
-      // $(document).ready(function () {
-      //   setTimeout(refreshTime, 5000);
-      // });
+      var refreshTime = function () {
+        getFriendsPosts();
+        getFriendRequest();
+        getFriendsOnline();
+        getChatRooms();
+        getChatInvites();
+        getFriendList()
+        setTimeout(refreshTime, 5000);
+      };
+      $(document).ready(function () {
+        setTimeout(refreshTime, 5000);
+      });
       //newly added
       function online() {
         $(document).ready(function () {
@@ -670,6 +687,38 @@
             error: function (result) {
               alert('add online error');
             }
+          });
+        });
+      }
+
+    
+      function getFriendList() {
+        $(document).ready(function () {
+         
+          $.getJSON('/getFriendList', function (data) {
+            if (data == undefined) {
+              console.log("no requests")
+            }
+            else {
+              
+              var friendList = data.L;
+             
+               
+
+            var difference = $.grep(friendList, (item) => $.inArray(item, globalFriendList) === -1);
+           console.log(difference);
+
+          
+
+            for (let i = difference.length - 1; i >= 0; i--) {
+              createFriendDiv(difference[i]);
+            };
+            globalFriendList = friendList;
+
+
+            }
+
+
           });
         });
       }
@@ -706,6 +755,19 @@
 
           });
         });
+      }
+
+      function createFriendDiv(friend) {
+        test_el = document.createElement('div');
+       
+        test_el.innerHTML =
+        '<div id= "friend">'+friend+'</div'
+          
+        document.body.appendChild(test_el);
+
+        var onlineFriendsDiv = document.getElementById('flTitle');
+        onlineFriendsDiv.after(test_el);
+       
       }
 
       function createFriendReqDiv(friendReq) {
@@ -1696,6 +1758,14 @@
         <textarea class="posttext" placeholder="what's on your mind today?" name="postcontent"></textarea>
       </div>
       <button type="post" id="post-button">Post</button>
+    </div>
+
+    <div class="friendList">
+      <div id="flTitle">
+        <h2>Friend List</h2>
+      </div>
+      <div class="friendListLog">
+      </div>
     </div>
   </div>
 
