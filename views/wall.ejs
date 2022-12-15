@@ -17,15 +17,41 @@
         font-weight: 600;
       }
 
+      
+
       .card {
         border-radius: 10px;
         width: 500px;
         padding: 20px;
-        margin-left: auto;
+        margin-left: 80px;
         margin-right: auto;
         margin-bottom: 30px;
         margin-top: 30px;
+        
         background-color: #ffffff;
+      }
+
+      .profile {
+        text-align: center;
+        border-radius: 10px;
+        width: 300px;
+        height: 400px;
+        padding: 20px;
+        top: 20px;
+        left: 20px;
+        margin-top: 30px;
+        margin-left: 50px;
+        background-color: #ffffff;
+      }
+      .whole{
+        display:flex;
+      }
+      .wallPic {
+        width: 150px;
+        height: 150px;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
       }
 
       .post {
@@ -294,12 +320,14 @@
 
       <script type="text/javascript">
         var sessionCreator = "";
+        var wallOwner = "";
         window.onload = function () {
 
           const urlParams = new URLSearchParams(window.location.search);
           const currWallUser = urlParams.get('search');
           console.log("search results: ");
           console.log(currWallUser);
+          wallOwner = currWallUser;
 
           $(document).ready(function () {
             $.ajax({
@@ -311,8 +339,10 @@
               success: function (result) {
 
                 getwallownerinfo();
+                getBoolFriend();
                 var string = "post on " + currWallUser + " 's wall...";
                 document.getElementsByName('postcontent')[0].placeholder = string;
+                
 
 
               },
@@ -331,7 +361,8 @@
           window.onload = function () {
             var string = "post something on your wall...";
             document.getElementsByName('postcontent')[0].placeholder = string;
-            getFriendsPosts();
+           
+            getwallownerinfo();
 
             // getUserInfo();
           }
@@ -356,12 +387,96 @@
                   } else {
                     console.log("success");
                     console.log(data);
+                    var fullnameP = data.fullname.S
+                    var usernameP = data.username.S
+                    var emailP = data.email.S
+                    var interestArray = data.interest.L
+                    var interestP = "";
+                    for(let i = 0; i < interestArray.length; i++){
+                      
+                      interestP +=interestArray[i].S;
+                      interestP+=" "
+                    }
+                    var affiliationP = data.affiliation.S
+                    var string = "";
+                    string = "<b>name: </b>"+fullnameP;
+                    document.getElementById("wallName").innerHTML = string;
+                    string = "<b>username: </b> @"+usernameP;
+                    document.getElementById("wallUsername").innerHTML = string;
+                    string = "<b>email: </b>"+emailP;
+                    document.getElementById("wallGmail").innerHTML = string;
+                    string = "<b>affiliation: </b>"+affiliationP;
+                    document.getElementById("wallAffiliation").innerHTML = string;
+                    string = "<b>interest: </b>"+interestP;
+                    document.getElementById("wallInterest").innerHTML = string;
+                    
                     getFriendsPosts();
-                    getBoolFriend();
+                    
                   }
                 });
               });
             }
+
+            function getBoolFriend() {
+              $(document).ready(function () {
+                $.getJSON('/getIsWallAFriend', function (friendBool) {
+                  console.log("check if user is a friend: ");
+                  friend = friendBool.BOOL;
+
+                  console.log(friend);
+                  test_el = document.createElement('div');
+              
+                  if(friend){
+                    console.log("is friend");
+                    test_el.innerHTML +=
+                '<div class = "isfriend" id = isfriend>friend</div>'
+                document.body.appendChild(test_el);
+                var cardDiv = document.getElementById('wallInterest');
+                cardDiv.after(test_el);
+                  }
+                  else{
+                    console.log("is not friend");
+                    test_el.innerHTML +=
+                '<button type = "addfriend" id = "addfriend">add friend</button></div>'
+                document.body.appendChild(test_el);
+                var cardDiv = document.getElementById('wallInterest');
+                cardDiv.after(test_el);
+                addFriendButtons();
+                  }
+                });
+              });
+            }
+
+      function addFriendButtons() {
+      $(document).ready(function () {
+        $("#addfriend").click(function (e) {
+      
+            console.log("request clicked!");
+            console.log(wallOwner);
+           
+            e.preventDefault();
+                    $.ajax({
+                      type: "POST",
+                      url: "/sendFriendRequest",
+                      data:{ 
+                          receiver : wallOwner
+                      },
+
+                    success: function(result) {
+                    alert('friend request sent');
+
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+    
+
+        });
+
+      });
+    }
+
             //calls ajax with /getList that retreives restaraut data from db
             function getFriendsPosts() {
               var friendposts = [];
@@ -404,14 +519,6 @@
                 });
               });
             }
-            
-            function getBoolFriend() {
-              $(document).ready(function () {
-                $.getJSON('/getIsWallAFriend', function (friend) {
-                  console.log(friend);
-                });
-              });
-            }
 
             function createPostDiv(friendpost) {
               test_el = document.createElement('div');
@@ -446,7 +553,7 @@
                 +
                 '<button type = "comment" id = ' + commentID + '>Comment</button></div>'
               document.body.appendChild(test_el);
-              var cardDiv = document.getElementById('cardID');
+              var cardDiv = document.getElementById('whole');
               cardDiv.after(test_el);
               var commentIDWithHash = "#" + commentID;
               commentButtons(commentIDWithHash, commentContent, friendpost.postType);
@@ -457,6 +564,8 @@
                   console.log("comment clicked!");
                   e.preventDefault();
                   var contentUpd = document.getElementsByName(commentCon)[0].value;
+                  document.getElementsByName(commentCon)[0].value = "";
+
                   console.log(contentUpd);
                   var contentWithUser = sessionCreator + ": " + contentUpd;
                   console.log(contentWithUser);
@@ -514,6 +623,7 @@
                 console.log("post clicked!");
                 e.preventDefault();
                 var contentUpd = document.getElementsByName("postcontent")[0].value;
+                document.getElementsByName("postcontent")[0].value = "";
                 $.ajax({
                   type: "POST",
                   url: "/createwall",
@@ -573,6 +683,34 @@
       </div>
     </div>
   </div>
+  <div id = "whole" class = "whole">
+    <div class="profile" id = "profileID">
+  
+      <div class="userInfo">
+       
+        <img class = "wallPic"
+          src="data:image/jpeg;base64,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">
+        <h4>
+          
+          <div id="wallName"></div>
+        </h4>
+        <h4>
+          <div id="wallUsername"></div>
+        </h4>
+        <h4>
+          <div id="wallGmail"></div>
+        </h4>
+        <h4>
+          <div id="wallAffiliation"></div>
+        </h4>
+  
+        <h4>
+          <div id="wallInterest"></div>
+        </h4>
+  
+      </div>
+     
+    </div>
   <div class="card" id="cardID">
 
     <div class="userInfo">
@@ -587,6 +725,7 @@
     </div>
     <button type="post" id="post-button">Post</button>
   </div>
+</div>
 </body>
 
 </html>

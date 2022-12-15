@@ -1,4 +1,5 @@
 var db = require('../models/database.js');
+var chatdb = require('../models/chatDB.js');
 var sjcl = require('sjcl');
 // var stemmer = require('stemmer');
 
@@ -17,6 +18,22 @@ var getHomepage = function (req, res) {
     return res.redirect('/')
   }
   res.render('homepage.ejs', { "check": req.session.isVerified })
+}
+
+var getNews = function (req, res) {
+  req.session.currWall = null;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('news.ejs', { "check": req.session.isVerified })
+}
+
+var getNewsSearch = function (req, res) {
+  req.session.currWall = null;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('newsSearch.ejs', { "check": req.session.isVerified })
 }
 
 var getWall = function (req, res) {
@@ -63,10 +80,15 @@ var getSignup = function (req, res) {
 //gets logout page
 var getLogout = function (req, res) {
   req.session.currWall = null;
-  req.session.username = null;
   req.session.isVerified = false;
-  req.session.destroy();
-  res.render('logout.ejs', {});
+  console.log("logging out");
+  res.render('main.ejs', {});
+	
+		chatdb.deleteUserOnline(req.session.username, function (err, data) {
+			if (err) { console.log(err); }
+      req.session.username = null;
+	  req.session.destroy();
+		})
 }
 
 var getChat = function (req, res) {
@@ -99,8 +121,6 @@ var getDetermineWallOwner = function (req, res) {
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
     console.log("WALL OTHER");
     console.log(data);
-
-    console.log(req.session);
    
     if (data === null) {
       req.session.currWall = null;
@@ -110,11 +130,21 @@ var getDetermineWallOwner = function (req, res) {
       db.getUserInfo(req.session.currWall, "username", function (err, data) {
         console.log("WALL DATA");
         console.log(data);
+        console.log("WALL DATA");
+        console.log(data.interest.L);
         res.send(data);
       })
     }
 
   });
+}
+
+var getUserInfo = function(req, res){
+  db.getUserInfo(req.session.username,  "username", function (err, data) {
+    console.log("USER DATA");
+    console.log(data);
+    res.send(data);
+  })
 }
 
 //check if new account can be created by receiving null (which means that username in db is empty)
@@ -130,8 +160,20 @@ var postNewAccount = function (req, res) {
       req.session.affiliation = req.body.affiliation;
       req.session.email = req.body.email;
       req.session.birthday = req.body.birthday;
-
-      var interestList = (req.body.interest.toLowerCase()).split(", ");
+      req.session.interest1 = req.body.interest1;
+      req.session.interest2 = req.body.interest2;
+      req.session.interest3 = req.body.interest3;
+      
+      var stringify1 = { 
+        S: req.session.interest1
+      };
+      var stringify2 = { 
+        S: req.session.interest2
+      };
+      var stringify3 = { 
+        S: req.session.interest3
+      };
+      var interestList = [stringify1,stringify2,stringify3];
       req.session.interest = interestList;
       req.session.pfpURL = req.body.pfpURL;
       db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
@@ -192,6 +234,7 @@ var getHomepagePostListAjax = function (req, res) {
         tempList.push(pointer);
       }
       db.getFriends(req.session.username, function (err, data) {
+        
         var friendsList = [];
         data.forEach(function (r) {
           friendsList.push(r);
@@ -268,7 +311,9 @@ var getCreator = function (req, res) {
 var postNewPostAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = "posts";
+  var postType = { 
+    S: "posts"
+  };
   if (content.length != 0 && timepost.length != 0) {
     db.createPost(req.session.username, content, timepost, postType, function (err, data) { });
 
@@ -298,7 +343,7 @@ var postNewCommentAjax = function (req, res) {
 
   if (userID.length != 0 && timepost.length != 0 && comment.length != 0) {
     console.log("passing");
-    db.addComment(userID, timepost, comment, table, function (err, data) { });
+    db.addComment(userID, timepost, comment, table, function (err, data) {});
 
     var response = {
       "userID": userID,
@@ -318,7 +363,6 @@ var getWallListAjax = function (req, res) {
   console.log("req.session.currWall: ");
   console.log(req.session.currWall);
   var tempList = [];
-  ///req.session.username into B's wall
   db.getAllPosts(req.session.currWall, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
     var commentsArr = data.map(obj => obj.comments.L);
@@ -338,7 +382,6 @@ var getWallListAjax = function (req, res) {
       };
       tempList.push(pointer);
     }
-    ///req.session.username into B's wall
     console.log("getCurrWall");
     console.log(req.session.currWall);
     db.getAllWalls(req.session.currWall, function (err, postsList) {
@@ -367,8 +410,7 @@ var getWallListAjax = function (req, res) {
           friendsList.push(r);
         });
         console.log(friendsList);
-        ///recursion as friends
-        recGetAllWalls(friendsList, tempList, req.session.username, 0, function (postsList) {
+        recGetAllWalls(friendsList, tempList, req.session.currWall, 0, function (postsList) {
           console.log("postsList");
           console.log(postsList);
           if (postsList.length > 1) {
@@ -418,11 +460,41 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
   }
 }
 
+var getIsWallAFriend = function (req, res) {
+  db.getFriends(req.session.username, function (err, data) {
+    if(err) {
+      console.log(err);
+    }
+    console.log(data);
+    var isFriend = {BOOL: false};
+    console.log(req.session);
+    if(req.session.username === req.session.currWall) {
+      isFriend = {BOOL: true};
+      res.send(isFriend);
+    } else {
+      data.forEach(function (r) {
+        console.log(r);
+        if(r === req.session.currWall) {
+          isFriend = {BOOL: true};
+          res.send(isFriend);
+        }
+      })
+      if(isFriend.BOOL === false) {
+        isFriend = {BOOL: false};
+        res.send(isFriend);
+      }
+    }
+  });
+}
+
+
 //create new wall in the db when all inputs exist in posts
 var postNewWallAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = "walls"
+  var postType = { 
+    S: "walls"
+  };
   if (content.length != 0 && timepost.length != 0) {
     db.createWall(req.session.currWall, req.session.username, content, timepost, postType, function (err, data) { });
 
@@ -472,6 +544,8 @@ var postUpdateUser = function (req, res) {
   db.getInterest(req.session.username, function (err, data) {
     var interestSet = new Set();
     for (let i = 0; i < data.length; i++) {
+      console.log("data[i]");
+      console.log(data[i]);
       interestSet.add(data[i].S);
     }
 
@@ -479,7 +553,19 @@ var postUpdateUser = function (req, res) {
       if (err) {
         console.log(err);
       }
-      db.updateInterest(req.session.username, req.body.interest, function (err, data) {
+
+      var stringify1 = { 
+        S: req.body.interest1
+      };
+      var stringify2 = { 
+        S: req.body.interest2
+      };
+      var stringify3 = { 
+        S: req.body.interest3
+      };
+      console.log("stringify2");
+      console.log(stringify2);
+      db.updateInterest(req.session.username, stringify1, stringify2, stringify3, function (err, data) {
         if (err) {
           console.log(err);
         }
@@ -527,104 +613,69 @@ var getVisualizer = function (req, res) {
   res.render('friendvisualizer.ejs', { "check": req.session.isVerified })
 }
 
-var getIsWallAFriend = function (req, res) {
-  db.getFriends(req.session.username, function (err, data) {
-    if(err) {
-      console.log(err);
-    }
-    console.log(data);
-    var isFriend = {BOOL: false};
-    console.log(req.session);
-    if(req.session.username === req.session.currWall) {
-      isFriend = {BOOL: true};
-      res.send(isFriend);
-    } else {
-      data.forEach(function (r) {
-        console.log(r);
-        if(r === req.session.currWall) {
-          isFriend = {BOOL: true};
-          res.send(isFriend);
-        }
-      })
-      if(isFriend.BOOL === false) {
-        isFriend = {BOOL: false};
-        res.send(isFriend);
-      }
-    }
-  });
+//ajax: deletes the restaurant data in db
+// var postDeleteRestaurantAjax = function (req, res) {
+//   var resName = req.body.name;
+//   db.deleteRestaurant(resName, function (err, data) { });
+//   res.send(resName);
+// };
+
+// Send friend request
+var sendFriendRequest = function(req, res) {
+	var receiver = req.body.receiver;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		db.addRequest(receiver, req.session.username, function(err, data) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}
 }
 
+// Receiver rejects friend request
+var rejectFriendRequest = function(req, res) {
+	var sender = req.body.sender;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		db.deleteRequest(req.session.username, sender, function(err, data) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}
+}
 
-//***************************************************** */
+// Receiver accepts friend request. Sender and receiver are both added to each other's friends set
+var acceptFriendRequest = function(req, res) {
+	var sender = req.body.sender;
+	if (!req.session.username) {
+		res.render('main.ejs', { message: "Not logged in" });
+	} else {
+		db.deleteRequest(req.session.username, sender, function(err1, data) {
+			if (err1) {console.log(err1);
+			} else {
+				db.addFriend(req.session.username, sender, function (err2, data) {
+					if (err2) {console.log(err2);
+					} else {
+						db.addFriend(sender, req.session.username, function (err3, data) {
+							if (err3) { console.log(err3) }
+						});
+					}
+				});
+			}
+		});
+	}
+}
 
-//get all restaurants and login verification and put in restaurants
-var getRestaurants = function (req, res) {
-  res.render('restaurants.ejs', { "isVerified": req.session.isVerified })
-};
-
-
-
-//ajax: get all data of restaurants
-var getRestaurantList = function (req, res) {
-  db.getAllRestaurants(function (err, data) {
-    res.send(JSON.stringify(data))
-  });
-};
-
-
-
-//create new restaurant in the db when all inputs exist
-var postNewRestaurantAjax = function (req, res) {
-  var latitude = req.body.latitude;
-  var longitude = req.body.longitude;
-  var resName = req.body.name;
-  var description = req.body.description;
-  if (latitude.length != 0 && longitude.length != 0 && resName.length != 0 && description.length != 0) {
-    db.createRestaurant(resName, latitude, longitude, description, req.session.username, function (err, data) { });
-
-    var response = {
-      "name": resName,
-      "latitude": latitude,
-      "longitude": longitude,
-      "description": description,
-      "creator": req.session.username
-    };
-
-    res.send(response);
-  } else {
-    res.send(null);
-  }
-};
-
-//ajax: deletes the restaurant data in db
-var postDeleteRestaurantAjax = function (req, res) {
-  var resName = req.body.name;
-  db.deleteRestaurant(resName, function (err, data) { });
-  res.send(resName);
-};
-
-//create new restaurant in the db when all inputs exist
-//var postNewRestaurant = function(req, res) {
-//  var latitude = req.body.latitude;
-//  var longitude = req.body.longitude;
-//  var resName = req.body.restaurantName;
-//  var description = req.body.description;
-//  if(latitude.length != 0 && longitude.length != 0 && resName.length != 0 && description.length != 0) {
-//	db.createRestaurant(resName, latitude, longitude, description, session.username, function(err, data){});
-//	
-//  	res.render('addrestaurant.ejs', {"allFields" : true}); //send? addrestaurant.ejs is unnecessary
-//  } else {
-//	res.render('addrestaurant.ejs', {"allFields" : false});
-//  }
-//};
 
 // TODO Don't forget to add any new functions to this class, so app.js can call them. (The name before the colon is the name you'd use for the function in app.js; the name after the colon is the name the method has here, in this file.)
 
 var routes = {
   get_main: getMain,
   verifyUser: postResultsUser,
-  get_restaurants: getRestaurants,
-  get_restaurantList: getRestaurantList,
   get_signup: getSignup,
   get_logout: getLogout,
   get_creator: getCreator,
@@ -632,8 +683,15 @@ var routes = {
   get_wall: getWall,
   post_otherWallPageAjax: postOtherWallPageAjax,
   get_determineWallOwner: getDetermineWallOwner,
+  get_userInfo: getUserInfo,
   get_edit: getEdit,
+  get_news: getNews,
+  get_news_search: getNewsSearch,
   get_otherwall: getOtherWall,
+  reject_friend_request: rejectFriendRequest, 
+  accept_friend_request: acceptFriendRequest, 
+  send_friend_request: sendFriendRequest, 
+  get_isWallAFriend: getIsWallAFriend,
 
   //NEW
   get_homepage: getHomepage,
@@ -641,17 +699,14 @@ var routes = {
   get_wallListAjax: getWallListAjax,
   get_editUserInfoAjax: getEditUserInfoAjax,
   get_allUsername: getAllUsername,
-  get_isWallAFriend: getIsWallAFriend,
 
   post_newPostAjax: postNewPostAjax,
   post_newCommentAjax: postNewCommentAjax,
   post_newWallAjax: postNewWallAjax,
   post_updateUser: postUpdateUser,
+  
 
   post_newAccount: postNewAccount,
-  post_newRestaurantAjax: postNewRestaurantAjax,
-  post_deleteRestaurantAjax: postDeleteRestaurantAjax,
-  
   get_friend_visualizer: getVisualizer,
 
   //post_newRestaurant : postNewRestaurant

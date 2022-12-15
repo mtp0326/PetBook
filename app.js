@@ -65,14 +65,14 @@
    
    
       app.get('/', routes.get_main);
-      app.get('/restaurants', routes.get_restaurants);
       app.get('/signup', routes.get_signup);
       app.get('/logout', routes.get_logout);
       app.get('/chat', routes.get_chat);
       app.get('/wall', routes.get_wall);
       app.get('/otherwall', routes.get_otherwall);
       app.get('/edit', routes.get_edit);
-      app.get('/getList', routes.get_restaurantList);
+      app.get('/news', routes.get_news);
+      app.get('/newsSearch', routes.get_news_search);
       app.get('/getCreator', routes.get_creator);
       
       //NEW
@@ -88,23 +88,36 @@
       app.post('/postUpdateUser', routes.post_updateUser);
       
       app.post('/checklogin', routes.verifyUser);
+      app.get('/getIsWallAFriend', routes.get_isWallAFriend),
+
+      
+      app.post('/sendFriendRequest', routes.send_friend_request);
+      app.post('/rejectFriendRequest', routes.reject_friend_request);
+      app.post('/acceptFriendRequest', routes.accept_friend_request);
+
+      
+     
       
       app.post('/createaccount', routes.post_newAccount);
-      app.post('/addList', routes.post_newRestaurantAjax);
-      app.post('/deleteList', routes.post_deleteRestaurantAjax);
       app.post('/editaccount', routes.post_updateUser);
       app.post('/postOtherWallPageAjax', routes.post_otherWallPageAjax);
       app.get('/getDetermineWallOwner', routes.get_determineWallOwner),
-      app.get('/getIsWallAFriend', routes.get_isWallAFriend),
-      
+      app.get('/getUserInfo', routes.get_userInfo),
       //chat
       app.get('/getonlineusers', chats.get_online_users);
       app.get('/getchat', chats.get_chat);
       app.post('/addchatroom', chats.add_chatroom);
       app.post('/addonlineuser', chats.add_online_user);
+      app.post('/addonlineuser', chats.add_online_user);
       app.post('/addmessage', chats.add_message);
       app.get('/getchatrooms', chats.get_chatrooms);
       app.post('/logoutchat', chats.log_out);
+
+      app.post('/inviteuser', chats.invite_user);
+      app.post('/rejectinvite', chats.reject_invite);
+      app.post('/acceptinvite', chats.accept_invite);
+      app.get('/chatlogout', chats.log_out);
+
       
       //visualizer
       app.get('/visualizer', routes.get_friend_visualizer);

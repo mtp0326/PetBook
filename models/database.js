@@ -63,10 +63,11 @@ var myDB_userInfo = function (searchTerm, language, callback) {
   };
   console.log("running");
   db.getItem(params, function (err, data) {
-    if (err || data.Item.length == 0) {
+    if (err) {
       console.log(err);
       callback(err, null);
     } else {
+      console.log(data);
       callback(err, data.Item);
     }
   });
@@ -104,7 +105,6 @@ var myDB_createAccount =
         "birthday": { S: newBirthday },
         "chatID": { L: [] },
         "email": { S: newEmail },
-        "friends": { SS: [""] },
         "fullname": { S: newFullname },
         "interest": { L: interestArr },
         "password": { S: newPassword },
@@ -139,8 +139,12 @@ var myDB_getFriends = (function (username, callback) {
     if (err) {
       console.log(err);
     } else {
-      console.log(data.Items[0]);
-      callback(err, data.Items[0].friends.SS);
+      if(data.Items[0].friends == undefined) {
+        var empty = [];
+        callback(err, empty);
+      } else {
+        callback(err, data.Items[0].friends.SS);
+      }
     }
   });
 });
@@ -210,25 +214,27 @@ var myDB_updatepw = function (username, newPw, callback) {
 
 // Update user interest. Minimum 2???
 //client side has the list of interests => newInterests is final interests
-var myDB_updateInterest = function (username, newInterests, callback) {
-  var params = {
-    TableName: "users",
-    Item: {
-      'username': { S: username },
-      'interest': { S: newInterests },
-    }
-  };
+// var myDB_updateInterest = function (username, newInterest1, newInterest2, newInterest3, callback) {
+//   var newInterests = [];
+//   newInterests = [newInterest1, newInterest2, newInterest3]
+//   var params = {
+//     TableName: "users",
+//     Item: {
+//       'username': { S: username },
+//       'interest': { S: newInterests },
+//     }
+//   };
 
-  db.putItem(params, function (err, data) {
-    if (err) {
-      callback(err, null);
-    } else if (username.length == 0 || newPw.length == 0) {
-      callback("Field cannot be left blank", null);
-    } else {
-      callback(err, "Updated");
-    }
-  });
-}
+//   db.putItem(params, function (err, data) {
+//     if (err) {
+//       callback(err, null);
+//     } else if (username.length == 0 || newPw.length == 0) {
+//       callback("Field cannot be left blank", null);
+//     } else {
+//       callback(err, "Updated");
+//     }
+//   });
+// }
 
 //creates post with the right db parameters
 var myDB_createPost = function (userID, content, timepost, postType, callback) {
@@ -252,6 +258,9 @@ var myDB_createPost = function (userID, content, timepost, postType, callback) {
       },
       "likes": {
         L: []
+      },
+      "postType": {
+        S: "walls"
       }
     }
   };
@@ -459,17 +468,11 @@ var myDB_updateUser = function (username, variable, columnName, callback) {
   });
 }
 
-var myDB_updateInterest = function (username, interest, callback) {
-  console.log(interest);
+var myDB_updateInterest = function (username, newInterest1, newInterest2, newInterest3, callback) {
   var interestArr = [];
-  intArr = interest.split(",");
-  for (let i = 0; i < intArr.length; i++) {
-    var stringifyInterest = {
-      S: intArr[i]
-    }
-    interestArr.push(stringifyInterest);
-  }
+  interestArr = [newInterest1, newInterest2, newInterest3];
 
+  console.log(interestArr);
   var paramsUpdate = {
     Key: {
       "username": { S: username }
@@ -523,6 +526,7 @@ var myDB_getInterest = function (username, callback) {
   };
 
   db.query(paramsGet, function (err, data) {
+    console.log("get interest")
     console.log(data.Items[0].interest.L);
     callback(err, data.Items[0].interest.L);
   });
@@ -543,98 +547,64 @@ var myDB_getAllUsername = (function (callback) {
     }
   });
 });
-//***************************************************** */
 
+// Adds a friend request to user's DB
+var myDB_addRequest = function(receiver, sender, callback) {
+	console.log(sender + " sent a request to " + receiver);
 
-//creates restaurant with the right db parameters
-var myDB_createRestaurant = function (name, latitude, longitude, description, creator, callback) {
-  var params = {
-    TableName: "restaurants",
-    Item: {
-      "name": {
-        S: name
-      },
-      "latitude": {
-        S: latitude
-      },
-      "longitude": {
-        S: longitude
-      },
-      "description": {
-        S: description
-      },
-      "creator": {
-        S: creator
-      }
-    }
-  };
-
-  db.putItem(params, function (err, data) {
-    if (err) {
-      console.log(err);
-    }
-  });
+	var newUserIDSet = {SS: [sender]};
+	var params = {
+		TableName: "users",
+		Key: {"username" : {S: receiver}},
+		UpdateExpression: "ADD requests :newUserID",
+	    ExpressionAttributeValues : {
+	      ":newUserID": newUserIDSet
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+		callback(err, data);
+	});
 }
 
-
-
-
-//deletes restaurant using key and tablename
-var myDB_deleteRestaurant = function (name, callback) {
-  var params = {
-    TableName: "restaurants",
-    Key: {
-      "name": {
-        S: name
-      }
-    }
-  };
-
-  db.deleteItem(params, function (err, data) {
-    if (err) {
-      console.log(err);
-    }
-  });
+// Deletes a friend request from user's db
+var myDB_deleteRequest = function(receiver, sender, callback) {
+  	var deleteUserIDSet = {SS: [sender]};
+  	var params = {
+    	TableName: "users",
+        Key: {"username" : {S: receiver}},
+	    UpdateExpression: "DELETE requests :deleteUserID",
+	    ExpressionAttributeValues : {
+	      ":deleteUserID": deleteUserIDSet
+	    },
+    };
+    db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+	    callback(err, data);
+    });
 }
 
-//outputs all restaurants from db into an array
-var myDB_allRestaurants = function (callback) {
-  var params = {
-    TableName: "restaurants",
-    Select: "ALL_ATTRIBUTES"
-  };
-
-  db.scan(params, function (err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      callback(err, data.Items);
-    }
-  });
-}
-
-//GERMAN
-var myDB_lookup = function (searchTerm, language, callback) {
-  console.log('Looking up: ' + searchTerm);
-
-  var params = {
-    KeyConditions: {
-      keyword: {
-        ComparisonOperator: 'EQ',
-        AttributeValueList: [{ S: searchTerm }]
-      }
-    },
-    TableName: "words",
-    AttributesToGet: ['German']
-  };
-
-  db.query(params, function (err, data) {
-    if (err || data.Items.length == 0) {
-      callback(err, null);
-    } else {
-      callback(err, data.Items[0].German.S);
-    }
-  });
+// Add user1 to user2's friends set
+var myDB_addFriend = function(user1, user2, callback) {
+	var add1To2 = {SS: [user1]};
+	var params = {
+		TableName: "users",
+		Key: {"username" : {S: user2}},
+		UpdateExpression: "ADD friends :newUserID",
+	    ExpressionAttributeValues : {
+	      ":newUserID": add1To2
+	    },
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+		callback(err, data);
+	});
 }
 
 // TODO Your own functions for accessing the DynamoDB tables should go here
@@ -646,10 +616,12 @@ var myDB_lookup = function (searchTerm, language, callback) {
 // TODO Don't forget to add any new functions to this class, so app.js can call them. (The name before the colon is the name you'd use for the function in app.js; the name after the colon is the name the method has here, in this file.)
 
 var database = {
-  lookup: myDB_lookup,
   passwordLookup: myDB_getPassword,
   usernameLookup: myDB_getUsername,
   createAccount: myDB_createAccount,
+  addFriend : myDB_addFriend,
+  deleteRequest : myDB_deleteRequest,
+  addRequest : myDB_addRequest,
 
   //NEW
   getAllPosts: myDB_allPosts,
@@ -666,12 +638,7 @@ var database = {
   updateEmail: myDB_updateEmail,
   updatePw: myDB_updatepw,
   updateInterest: myDB_updateInterest,
-  updateUser: myDB_updateUser,
-  updateInterest: myDB_updateInterest,
-
-  createRestaurant: myDB_createRestaurant,
-  getAllRestaurants: myDB_allRestaurants,
-  deleteRestaurant: myDB_deleteRestaurant
+  updateUser: myDB_updateUser
 
 
 };
