@@ -320,12 +320,14 @@
 
       <script type="text/javascript">
         var sessionCreator = "";
+        var wallOwner = "";
         window.onload = function () {
 
           const urlParams = new URLSearchParams(window.location.search);
           const currWallUser = urlParams.get('search');
           console.log("search results: ");
           console.log(currWallUser);
+          wallOwner = currWallUser;
 
           $(document).ready(function () {
             $.ajax({
@@ -337,8 +339,10 @@
               success: function (result) {
 
                 getwallownerinfo();
+                getBoolFriend();
                 var string = "post on " + currWallUser + " 's wall...";
                 document.getElementsByName('postcontent')[0].placeholder = string;
+                
 
 
               },
@@ -407,10 +411,72 @@
                     document.getElementById("wallInterest").innerHTML = string;
                     
                     getFriendsPosts();
+                    
                   }
                 });
               });
             }
+
+            function getBoolFriend() {
+              $(document).ready(function () {
+                $.getJSON('/getIsWallAFriend', function (friendBool) {
+                  console.log("check if user is a friend: ");
+                  friend = friendBool.BOOL;
+
+                  console.log(friend);
+                  test_el = document.createElement('div');
+              
+                  if(friend){
+                    console.log("is friend");
+                    test_el.innerHTML +=
+                '<div class = "isfriend" id = isfriend>friend</div>'
+                document.body.appendChild(test_el);
+                var cardDiv = document.getElementById('wallInterest');
+                cardDiv.after(test_el);
+                  }
+                  else{
+                    console.log("is not friend");
+                    test_el.innerHTML +=
+                '<button type = "addfriend" id = "addfriend">add friend</button></div>'
+                document.body.appendChild(test_el);
+                var cardDiv = document.getElementById('wallInterest');
+                cardDiv.after(test_el);
+                addFriendButtons();
+                  }
+                });
+              });
+            }
+
+      function addFriendButtons() {
+      $(document).ready(function () {
+        $("#addfriend").click(function (e) {
+      
+            console.log("request clicked!");
+            console.log(wallOwner);
+           
+            e.preventDefault();
+                    $.ajax({
+                      type: "POST",
+                      url: "/sendFriendRequest",
+                      data:{ 
+                          receiver : wallOwner
+                      },
+
+                    success: function(result) {
+                    alert('friend request sent');
+
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+    
+
+        });
+
+      });
+    }
+
             //calls ajax with /getList that retreives restaraut data from db
             function getFriendsPosts() {
               var friendposts = [];
@@ -498,6 +564,8 @@
                   console.log("comment clicked!");
                   e.preventDefault();
                   var contentUpd = document.getElementsByName(commentCon)[0].value;
+                  document.getElementsByName(commentCon)[0].value = "";
+
                   console.log(contentUpd);
                   var contentWithUser = sessionCreator + ": " + contentUpd;
                   console.log(contentWithUser);
@@ -555,6 +623,7 @@
                 console.log("post clicked!");
                 e.preventDefault();
                 var contentUpd = document.getElementsByName("postcontent")[0].value;
+                document.getElementsByName("postcontent")[0].value = "";
                 $.ajax({
                   type: "POST",
                   url: "/createwall",

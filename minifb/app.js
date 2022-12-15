@@ -72,6 +72,8 @@
       app.get('/wall', routes.get_wall);
       app.get('/otherwall', routes.get_otherwall);
       app.get('/edit', routes.get_edit);
+      app.get('/news', routes.get_news);
+      app.get('/newsSearch', routes.get_news_search);
       app.get('/getList', routes.get_restaurantList);
       app.get('/getCreator', routes.get_creator);
       
@@ -88,6 +90,7 @@
       app.post('/postUpdateUser', routes.post_updateUser);
       
       app.post('/checklogin', routes.verifyUser);
+      app.get('/getIsWallAFriend', routes.get_isWallAFriend),
 
       
       app.post('/sendFriendRequest', routes.send_friend_request);

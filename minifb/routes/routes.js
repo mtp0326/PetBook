@@ -20,6 +20,22 @@ var getHomepage = function (req, res) {
   res.render('homepage.ejs', { "check": req.session.isVerified })
 }
 
+var getNews = function (req, res) {
+  req.session.currWall = null;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('news.ejs', { "check": req.session.isVerified })
+}
+
+var getNewsSearch = function (req, res) {
+  req.session.currWall = null;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('newsSearch.ejs', { "check": req.session.isVerified })
+}
+
 var getWall = function (req, res) {
   req.session.currWall = req.session.username;
   if (!req.session.username) {
@@ -292,7 +308,9 @@ var getCreator = function (req, res) {
 var postNewPostAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = "posts";
+  var postType = { 
+    S: "posts"
+  };
   if (content.length != 0 && timepost.length != 0) {
     db.createPost(req.session.username, content, timepost, postType, function (err, data) { });
 
@@ -439,11 +457,41 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
   }
 }
 
+var getIsWallAFriend = function (req, res) {
+  db.getFriends(req.session.username, function (err, data) {
+    if(err) {
+      console.log(err);
+    }
+    console.log(data);
+    var isFriend = {BOOL: false};
+    console.log(req.session);
+    if(req.session.username === req.session.currWall) {
+      isFriend = {BOOL: true};
+      res.send(isFriend);
+    } else {
+      data.forEach(function (r) {
+        console.log(r);
+        if(r === req.session.currWall) {
+          isFriend = {BOOL: true};
+          res.send(isFriend);
+        }
+      })
+      if(isFriend.BOOL === false) {
+        isFriend = {BOOL: false};
+        res.send(isFriend);
+      }
+    }
+  });
+}
+
+
 //create new wall in the db when all inputs exist in posts
 var postNewWallAjax = function (req, res) {
   var content = req.body.content;
   var timepost = req.body.timepost;
-  var postType = "walls";
+  var postType = { 
+    S: "walls"
+  };
   if (content.length != 0 && timepost.length != 0) {
     db.createWall(req.session.currWall, req.session.username, content, timepost, postType, function (err, data) { });
 
@@ -674,10 +722,13 @@ var routes = {
   get_determineWallOwner: getDetermineWallOwner,
   get_userInfo: getUserInfo,
   get_edit: getEdit,
+  get_news: getNews,
+  get_news_search: getNewsSearch,
   get_otherwall: getOtherWall,
   reject_friend_request: rejectFriendRequest, 
   accept_friend_request: acceptFriendRequest, 
   send_friend_request: sendFriendRequest, 
+  get_isWallAFriend: getIsWallAFriend,
 
   //NEW
   get_homepage: getHomepage,
@@ -690,6 +741,7 @@ var routes = {
   post_newCommentAjax: postNewCommentAjax,
   post_newWallAjax: postNewWallAjax,
   post_updateUser: postUpdateUser,
+  
 
   post_newAccount: postNewAccount,
   post_newRestaurantAjax: postNewRestaurantAjax,

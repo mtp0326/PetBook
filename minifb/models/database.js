@@ -647,7 +647,7 @@ var myDB_lookup = function (searchTerm, language, callback) {
 var myDB_addRequest = function(receiver, sender, callback) {
 	console.log(sender + " sent a request to " + receiver);
 
-	var newUserIDSet = {S: sender};
+	var newUserIDSet = {SS: [sender]};
 	var params = {
 		TableName: "users",
 		Key: {"username" : {S: receiver}},
@@ -666,7 +666,7 @@ var myDB_addRequest = function(receiver, sender, callback) {
 
 // Deletes a friend request from user's db
 var myDB_deleteRequest = function(receiver, sender, callback) {
-  	var deleteUserIDSet = {S: sender};
+  	var deleteUserIDSet = {SS: [sender]};
   	var params = {
     	TableName: "users",
         Key: {"username" : {S: receiver}},
@@ -685,7 +685,7 @@ var myDB_deleteRequest = function(receiver, sender, callback) {
 
 // Add user1 to user2's friends set
 var myDB_addFriend = function(user1, user2, callback) {
-	var add1To2 = {S: user1};
+	var add1To2 = {SS: [user1]};
 	var params = {
 		TableName: "users",
 		Key: {"username" : {S: user2}},

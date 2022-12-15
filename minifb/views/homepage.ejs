@@ -415,7 +415,7 @@
 
     function rejectButtons(rejectID, friendReq) {
       $(document).ready(function () {
-        $(acceptID).click(function (e) {
+        $(rejectID).click(function (e) {
             console.log("reject clicked!");
             e.preventDefault();
 
@@ -532,6 +532,7 @@
             console.log("comment clicked!");
             e.preventDefault();
             var contentUpd = document.getElementsByName(commentCon)[0].value;
+            document.getElementsByName(commentCon)[0].value = "";
             console.log(contentUpd);
             var contentWithUser = sessionCreator + ": " + contentUpd;
             console.log(contentWithUser);
@@ -591,6 +592,7 @@
           console.log("post clicked!");
           e.preventDefault();
           var contentUpd = document.getElementsByName("postcontent")[0].value;
+          document.getElementsByName("postcontent")[0].value = "";
           $.ajax({
             type: "POST",
             url: "/createpost",
@@ -687,7 +689,7 @@
  
   <div id = "wholeHome" class = "wholeHome">
     <div class="friendRequest">
-      <div class = "frTitle">
+      <div id = "frTitle">
       <h2>Friend Requests</h2>
     </div>
       <div class = "friendRequestLog">
