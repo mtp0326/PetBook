@@ -81,7 +81,6 @@ var getSignup = function (req, res) {
 var getLogout = function (req, res) {
   req.session.currWall = null;
   req.session.isVerified = false;
-  console.log("logging out");
   res.render('main.ejs', {});
 	
 		chatdb.deleteUserOnline(req.session.username, function (err, data) {
@@ -112,26 +111,17 @@ var postOtherWallPageAjax = function (req, res) {
     return res.redirect('/')
   }
   req.session.currWall = req.body.currWall;
-  console.log(req.session.currWall);
   res.send("success");
-  console.log("posting currWall successful");
 }
 
 var getDetermineWallOwner = function (req, res) {
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
-    console.log("WALL OTHER");
-    console.log(data);
    
     if (data === null) {
       req.session.currWall = null;
-      console.log("bruh")
       res.send("null");
     } else {
       db.getUserInfo(req.session.currWall, "username", function (err, data) {
-        console.log("WALL DATA");
-        console.log(data);
-        console.log("WALL DATA");
-        console.log(data.interest.L);
         res.send(data);
       })
     }
@@ -141,8 +131,6 @@ var getDetermineWallOwner = function (req, res) {
 
 var getUserInfo = function(req, res){
   db.getUserInfo(req.session.username,  "username", function (err, data) {
-    console.log("USER DATA");
-    console.log(data);
     res.send(data);
   })
 }
@@ -336,13 +324,8 @@ var postNewCommentAjax = function (req, res) {
   var timepost = req.body.timepost;
   var comment = req.body.comment;
   var table = req.body.table;
-  console.log("userID " + userID);
-  console.log("timepost " + timepost);
-  console.log("comment " + comment);
-  console.log("table " + table);
 
   if (userID.length != 0 && timepost.length != 0 && comment.length != 0) {
-    console.log("passing");
     db.addComment(userID, timepost, comment, table, function (err, data) {});
 
     var response = {
@@ -360,8 +343,6 @@ var postNewCommentAjax = function (req, res) {
 //ajax: get your posts and wall you receive from friends posting on yours
 //NEW
 var getWallListAjax = function (req, res) {
-  console.log("req.session.currWall: ");
-  console.log(req.session.currWall);
   var tempList = [];
   db.getAllPosts(req.session.currWall, function (err, data) {
     var contentArr = data.map(obj => obj.content.S);
@@ -382,8 +363,6 @@ var getWallListAjax = function (req, res) {
       };
       tempList.push(pointer);
     }
-    console.log("getCurrWall");
-    console.log(req.session.currWall);
     db.getAllWalls(req.session.currWall, function (err, postsList) {
       var contentArr = postsList.map(obj => obj.content.S);
       var commentsArr = postsList.map(obj => obj.comments.L);
@@ -409,14 +388,10 @@ var getWallListAjax = function (req, res) {
         data.forEach(function (r) {
           friendsList.push(r);
         });
-        console.log(friendsList);
         recGetAllWalls(friendsList, tempList, req.session.currWall, 0, function (postsList) {
-          console.log("postsList");
-          console.log(postsList);
           if (postsList.length > 1) {
             postsList.sort((a, b) => (a.timepost).localeCompare(b.timepost)).reverse();
           }
-          console.log(postsList);
           res.send(JSON.stringify(postsList));
 
           if (err) {
@@ -430,12 +405,9 @@ var getWallListAjax = function (req, res) {
 
 var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, callback) {
   if (counter >= recFriendsList.length) {
-    console.log("recWallsList");
-    console.log(recWallsList);
     callback(recWallsList);
   } else {
     db.getAllWallsAsSender(recFriendsList[counter], sender, function (err, data) {
-      console.log("asSe" + data);
       var contentArr = data.map(obj => obj.content.S);
       var commentsArr = data.map(obj => obj.comments.L);
       var likesArr = data.map(obj => obj.likes.L);
@@ -465,15 +437,12 @@ var getIsWallAFriend = function (req, res) {
     if(err) {
       console.log(err);
     }
-    console.log(data);
     var isFriend = {BOOL: false};
-    console.log(req.session);
     if(req.session.username === req.session.currWall) {
       isFriend = {BOOL: true};
       res.send(isFriend);
     } else {
       data.forEach(function (r) {
-        console.log(r);
         if(r === req.session.currWall) {
           isFriend = {BOOL: true};
           res.send(isFriend);
@@ -512,9 +481,7 @@ var postNewWallAjax = function (req, res) {
 }
 
 var getEditUserInfoAjax = function (req, res) {
-  console.log("getUser");
   db.getUserInfo(req.session.username, "username", function (err, data) {
-    console.log(data);
     data.password.S = "";
     res.send(data);
   });
@@ -536,16 +503,11 @@ var postUpdateUser = function (req, res) {
   updateInfoNameList.push('password');
   updateInfoNameList.push('pfpURL');
 
-  console.log(updateInfoList);
-  console.log(updateInfoNameList);
-
   res.render('editaccount.ejs', { "check": true });
 
   db.getInterest(req.session.username, function (err, data) {
     var interestSet = new Set();
     for (let i = 0; i < data.length; i++) {
-      console.log("data[i]");
-      console.log(data[i]);
       interestSet.add(data[i].S);
     }
 
@@ -563,16 +525,11 @@ var postUpdateUser = function (req, res) {
       var stringify3 = { 
         S: req.body.interest3
       };
-      console.log("stringify2");gi
-      console.log(stringify2);
       db.updateInterest(req.session.username, stringify1, stringify2, stringify3, function (err, data) {
         if (err) {
           console.log(err);
         }
-        console.log(interestSet);
         for (let i = 0; i < data.length; i++) {
-          console.log(interestSet);
-          console.log(data[i].S);
           if (!interestSet.has(data[i].S)) {
             var newContent = req.session.username + " is now interested in " + data[i].S;
             var newTimepost = new Date().getTime() + "";
@@ -589,7 +546,6 @@ var recUpdateUser = function (sessionUser, recUpdateInfoList, recUpdateInfoNameL
     callback("successfully updated user");
   } else {
     db.updateUser(sessionUser, recUpdateInfoList[counter], recUpdateInfoNameList[counter], function (err, data) {
-      console.log("callback hello");
       counter++;
       recUpdateUser(sessionUser, recUpdateInfoList, recUpdateInfoNameList, counter, callback);
     });
@@ -601,7 +557,6 @@ var getAllUsername = function (req, res) {
     if(err) {
       console.log(err);
     }
-    console.log(data);
     res.send(data);
   });
 }

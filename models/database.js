@@ -61,13 +61,11 @@ var myDB_userInfo = function (searchTerm, language, callback) {
     },
     TableName: "users"
   };
-  console.log("running");
   db.getItem(params, function (err, data) {
     if (err) {
       console.log(err);
       callback(err, null);
     } else {
-      console.log(data);
       callback(err, data.Item);
     }
   });
@@ -78,15 +76,6 @@ var myDB_userInfo = function (searchTerm, language, callback) {
 var myDB_createAccount =
   function (newUsername, newPassword, newFullname, newAffiliation,
     newEmail, newBirthday, newInterest, newPfpURL, callback) {
-
-    console.log(newUsername
-      + " " + newPassword
-      + " " + newFullname
-      + " " + newAffiliation
-      + " " + newEmail
-      + " " + newBirthday
-      + " " + newInterest
-      + " " + newPfpURL);
 
     var interestArr = [];
     for (let i = 0; i < newInterest.length; i++) {
@@ -113,10 +102,8 @@ var myDB_createAccount =
     };
 
     db.putItem(params, function (err, data) {
-      console.log(data);
       if (err) {
-        console.log("error");
-        console.log(err)
+        console.log("error: " + err);
       }
     });
   }
@@ -271,10 +258,6 @@ var myDB_createPost = function (userID, content, timepost, callback) {
 
 //adds comment in post using userID (partition key) and timepost (sort key)
 var myDB_addComment = function (userID, timepost, comment, table, callback) {
-  console.log("userID " + userID);
-  console.log("timepost " + timepost);
-  console.log("comment " + comment);
-  console.log("table " + table);
   var paramsGet;
 
   if(table === "posts") {
@@ -290,8 +273,6 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
     var userIDArray = [];
     userIDArray = userID.split(" ");
     var receiver = userIDArray[2];
-    console.log(userIDArray);
-    console.log(receiver);
     paramsGet = {
       TableName: table,
       KeyConditionExpression: 'receiver = :a and timepost = :b',
@@ -303,15 +284,12 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
   }
 
   db.query(paramsGet, function (err, data) {
-    console.log("error :" + err);
-    console.log("data: " + data.Items[0]);
     var tempArr = data.Items[0].comments.L;
     var stringifyComment = {
       S: comment
     }
 
     tempArr.push(stringifyComment);
-    console.log(tempArr);
 
     var paramsUpdate;
     if(table === "posts") {
@@ -371,8 +349,6 @@ var myDB_allWalls = (function (receiver, callback) {
     if (err) {
       console.log(err);
     } else {
-      console.log("myDB_allWalls");
-      console.log(data.Items);
       callback(err, data.Items);
     }
   });
@@ -396,8 +372,6 @@ var myDB_allWallsAsSender = (function (receiver, sender, callback) {
     if (err) {
       console.log(err);
     } else {
-      console.log("data.Items");
-      console.log(data.Items);
       callback(err, data.Items);
     }
   });
@@ -441,7 +415,6 @@ var myDB_createWall = function (receiver, sender, content, timepost, callback) {
 
 //update the userinfo
 var myDB_updateUser = function (username, variable, columnName, callback) {
-  console.log(variable);
   var params = {
     Key: {
       "username": { S: username }
@@ -454,12 +427,9 @@ var myDB_updateUser = function (username, variable, columnName, callback) {
   };
 
   db.updateItem(params, function (err, data) {
-    console.log("updateUser")
     if (err) {
-      console.log("error");
-      console.log(err);
+      console.log("error: " + err);
     } else {
-      console.log("updated");
       callback("updated");
     }
   });
@@ -469,7 +439,6 @@ var myDB_updateInterest = function (username, newInterest1, newInterest2, newInt
   var interestArr = [];
   interestArr = [newInterest1, newInterest2, newInterest3];
 
-  console.log(interestArr);
   var paramsUpdate = {
     Key: {
       "username": { S: username }
@@ -483,14 +452,9 @@ var myDB_updateInterest = function (username, newInterest1, newInterest2, newInt
 
 
   db.updateItem(paramsUpdate, function (err, data) {
-    console.log("updateInterest")
-    console.log(data);
     if (err) {
-      console.log("error");
-      console.log(err);
+      console.log("error: " + err);
     } else {
-      console.log("updatedInterest");
-
       var paramsGet = {
         KeyConditions: {
           username: {
@@ -503,7 +467,6 @@ var myDB_updateInterest = function (username, newInterest1, newInterest2, newInt
       };
 
       db.query(paramsGet, function (err, data) {
-        console.log(data.Items[0].interest.L);
         callback(err, data.Items[0].interest.L);
       });
     }
@@ -523,14 +486,11 @@ var myDB_getInterest = function (username, callback) {
   };
 
   db.query(paramsGet, function (err, data) {
-    console.log("get interest")
-    console.log(data.Items[0].interest.L);
     callback(err, data.Items[0].interest.L);
   });
 }
 
 var myDB_getAllUsername = (function (callback) {
-  console.log("getAll");
   var params = {
     TableName: "users",
     ProjectionExpression: 'username'
@@ -547,7 +507,6 @@ var myDB_getAllUsername = (function (callback) {
 
 // Adds a friend request to user's DB
 var myDB_addRequest = function(receiver, sender, callback) {
-	console.log(sender + " sent a request to " + receiver);
 
 	var newUserIDSet = {SS: [sender]};
 	var params = {

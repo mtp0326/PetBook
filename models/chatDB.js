@@ -14,8 +14,6 @@ var myDB_getUserChatrooms = function(username, callback) {
     if (err) {
       console.log("Error" + err);
     } else {
-		
-	  console.log(data.Item);
 	  if(data.Item.chatID == undefined) {
         var empty = [];
         callback(null, empty);
@@ -29,7 +27,6 @@ var myDB_getUserChatrooms = function(username, callback) {
 // Adds a new chatID to user db
 var myDB_addchatIDToUser = function(username, chatID, callback) {
   var newChatID = {SS: [chatID]};
-  console.log(newChatID);
   var params = {
       TableName: "users",
       Key: {"username" : {S: username}},
@@ -42,7 +39,6 @@ var myDB_addchatIDToUser = function(username, chatID, callback) {
 	  if (err) {
 	    console.log("Error", err);
 	  }
-	  console.log("success");
 	  callback(err, "success");
   });
 }
@@ -103,8 +99,6 @@ var myDB_getChatroom = function(chatID, callback) {
         } else if (chatID.length == 0) {
           callback("chatID cannot be empty", null);
         } else {
-            console.log("get item success");
-            console.log(data.Item);
           //data.Item - has chatID, content, userIDs
           callback(null, data.Item);
         }
@@ -148,9 +142,6 @@ var myDB_deleteChatroom = function(chatID, callback) {
 // Adds a new message to the chatroom
 //newMessage: [timepost, userID, content]
 var myDB_addMessage = function(chatID, newMessage, callback) {
-	console.log(chatID);
-	console.log(newMessage);
-
 	var messageList = [];
 	for(let i = 0; i < 2; i++) {
 		var stringifyMessage = {S : newMessage[i]};
@@ -158,7 +149,6 @@ var myDB_addMessage = function(chatID, newMessage, callback) {
 	}
 
 	var listListMessage = {L : [{L : messageList}]}
-	console.log(listListMessage);
 	var params = {
 		TableName: "chatrooms",
 		Key: {
@@ -224,7 +214,6 @@ var myDB_deleteUserFromChat = function(deleteUserID, groupChatID, callback) {
 
 // Deletes a logged-out user from online DB
 var myDB_deleteOnline = function(deleteUserID, callback) {
-	console.log("delete");
 	var deleteUserIDSet =  {SS: [deleteUserID]};
 	var params = {
 		TableName: "online",
@@ -265,8 +254,6 @@ var myDB_addOnline = function(newUserID, callback) {
 
 // Adds a chatID to user's invites list
 var myDB_addInvite = function(username, chatID, callback) {
-	console.log(username + " invited to " + chatID);
-
 	var newChatIDSet = {SS: [chatID]};
 	var params = {
 		TableName: "users",
@@ -280,7 +267,6 @@ var myDB_addInvite = function(username, chatID, callback) {
 	    if (err) {
 	      console.log("Error", err);
 	    }
-		console.log("added");
 		callback(err, data);
 	});
 }
