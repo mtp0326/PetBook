@@ -92,7 +92,6 @@ var myDB_createAccount =
         "username": { S: newUsername },
         "affiliation": { S: newAffiliation },
         "birthday": { S: newBirthday },
-        "chatID": { L: [] },
         "email": { S: newEmail },
         "fullname": { S: newFullname },
         "interest": { L: interestArr },
@@ -241,9 +240,6 @@ var myDB_createPost = function (userID, content, timepost, callback) {
         S: "posts"
       },
       "comments": {
-        L: []
-      },
-      "likes": {
         L: []
       }
     }
@@ -401,9 +397,6 @@ var myDB_createWall = function (receiver, sender, content, timepost, callback) {
         S: "walls"
       },
       "comments": {
-        L: []
-      },
-      "likes": {
         L: []
       }
     }
