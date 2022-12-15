@@ -563,7 +563,7 @@ var postUpdateUser = function (req, res) {
       var stringify3 = { 
         S: req.body.interest3
       };
-      console.log("stringify2");
+      console.log("stringify2");gi
       console.log(stringify2);
       db.updateInterest(req.session.username, stringify1, stringify2, stringify3, function (err, data) {
         if (err) {
