@@ -262,7 +262,7 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
 
   if(table === "posts") {
     paramsGet = {
-      TableName: table,
+      TableName: "posts",
       KeyConditionExpression: 'userID = :a and timepost = :b',
       ExpressionAttributeValues: {
         ':a': { S: userID },
@@ -274,7 +274,7 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
     userIDArray = userID.split(" ");
     var receiver = userIDArray[2];
     paramsGet = {
-      TableName: table,
+      TableName: "walls",
       KeyConditionExpression: 'receiver = :a and timepost = :b',
       ExpressionAttributeValues: {
         ':a': { S: receiver },
@@ -284,17 +284,21 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
   }
 
   db.query(paramsGet, function (err, data) {
-    var tempArr = data.Items[0].comments.L;
+    var tempArr = [];
+    if(data != null) {
+      tempArr = data.Items[0].comments.L;
+    }
     var stringifyComment = {
       S: comment
     }
 
     tempArr.push(stringifyComment);
+    console.log(tempArr);
 
     var paramsUpdate;
     if(table === "posts") {
       paramsUpdate = {
-        TableName: table,
+        TableName: "posts",
         Key: {
           'userID': {
             S: userID
@@ -310,7 +314,7 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
       };
     } else {
       paramsUpdate = {
-        TableName: table,
+        TableName: "walls",
         Key: {
           'receiver': {
             S: receiver
