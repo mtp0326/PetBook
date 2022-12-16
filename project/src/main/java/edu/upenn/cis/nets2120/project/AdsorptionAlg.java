@@ -270,8 +270,7 @@ public class AdsorptionAlg implements Job<List<String>>{
 						}
 					}
 				}
-			}
-			
+			}			
 			return new Tuple2<>(tuple._1(), list);
 		}).foreachPartition(iter -> {
 			DynamoDB tempDB = DynamoConnector.getConnection("https://dynamodb.us-east-1.amazonaws.com");

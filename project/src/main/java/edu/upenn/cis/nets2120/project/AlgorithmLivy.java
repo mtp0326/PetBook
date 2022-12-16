@@ -17,7 +17,7 @@ public class AlgorithmLivy {
 		System.out.println("connecting to livy");
 		
 		LivyClient client = new LivyClientBuilder()
-				  .setURI(new URI("http://ec2-44-201-54-41.compute-1.amazonaws.com:8998/"))
+				  .setURI(new URI("http://ec2-54-160-20-236.compute-1.amazonaws.com:8998/"))
 				  .build();
 		
 		System.out.println("uploading");
