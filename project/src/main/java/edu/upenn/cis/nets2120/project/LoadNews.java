@@ -165,7 +165,7 @@ public class LoadNews {
 		newsContents.put("authors", newsArticle.getAs("authors"));
 		newsContents.put("link", newsArticle.getAs("link"));
 		newsContents.put("short_description", newsArticle.getAs("short_description"));
-		newsContents.put("datePosted", newsArticle.getAs("date"));
+		newsContents.put("datePosted", newsArticle.getAs("datePosted"));
 		newsContents.put("category", newsArticle.getAs("category"));
 		Set<String> keySet = newsContents.keySet();
 		

@@ -254,23 +254,35 @@ public class AdsorptionAlg implements Job<List<String>>{
 		System.out.println("sorted");
 		
 		userNews.groupByKey().mapToPair(tuple -> {
-			String[] arr = new String[10];
+			List<Tuple2<String, Double>> list = new LinkedList<>();
 			Iterator<Tuple2<String, Double>> itr = tuple._2().iterator();
 			
-			for (int i = 0; i < 10 && itr.hasNext(); i++) {
-				arr[i] = itr.next()._1();
+			while (itr.hasNext()) {
+				if (list.size() < 10) {
+					list.add(itr.next());
+				} else {
+					Tuple2<String, Double> next = itr.next();
+					for (int i = 0; i < 10; i++) {
+						if (list.get(i)._2() < next._2()) {
+							list.remove(i);
+							list.add(next);
+							break;
+						}
+					}
+				}
 			}
 			
-			return new Tuple2<>(tuple._1(), arr);
+			return new Tuple2<>(tuple._1(), list);
 		}).foreachPartition(iter -> {
 			DynamoDB tempDB = DynamoConnector.getConnection("https://dynamodb.us-east-1.amazonaws.com");
 			Table tempTable = tempDB.getTable("users");
 
 			while (iter.hasNext()) {
-				Tuple2<String, String[]> next = iter.next();
-				for (int i = 0; i < 10 && next._2()[i] != null; i++) {
+				Tuple2<String, List<Tuple2<String, Double>>> next = iter.next();
+				for (int i = 0; i < next._2().size(); i++) {
+					Thread.sleep(2500);
 					AttributeUpdate attributeUpdates = new AttributeUpdate("recommended")
-							.addElements(next._2()[i]);
+							.addElements(next._2().get(i)._1());
 					if (attributeUpdates != null) {
 						tempTable.updateItem(new PrimaryKey("username", next._1()), attributeUpdates);
 					}
@@ -285,7 +297,7 @@ public class AdsorptionAlg implements Job<List<String>>{
 			Table tempTable = tempDB.getTable("users");
 			
 			while (itr.hasNext()) {
-				Thread.sleep(1000);
+				Thread.sleep(5000);
 				Tuple2<String, Tuple2<String, Double>> next = itr.next();
 				AttributeUpdate attributeUpdates = new AttributeUpdate("graphWeights")
 						.addElements(next._2()._1() + ":" + next._2()._2());
