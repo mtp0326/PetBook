@@ -625,8 +625,8 @@ var sendFriendRequest = function(req, res) {
 		db.addRequest(receiver, req.session.username, function(err, data) {
 			if (err) {
 				console.log(err);
-        res.send({ S: "sent friend request"});
 			}
+      res.send({ S: "sent friend request"});
 		});
 	}
 }
@@ -641,6 +641,7 @@ var rejectFriendRequest = function(req, res) {
 			if (err) {
 				console.log(err);
 			}
+      res.send({S: "rejected friend request"});
 		});
 	}
 }
@@ -659,6 +660,7 @@ var acceptFriendRequest = function(req, res) {
 					} else {
 						db.addFriend(sender, req.session.username, function (err3, data) {
 							if (err3) { console.log(err3) }
+              res.send({S : "accepted friend request"});
 						});
 					}
 				});

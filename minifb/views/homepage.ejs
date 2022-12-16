@@ -594,6 +594,28 @@
         font-weight: 600;
 
       }
+
+
+      .alert {
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
     </style>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
@@ -639,7 +661,7 @@
              document.getElementById("profilepicurl").innerHTML = pfpFinalpro;
 
             
-;
+
 
 
            
@@ -655,7 +677,8 @@
         getFriendsOnline();
         getChatRooms();
         getChatInvites();
-        getFriendList();
+        friendList();
+       
       }
 
       var refreshTime = function () {
@@ -681,12 +704,43 @@
               username: sessionCreator
             },
             success: function (result) {
-              alert('added online user');
-          
+              console.log("added online");
             },
             error: function (result) {
               alert('add online error');
             }
+          });
+        });
+      }
+
+      function friendList() {
+        $(document).ready(function () {
+         
+          $.getJSON('/getFriendList', function (data) {
+            if (data == undefined) {
+              console.log("no requests")
+            }
+            else {
+              
+              var friendList = data.L;
+             
+               
+
+            var difference = $.grep(friendList, (item) => $.inArray(item, globalFriendList) === -1);
+           console.log(difference);
+
+          
+
+            for (let i = difference.length - 1; i >= 0; i--) {
+             
+              createFriendDiv(difference[i]);
+            };
+            globalFriendList = friendList;
+
+
+            }
+
+
           });
         });
       }
@@ -711,6 +765,21 @@
           
 
             for (let i = difference.length - 1; i >= 0; i--) {
+              var string =
+              '<div class="alert">'
+              + '<span class="closebtn" onclick="this.parentElement.style.display="none";">&times;</span>' 
+            + '<strong>Danger!</strong> Indicates a dangerous or potentially negative action.'
+             +' </div>'
+
+             test_el = document.createElement('div');
+       
+            test_el.innerHTML = string;
+         
+            document.body.appendChild(test_el);
+
+            var onlineFriendsDiv = document.getElementById('wholeHome');
+            onlineFriendsDiv.before(test_el);
+      
               createFriendDiv(difference[i]);
             };
             globalFriendList = friendList;
@@ -810,7 +879,7 @@
               },
 
               success: function (result) {
-                alert('acceptedInvite');
+                alert('accepted Invite');
               
 
 
@@ -1703,7 +1772,7 @@
         }
       }
     </script>
-
+   
 
     <% } else { %>
       <script>
@@ -1735,6 +1804,9 @@
       </div>
     </div>
   </div>
+
+
+
 
   <div id="wholeHome" class="wholeHome">
     <div class="friendRequest">
@@ -1780,7 +1852,7 @@
   <div class="chat-box">
 
 
-    <div class="whole">
+    <div class="whole" id="whole">
       <div class="left">
         <div id="online-friends">
           <h1> online friends</h1>
