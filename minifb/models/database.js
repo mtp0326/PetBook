@@ -432,6 +432,7 @@ var myDB_updateUser = function (username, variable, columnName, callback) {
 }
 
 var myDB_updateInterest = function (username, newInterest1, newInterest2, newInterest3, callback) {
+  
   var interestArr = [];
   interestArr = [newInterest1, newInterest2, newInterest3];
 

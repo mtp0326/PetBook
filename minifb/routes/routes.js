@@ -1,6 +1,7 @@
 var db = require('../models/database.js');
 var chatdb = require('../models/chatDB.js');
 var sjcl = require('sjcl');
+const { exec } = require('child_process');
 // var stemmer = require('stemmer');
 
 // TODO The code for your own routes should go here
@@ -34,6 +35,14 @@ var getNewsSearch = function (req, res) {
     return res.redirect('/')
   }
   res.render('newsSearch.ejs', { "check": req.session.isVerified })
+}
+
+var getNewsSearchResult = function (req, res) {
+  req.session.currWall = null;
+  if (!req.session.username) {
+    return res.redirect('/')
+  }
+  res.render('newsSearchResult.ejs', { "check": req.session.isVerified })
 }
 
 var getWall = function (req, res) {
@@ -380,6 +389,7 @@ var getWallListAjax = function (req, res) {
         return obj.likes.SS.length+"";
       }
     })
+    console.log(likesArr);
 
     for (let i = 0; i < userIDArr.length; i++) {
       var pointer = {
@@ -405,6 +415,7 @@ var getWallListAjax = function (req, res) {
           return obj.likes.SS.length+"";
         }
       })
+      console.log(likesArr);
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
@@ -455,6 +466,7 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
           return obj.likes.SS.length+"";
         }
       })
+      console.log(likesArr);
 
       for (let i = 0; i < userIDArr.length; i++) {
         var pointer = {
@@ -574,6 +586,11 @@ var postUpdateUser = function (req, res) {
           if (!interestSet.has(data[i].S)) {
             var newContent = req.session.username + " is now interested in " + data[i].S;
             var newTimepost = new Date().getTime() + "";
+            console.log("run exec");
+            exec('mvn exec:java@livy', (err, stdout, stderr) => {
+              console.log(err);
+              console.log(stdout);
+            });
             db.createWall(req.session.username, req.session.username, newContent, newTimepost, function (err, data) { });
           }
         }
@@ -716,6 +733,7 @@ var routes = {
   get_userInfo: getUserInfo,
   get_edit: getEdit,
   get_news: getNews,
+  get_news_search_result: getNewsSearchResult,
   get_news_search: getNewsSearch,
   get_otherwall: getOtherWall,
   reject_friend_request: rejectFriendRequest, 

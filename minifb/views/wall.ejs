@@ -16,6 +16,25 @@
         font-family: Arial, Helvetica, sans-serif;
         font-weight: 600;
       }
+      .likesection {
+        display: flex;
+        color: white;
+      }
+
+      .like{
+        margin-top: 22px;
+        margin-left: 10px;
+      }
+      button[type=like] {
+     
+     padding-top: 20px;
+     background-color: #5e97dc;
+     color: #fff;
+     border-radius: 0px;
+     border: 0;
+     box-shadow:0;
+     display: inline-block;
+   }
 
       
 
@@ -297,6 +316,32 @@
         display: inline-block;
       }
 
+      button[type=addfriend] {
+        appearance: none;
+        -webkit-appearance: none;
+       
+        text-align: top;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #04c74f;
+        color: #fff;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
+      button[type=removefriend] {
+        appearance: none;
+        -webkit-appearance: none;
+       
+        text-align: top;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #ca4230;
+        color: #fff;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
       button[type=post] {
         appearance: none;
         -webkit-appearance: none;
@@ -474,7 +519,7 @@ setTimeout(refreshTime, 5000);
               
                   if(friend){
                     console.log("is friend");
-                     var test_el= '<button type = "removefriend" id = "removefriend">remove friend</button></div>'
+                     var test_el= '<button type = "removefriend" id = "removefriend"><img src="https://img.icons8.com/material/24/FFFFFF/delete-user-male.png"/> remove friend</button></div>'
          
                 var cardDiv = document.getElementById('friendBoolButton').innerHTML = test_el;
                
@@ -483,7 +528,7 @@ setTimeout(refreshTime, 5000);
                   else{
                     console.log("is not friend");
                     var test_el =
-                '<button type = "addfriend" id = "addfriend">add friend</button></div>'
+                '<button type = "addfriend" id = "addfriend"><img src="https://img.icons8.com/material-sharp/24/FFFFFF/add-user-male.png"/>add friend</button></div>'
              
                 var cardDiv = document.getElementById('friendBoolButton').innerHTML = test_el;
                 addFriendButtons();
@@ -564,23 +609,28 @@ setTimeout(refreshTime, 5000);
                   console.log(elementsArr);
 
                   for (let i = 0; i < elementsArr.length; i++) {
-                    var contentN = elementsArr[i].content;
-                    var userIDN = elementsArr[i].userID;
-                    var timepostN = elementsArr[i].timepost;
-                    var likesN = elementsArr[i].likes;
-                    var commentsN = elementsArr[i].comments;
-                    var postTypeN = elementsArr[i].postType;
-                    var Item =
-                    {
-                      "content": contentN,
-                      "comments": commentsN,
-                      "likes": likesN,
-                      "userID": userIDN,
-                      "timepost": timepostN,
-                      "postType":postTypeN
-                    };
-                    friendposts.push(Item);
-                  }
+              var contentN = elementsArr[i].content;
+              var userIDN = elementsArr[i].userID;
+              var timepostN = elementsArr[i].timepost;
+              var likesN = elementsArr[i].likes;
+              var commentsN = elementsArr[i].comments;
+              var postTypeN = elementsArr[i].postType;
+              var likesCount =elementsArr[i].likes;
+              var Item =
+              {
+                "content": contentN,
+                "comments": commentsN,
+                "likes": likesN,
+                "userID": userIDN,
+                "timepost": timepostN,
+                "postType": postTypeN,
+                "likesCount" : likesCount
+              };
+              friendposts.push(Item);
+              console.log(Item);
+          
+            }
+           
                   // A comparer used to determine if two entries are equal.
             const isSame = (a, b) =>
             a.userID === b.userID 
@@ -615,6 +665,10 @@ setTimeout(refreshTime, 5000);
             }
 
             function createPostDiv(friendpost) {
+
+              var likeID =   "like-btn-"+ friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+          var likeCount = "like-cnt-"+ friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+       
               test_el = document.createElement('div');
               var test = new Date(parseInt(friendpost.timepost));
               var time = (new Date(test)).toLocaleDateString()
@@ -622,17 +676,30 @@ setTimeout(refreshTime, 5000);
                 " "
                 +
                 (new Date(test)).toLocaleTimeString();
-              test_el.innerHTML =
-                '<div class="post"><div class= "user">'
-                + friendpost.userID +
-                '</div>' +
-                '<div class="time" >'
-                + time +
-                '</div>' +
-                '<div class="content" >'
-                + friendpost.content +
-                '</div></div>'
-                ;
+                var likeCountString = "";
+                if(friendpost.likesCount == undefined){
+                  likeCountString = "0";
+                }
+                else{
+                  likeCountString = friendpost.likesCount;
+                }
+               
+                test_el.innerHTML =
+          '<div class="post"><div class= "user">'
+          + friendpost.userID +
+          '</div>' +
+          '<div class="time" >'
+          + time +
+          '</div>' +
+          '<div class="content" >'
+          + friendpost.content +
+          '</div>'+
+          '<div class = "likesection">'
+          +'<button type="like"  id='+likeID+'>'
+         +' <img src="https://img.icons8.com/material-sharp/24/FFFFFF/facebook-like--v1.png"/></button>'+
+         '<div class="like" id ='+likeCount+'>'+likeCountString+'</div></div>'
+         +'</div>';
+         
               var commentsArr = (friendpost.comments).map(obj => obj.S);
               for (let i = 0; i < commentsArr.length; i++) {
                 test_el.innerHTML +=
@@ -651,7 +718,49 @@ setTimeout(refreshTime, 5000);
               cardDiv.after(test_el);
               var commentIDWithHash = "#" + commentID;
               commentButtons(commentIDWithHash, commentContent, friendpost.postType);
+               likeButton( friendpost.userID, friendpost.postType, friendpost.timepost);
             }
+
+            function likeButton( userID, postType, timepost) {
+        var hashlikeID =   "#like-btn-"+ userID.split(" ").join("") + "-" + timepost
+        var likeID ="like-btn-"+ userID.split(" ").join("") + "-" + timepost
+        $(document).ready(function () {
+          $(hashlikeID).click(function (e) {
+            console.log("like clicked!");
+            console.log(hashlikeID);
+            e.preventDefault();
+
+            $.ajax({
+              type: "POST",
+              url: "/addLikesToPost",
+              data: {
+                userID: userID,
+                postType: postType,
+                timepost: timepost
+              },
+
+              success: function (result) {
+               console.log(result);
+               var string = "like-cnt-"+ userID.split(" ").join("") + "-" + timepost;
+              
+                document.getElementById(string).innerHTML= result.S;
+               
+
+              
+               
+              
+              },
+              error: function (result) {
+                alert('accept friend error');
+              }
+            });
+
+
+
+          });
+
+        });
+      }
             function commentButtons(commentID, commentCon, postType) {
               $(document).ready(function () {
                 $(commentID).click(function (e) {

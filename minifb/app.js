@@ -6,6 +6,7 @@
 
    var express = require('express');
    var routes = require('./routes/routes.js');
+   var news = require('./routes/newsRoutes.js');
    var chats = require('./routes/chatRoutes.js');
    var app = express();
    app.use(express.urlencoded());
@@ -73,6 +74,7 @@
       app.get('/edit', routes.get_edit);
       app.get('/news', routes.get_news);
       app.get('/newsSearch', routes.get_news_search);
+      app.get('/newsSearchResult', routes.get_news_search_result);
       app.get('/getCreator', routes.get_creator);
       
       //NEW
@@ -95,7 +97,9 @@
       app.post('/sendFriendRequest', routes.send_friend_request);
       app.post('/rejectFriendRequest', routes.reject_friend_request);
       app.post('/acceptFriendRequest', routes.accept_friend_request);
-
+      app.get('/news', news.get_news_page);
+app.get('/getrecommended', news.get_recommended);
+app.post('/addLikeToNews', news.add_like);
       
      
       
@@ -115,7 +119,7 @@
       app.post('/addmessage', chats.add_message);
       app.get('/getchatrooms', chats.get_chatrooms);
       app.post('/logoutchat', chats.log_out);
-
+      app.post('/deleteuserfromchat', chats.delete_user_from_chat);
       app.post('/inviteuser', chats.invite_user);
       app.post('/rejectinvite', chats.reject_invite);
       app.post('/acceptinvite', chats.accept_invite);

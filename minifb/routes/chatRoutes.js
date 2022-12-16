@@ -177,6 +177,7 @@ var addUserToChatroom = function (req, res) {
 }
 
 var deleteUserFromChatroom = function (req, res) {
+	console.log("deleteuserfromchat");
 	var groupChatID = req.body.chatID;
 	if (!req.session.username) {
 		res.render('main.ejs', { message: "Not logged in" });

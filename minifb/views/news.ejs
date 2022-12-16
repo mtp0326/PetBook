@@ -224,6 +224,13 @@
         text-decoration: none;
         font-size: 17px;
       }
+      .h5{
+        font-size: 100px;
+        margin-left:auto;
+        margin-right:auto;
+        margin-top:auto;
+        margin-bottom:auto;
+      }
 
       .topnav a:hover {
         background-color: #d1d1d1;
@@ -331,34 +338,71 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+
+
+      $.getJSON('/getrecommended', function (data1) {
+   				var recommended = [];
+   				for (let i = 0; i < data1.length; i++) {
+		            var Item =
+		            {
+		              "headline": data1[i].headline,
+		            };
+		            recommended.push(Item);
+		            console.log("item is addeddddd: " + Item.headline.S);
+		          }
+
+
+             for(let i = 0 ; i < recommended.length; i++){
+                createNewsDiv(recommended[i]);
+             }
+   			})
+
+           
+
+
+             
          
          $.getJSON('/getUserInfo', function (data) {
             console.log(data);
 
              var pfp= data.pfpURL.S
+             if(data.recommended == undefined){
+              test_el = document.createElement('div');
+              test_el = "<h5>Loading new recommended news...</h5>"
+
+             }
+             else{
              var news = data.recommended.SS
+             
             
             pfpFinalnav = 
             '<img class="profile-pic-nav"src='+ pfp+'>';
             pfpFinalpro = 
             '<img class="profile-pic"src='+ pfp+'>';
+
+            
            
    
 
              document.getElementById("navpicdiv").innerHTML = pfpFinalnav;
 
              for(let i = 0 ; i < news.length; i++){
-                createNewsDiv(news[0]);
+                createNewsDiv(news[i]);
              }
 
-
+            }
 
     
 
          });
        });
 
-       function createNewsDiv(news) {
+      
+
+
+
+       function createNewsDiv(newsHD) {
+              news = newsHD.headline.S;
               test_el = document.createElement('div');
               var newsDash = news.replace(/\s+/g, '-').toLowerCase();
                 likeID = "like-btn-"+newsDash;
@@ -375,35 +419,30 @@
               likeButton(likeID);
             }
 
-            function likeButton(likeID) {
-                hashLikeID = "#"+likeID;
-        // $(document).ready(function () {
-        //   $(hashLikeID).click(function (e) {
-        //     console.log("like clicked!");
-        //     e.preventDefault();
+            function likeButton(news, likeID) {
+              var hashLikeID = "#"+likeID;
+              $(document).ready(function () {
+                $(hashLikeID).click(function (e) {
+                console.log("like clicked!");
+                e.preventDefault();
 
-        //     $.ajax({
-        //       type: "POST",
-        //       url: "/addLikesToPost",
-        //       data: {
-        //         sender: friendReq
-        //       },
+                $.ajax({
+                  type: "POST",
+                  url: "/addLikeToNews",
+                  data: {
+                    likedNews: news.headline
+                  },
+                  success: function (result) {
+                    alert('liked');
+                  },
+                  error: function (result) {
+                    alert('add like error');
+                  }
+                });
+              }
+              });
+            }
 
-        //       success: function (result) {
-        //         alert('liked');
-              
-        //       },
-        //       error: function (result) {
-        //         alert('accept friend error');
-        //       }
-        //     });
-
-
-
-        //   });
-
-        // });
-      }
 
 </script>
 

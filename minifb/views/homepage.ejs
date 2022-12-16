@@ -57,6 +57,27 @@
      display: inline-block;
    }
 
+   button[type=accept] {
+     
+     
+     background-color: white;
+     color: #fff;
+     border-radius: 10px;
+     border: 0;
+     box-shadow:0;
+     display: inline-block;
+   }
+   button[type=reject] {
+     
+     
+     background-color: #cf3030;
+     color: #fff;
+     border-radius: 30px;
+     border: 0;
+     box-shadow:0;
+     display: inline-block;
+   }
+
       .wholeHome {
         display: flex;
       }
@@ -67,7 +88,7 @@
       }
 
       .card {
-        border-radius: 10px;
+        border-radius: 20px;
         width: 500px;
         padding: 20px;
         margin-left: 80px;
@@ -324,6 +345,35 @@
         background-color: #0668E1;
         color: #fff;
         border-radius: 5px;
+        display: inline-block;
+      }
+
+      button[type=invite] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 5px;
+        text-align: top;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0668E1;
+        color: #fff;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
+      button[type="accept-invite"] {
+        appearance: none;
+        -webkit-appearance: none;
+      
+        
+        text-align: top;
+        border: 0;
+       
+        background-color: #efefef;
+        color: #fff;
+       
         display: inline-block;
       }
 
@@ -589,6 +639,21 @@
 
       }
 
+      button[type=gc] {
+        appearance: none;
+        -webkit-appearance: none;
+        
+       
+        border: 0;
+        margin-top:5px;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #3e77d3;
+        color: #fff;
+        border-radius: 5px;
+    
+
+      }
+
       h1 {
         font-size: 20px;
         font-weight: 600;
@@ -596,10 +661,19 @@
       }
 
 
-      .alert {
-  padding: 20px;
-  background-color: #f44336;
+
+.alert-friend {
+  padding: 10px;
+  background-color: #3089f5;
   color: white;
+  font-size: 20px;
+}
+
+.alert-online {
+  padding: 10px;
+  background-color: #0bc824;
+  color: white;
+  font-size: 20px;
 }
 
 .closebtn {
@@ -727,7 +801,7 @@
                
 
             var difference = $.grep(friendList, (item) => $.inArray(item, globalFriendList) === -1);
-           console.log(difference);
+          
 
           
 
@@ -766,10 +840,11 @@
 
             for (let i = difference.length - 1; i >= 0; i--) {
               var string =
-              '<div class="alert">'
-              + '<span class="closebtn" onclick="this.parentElement.style.display="none";">&times;</span>' 
-            + '<strong>Danger!</strong> Indicates a dangerous or potentially negative action.'
-             +' </div>'
+              '<div class="alert-friend">'
+ +' <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> '
+ + '<img src="https://img.icons8.com/external-anggara-basic-outline-anggara-putra/24/FFFFFF/external-friends-social-media-interface-anggara-basic-outline-anggara-putra.png"/>'
++ "  You and "+difference[i]+" are now friends!"
+ +'</div>'
 
              test_el = document.createElement('div');
        
@@ -801,7 +876,7 @@
             }
             else {
               var requestsSet = data.requests.SS
-              console.log(requestsSet);
+            
               var friendRequestList = [];
               requestsSet.forEach(re => friendRequestList.push(re));
 
@@ -809,7 +884,7 @@
                
 
             var difference = $.grep(friendRequestList, (item) => $.inArray(item, globalRequestList) === -1);
-           console.log(difference);
+           
 
           
 
@@ -848,9 +923,9 @@
         var rejectID = "reject-invite-button-" + friendReq
         test_el.innerHTML +=
         '<div id='+string+'>'
-          + friendReq+'<button type = "accept" id = ' + acceptID + '>accept</button>'
+          + friendReq+'<button type = "accept" id = ' + acceptID + '><img src="https://img.icons8.com/ios-glyphs/30/2DD82D/ok--v1.png"/></button>'
 
-         + '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+         + '<button type = "reject" id = ' + rejectID + '><img src="https://img.icons8.com/tiny-glyph/16/FFFFFF/delete-sign.png"/></button></div>'
         document.body.appendChild(test_el);
 
         var onlineFriendsDiv = document.getElementById('frTitle');
@@ -879,11 +954,7 @@
               },
 
               success: function (result) {
-                alert('accepted Invite');
-              
-
-
-
+             
               },
               error: function (result) {
                 alert('accept friend error');
@@ -915,9 +986,7 @@
               },
 
               success: function (result) {
-                alert('rejectedInvite');
                
-
               },
               error: function (result) {
                 alert('reject invite error');
@@ -979,7 +1048,7 @@
                   compareFunction(leftValue, rightValue)));
 
             var difference = onlyInLeft(friendposts, globalPostList, isSame);
-           console.log(difference);
+          
 
           
 
@@ -1273,6 +1342,20 @@
 
           
             for (let i = difference.length - 1; i >= 0; i--) {
+              var string =
+              '<div class="alert-online">'
+                +' <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> '
+                + '<img src="https://img.icons8.com/material-outlined/24/FFFFFF/online--v1.png"/>'+"  "+difference[i].name.S+" is online"
+                +'</div>'
+
+             test_el = document.createElement('div');
+       
+            test_el.innerHTML = string;
+         
+            document.body.appendChild(test_el);
+
+            var onlineFriendsDiv = document.getElementById('wholeHome');
+            onlineFriendsDiv.before(test_el);
               createOnlineFriendDiv(difference[i]);
             };
             globalOnlineList = onlinefriends;
@@ -1330,9 +1413,9 @@
        var rejectID = "reject-invite-button-" + chatinvite
        test_el.innerHTML +=
        '<div id='+string+'>'
-         + chatinvite+'<button type = "accept" id = ' + acceptID + '>accept</button>'
+         + chatinvite+'<button type = "accept-invite" id = ' + acceptID + '><img src="https://img.icons8.com/ios-glyphs/30/2DD82D/ok--v1.png"/></button>'
 
-        + '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+        + '<button type = "reject" id = ' + rejectID + '><img src="https://img.icons8.com/tiny-glyph/16/FFFFFF/delete-sign.png"/></button></div>'
 
         
 
@@ -1364,7 +1447,7 @@
               },
 
               success: function (result) {
-                alert('rejectedInvite');
+                alert('rejected invite to chatroom');
                 console.log(result);
 
               },
@@ -1397,7 +1480,7 @@
               },
 
               success: function (result) {
-                alert('acceptedInvite');
+                alert('accepted invite to chatroom');
                 console.log(result);
 
               },
@@ -1427,7 +1510,7 @@
         var inviteID = "invite-button-" + onlinefriendname
        test_el.innerHTML +=
        '<div id='+string+'>'
-         + onlinefriendname+'<button type = "accept" id = ' + inviteID + '>invite</button>'
+         + onlinefriendname+'<button type = "invite" id = ' + inviteID + '>invite</button>'
 
        
 
@@ -1730,14 +1813,47 @@
 
 
       }
+      function leaveChatroom(leaveID, chatID){
+        var hash = "#"+leaveID
+        $(hash).click(function(e) {
+          console.log("leave button clicked")
+          e.preventDefault();
+
+          $.ajax({
+            type: "POST",
+            url: "/deleteuserfromchat",
+            data: {
+              chatID : chatID
+            },
+            success: function (result) {
+              console.log(result)
+              alert("left chat");
+             
+            },
+            error: function (result) {
+              console.log(result);
+              alert('leave chatroom error');
+            }
+          });
+
+
+
+
+
+        });
+      }
 
       function gcButtonFunction(gcID, chatName, chatID) {
         socket.emit("leave room", {
           sender: id,
           room: roomID
         });
+        var leaveID = "leave-"+chatID;
+        var title = 
+        title = chatID +'<button type = "leavechatroom" id ='+leaveID+'>leave chatroom</button>'
+       
 
-        $("#chatname").html(chatID);
+        $("#chatname").html(title);
         roomID = chatID;
         console.log("room id is now: ")
         console.log(roomID);
@@ -1770,6 +1886,7 @@
 
 
         }
+        leaveChatroom(leaveID, chatID);
       }
     </script>
    
