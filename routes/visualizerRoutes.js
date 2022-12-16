@@ -26,7 +26,26 @@ var getFriendsVisualize = function(req, res) {
 			            "children": [],
 					});
 				});
-				res.send(node);
+				db.getUserAffiliation(req.session.username, function (err2, data2) {
+					if (err2) {
+						console.log(err2);
+					} else {
+						db.getAffiliations(data2, function (err3, data3) {
+							if (err3) {
+								console.log(err3);
+							} else {
+								data3.forEach(function (d3) {
+									node.children.push({
+										"id": d3, 
+							            "name": d3, 
+							            "children": [], 
+									});
+								});
+								res.send(node);
+							}
+						});
+					}
+				});
 			}
 		});
 	}
@@ -55,7 +74,26 @@ var expandGraph = function(req, res) {
 			            "children": [], 
 					});
 				});
-				res.send(node);
+				db.getUserAffiliation(req.session.username, function (err2, data2) {
+					if (err2) {
+						console.log(err2);
+					} else {
+						db.getAffiliations(data2, function (err3, data3) {
+							if (err3) {
+								console.log(err3);
+							} else {
+								data3.forEach(function (d3) {
+									node.children.push({
+										"id": d3, 
+							            "name": d3, 
+							            "children": [], 
+									});
+								});
+								res.send(node);
+							}
+						});
+					}
+				});
 			}
 		});
 	}
