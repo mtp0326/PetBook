@@ -432,7 +432,6 @@ var myDB_updateUser = function (username, variable, columnName, callback) {
 }
 
 var myDB_updateInterest = function (username, newInterest1, newInterest2, newInterest3, callback) {
-  
   var interestArr = [];
   interestArr = [newInterest1, newInterest2, newInterest3];
 
@@ -666,6 +665,62 @@ var myDB_deleteFriend = function(username, friend, callback) {
     callback(err, data);
   });
 }
+
+// Updates user's affiliation
+var myDB_addToAff = function(userID, updatedAffiliation, callback) {
+	var newUserIDSet = {SS: [userID]};
+	console.log("updated affil: " + updatedAffiliation);
+	var params = {
+		TableName: "affiliations",
+		Key: {"affiliations" : {S: updatedAffiliation}},
+	    UpdateExpression: "ADD users :new",
+	    ExpressionAttributeValues : {
+	      ":new": newUserIDSet
+	    },
+	    //ConditionExpression: "attribute_exists(affiliations)",
+	}
+	db.updateItem(params, function(err, data) {
+	    if (err) {
+	      console.log("Error", err);
+	    }
+		callback(err, data);
+	});
+}
+
+// Outputs user's affiliation
+var myDB_getUserAffil = function (username, callback) {
+  var params = {
+    TableName: "users",
+    Key: {"username" : {S: username}},
+    AttributesToGet: ['affiliation'],
+  };
+
+  db.getItem(params, function(err, data) {
+    if (err) {
+      console.log("Error" + err);
+    } else {
+      callback(null, data.Item.affiliation.S);
+    }
+  });
+}
+
+// Gets a list of all the user's affiliation friends
+var myDB_getAffiliations = function(affiliations, callback) {
+  var params = {
+      TableName: "affiliations",
+      Key: {"affiliations" : {S: affiliations}},
+  };
+
+  db.getItem(params, function(err, data) {
+    if (err) {
+      console.log("Error" + err);
+    } else {
+      callback(null, data.Item.users.SS);
+    }
+  });
+}
+
+
 // TODO Your own functions for accessing the DynamoDB tables should go here
 
 /* We define an object with one field for each method. For instance, below we have
@@ -699,8 +754,11 @@ var database = {
   updatePw: myDB_updatepw,
   updateInterest: myDB_updateInterest,
   updateUser: myDB_updateUser,
-  deleteFriend: myDB_deleteFriend
+  deleteFriend: myDB_deleteFriend,
 
+  updateAffiliation: myDB_addToAff,
+  getAffiliations: myDB_getAffiliations,
+  getUserAffiliation: myDB_getUserAffil,
 
 };
 

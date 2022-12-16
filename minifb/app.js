@@ -8,6 +8,7 @@
    var routes = require('./routes/routes.js');
    var news = require('./routes/newsRoutes.js');
    var chats = require('./routes/chatRoutes.js');
+   var visualizer = require('./routes/visualizerRoutes.js');
    var app = express();
    app.use(express.urlencoded());
    
@@ -100,6 +101,9 @@
       app.get('/news', news.get_news_page);
 app.get('/getrecommended', news.get_recommended);
 app.post('/addLikeToNews', news.add_like);
+app.get('/visualizer', visualizer.get_friend_visualizer);
+app.get('/friendvisualization', visualizer.get_friends);
+      app.get('/getFriends/:user', visualizer.get_more_friends);
       
      
       
