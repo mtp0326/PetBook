@@ -4,7 +4,7 @@ var sjcl = require('sjcl');
 const { exec } = require('child_process');
 // var stemmer = require('stemmer');
 
-// TODO The code for your own routes should go here
+//get the starting page (login)
 var getMain = function (req, res) {
   req.session.currWall = null;
   req.session.isVerified = false;
@@ -12,7 +12,6 @@ var getMain = function (req, res) {
 }
 
 //render homepage
-//NEW: getHomepage, homepage.ejs
 var getHomepage = function (req, res) {
   req.session.currWall = null;
   if (!req.session.username) {
@@ -21,6 +20,7 @@ var getHomepage = function (req, res) {
   res.render('homepage.ejs', { "check": req.session.isVerified })
 }
 
+//render news
 var getNews = function (req, res) {
   req.session.currWall = null;
   if (!req.session.username) {
@@ -29,6 +29,7 @@ var getNews = function (req, res) {
   res.render('news.ejs', { "check": req.session.isVerified })
 }
 
+//render news search
 var getNewsSearch = function (req, res) {
   req.session.currWall = null;
   if (!req.session.username) {
@@ -37,6 +38,7 @@ var getNewsSearch = function (req, res) {
   res.render('newsSearch.ejs', { "check": req.session.isVerified })
 }
 
+//render news search result
 var getNewsSearchResult = function (req, res) {
   req.session.currWall = null;
   if (!req.session.username) {
@@ -45,6 +47,7 @@ var getNewsSearchResult = function (req, res) {
   res.render('newsSearchResult.ejs', { "check": req.session.isVerified })
 }
 
+//render wall page
 var getWall = function (req, res) {
   req.session.currWall = req.session.username;
   if (!req.session.username) {
@@ -53,6 +56,7 @@ var getWall = function (req, res) {
   res.render('wall.ejs', { "check": req.session.isVerified, "isOther": false, "username": req.session.username});
 }
 
+//render other user's wall page
 var getOtherWall = function (req, res) {
   req.session.currWall = req.session.username;
   if (!req.session.username) {
@@ -99,6 +103,7 @@ var getLogout = function (req, res) {
 		})
 }
 
+//render chat
 var getChat = function (req, res) {
   req.session.currWall = null;
   if (!req.session.username) {
@@ -107,6 +112,7 @@ var getChat = function (req, res) {
   res.render('chat.ejs', { "check": req.session.isVerified })
 }
 
+//render edit
 var getEdit = function (req, res) {
   req.session.currWall = null;
   if (!req.session.username) {
@@ -115,6 +121,7 @@ var getEdit = function (req, res) {
   res.render('edit.ejs', { "check": req.session.isVerified })
 }
 
+//add the req.session.currWall the user that was searched
 var postOtherWallPageAjax = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
@@ -123,6 +130,7 @@ var postOtherWallPageAjax = function (req, res) {
   res.send("success");
 }
 
+//gives information about the wall owner
 var getDetermineWallOwner = function (req, res) {
   db.usernameLookup(req.session.currWall, "username", function (err, data) {
    
@@ -138,6 +146,7 @@ var getDetermineWallOwner = function (req, res) {
   });
 }
 
+//give information about user
 var getUserInfo = function(req, res){
   db.getUserInfo(req.session.username,  "username", function (err, data) {
     res.send(data);
@@ -161,20 +170,20 @@ var postNewAccount = function (req, res) {
       req.session.interest2 = req.body.interest2;
       req.session.interest3 = req.body.interest3;
       
-      var stringify1 = { 
-        S: req.session.interest1
-      };
-      var stringify2 = { 
-        S: req.session.interest2
-      };
-      var stringify3 = { 
-        S: req.session.interest3
-      };
-      var interestList = [stringify1,stringify2,stringify3];
+      // var stringify1 = { 
+      //   S: req.session.interest1
+      // };
+      // var stringify2 = { 
+      //   S: req.session.interest2
+      // };
+      // var stringify3 = { 
+      //   S: req.session.interest3
+      // };
+      var interestList = [req.session.interest1,req.session.interest2,req.session.interest3];
       req.session.interest = interestList;
       req.session.pfpURL = req.body.pfpURL;
       db.createAccount(req.session.username, req.session.password, req.session.fullname, req.session.affiliation, req.session.email, req.session.birthday,
-        req.session.interest, req.session.pfpURL, function (err, data) { });
+        interestList, req.session.pfpURL, function (err, data) { });
         req.session.isVerified = true;
       res.render('createaccount.ejs', { "check": req.session.isVerified });
     } else {
@@ -261,6 +270,7 @@ var getHomepagePostListAjax = function (req, res) {
   });
 }
 
+//uses recursion to get friends posts
 var recGetAllPosts = function (recFriendsList, recPostsList, counter, callback) {
   if (counter >= recFriendsList.length) {
     callback(recPostsList);
@@ -485,6 +495,7 @@ var recGetAllWalls = function (recFriendsList, recWallsList, sender, counter, ca
   }
 }
 
+//check if the wall is a friend of the user
 var getIsWallAFriend = function (req, res) {
   db.getFriends(req.session.username, function (err, data) {
     if(err) {
@@ -533,6 +544,7 @@ var postNewWallAjax = function (req, res) {
   }
 }
 
+//get the information about the user for edit
 var getEditUserInfoAjax = function (req, res) {
   db.getUserInfo(req.session.username, "username", function (err, data) {
     data.password.S = "";
@@ -540,6 +552,7 @@ var getEditUserInfoAjax = function (req, res) {
   });
 }
 
+//sign in info to the database
 var postUpdateUser = function (req, res) {
   var updateInfoList = [];
   var hashPassword = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(req.body.password));
@@ -610,6 +623,7 @@ var recUpdateUser = function (sessionUser, recUpdateInfoList, recUpdateInfoNameL
   }
 }
 
+//get all usernames from users database
 var getAllUsername = function (req, res) {
   db.getAllUsername(function (err, data) {
     if(err) {
@@ -619,6 +633,7 @@ var getAllUsername = function (req, res) {
   });
 }
 
+//renders visualizer
 var getVisualizer = function (req, res) {
   if (!req.session.username) {
     return res.redirect('/')
@@ -686,6 +701,7 @@ var acceptFriendRequest = function(req, res) {
 	}
 }
 
+//adds likes to the specific post
 var addLikesToPost = function (req, res) {
   var userID = req.body.userID;
   var postType = req.body.postType;
@@ -704,6 +720,7 @@ var addLikesToPost = function (req, res) {
   })
 }
 
+//delete friend
 var postDeleteFriend = function(req, res){
   var friend = req.body.friend;
   db.deleteFriend(req.session.username, friend, function (err, data) {
@@ -711,6 +728,7 @@ var postDeleteFriend = function(req, res){
   })
 }
 
+//gets friend list
 var getFriendList = function(req, res){
   db.getFriends(req.session.username, function (err, data) {
     console.log({L : data});

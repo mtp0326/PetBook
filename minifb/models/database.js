@@ -51,7 +51,7 @@ var myDB_getUsername = function (searchTerm, language, callback) {
   });
 }
 
-//gets username input and returns the username if existing
+//gets username input and gives the entire user entity
 var myDB_userInfo = function (searchTerm, language, callback) {
   var params = {
     Key: {
@@ -71,7 +71,6 @@ var myDB_userInfo = function (searchTerm, language, callback) {
   });
 }
 
-//NEW
 //create a new account with the right db parameters
 var myDB_createAccount =
   function (newUsername, newPassword, newFullname, newAffiliation,
@@ -81,10 +80,19 @@ var myDB_createAccount =
     for (let i = 0; i < newInterest.length; i++) {
       var newIt =
       {
-        "S": newInterest[i]
+        "S": newInterest[0][i]
       }
       interestArr.push(newIt);
     }
+
+    console.log(newUsername);
+    console.log(newPassword);
+    console.log(newFullname);
+    console.log(newAffiliation);
+    console.log(newEmail);
+    console.log(newBirthday);
+    console.log(newInterest);
+    console.log(newPfpURL);
 
     var params = {
       TableName: "users",
@@ -107,7 +115,6 @@ var myDB_createAccount =
     });
   }
 
-//NEW
 //outputs friends
 var myDB_getFriends = (function (username, callback) {
   var params = {
@@ -135,7 +142,6 @@ var myDB_getFriends = (function (username, callback) {
   });
 });
 
-//NEW
 //outputs all posts from user into an array
 var myDB_allPosts = (function (userID, callback) {
   var params = {
@@ -197,30 +203,6 @@ var myDB_updatepw = function (username, newPw, callback) {
     }
   });
 }
-
-// Update user interest. Minimum 2???
-//client side has the list of interests => newInterests is final interests
-// var myDB_updateInterest = function (username, newInterest1, newInterest2, newInterest3, callback) {
-//   var newInterests = [];
-//   newInterests = [newInterest1, newInterest2, newInterest3]
-//   var params = {
-//     TableName: "users",
-//     Item: {
-//       'username': { S: username },
-//       'interest': { S: newInterests },
-//     }
-//   };
-
-//   db.putItem(params, function (err, data) {
-//     if (err) {
-//       callback(err, null);
-//     } else if (username.length == 0 || newPw.length == 0) {
-//       callback("Field cannot be left blank", null);
-//     } else {
-//       callback(err, "Updated");
-//     }
-//   });
-// }
 
 //creates post with the right db parameters
 var myDB_createPost = function (userID, content, timepost, callback) {
@@ -333,7 +315,6 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
   });
 }
 
-//NEW
 //outputs all walls from user into an array
 var myDB_allWalls = (function (receiver, callback) {
   var params = {
@@ -353,7 +334,6 @@ var myDB_allWalls = (function (receiver, callback) {
   });
 });
 
-//NEW
 ///query as sender
 //outputs all walls as sender from user into an array
 var myDB_allWallsAsSender = (function (receiver, sender, callback) {
@@ -431,6 +411,7 @@ var myDB_updateUser = function (username, variable, columnName, callback) {
   });
 }
 
+//updates interest to users database
 var myDB_updateInterest = function (username, newInterest1, newInterest2, newInterest3, callback) {
   var interestArr = [];
   interestArr = [newInterest1, newInterest2, newInterest3];
@@ -469,6 +450,7 @@ var myDB_updateInterest = function (username, newInterest1, newInterest2, newInt
   });
 }
 
+//gets all interest from user
 var myDB_getInterest = function (username, callback) {
   var paramsGet = {
     KeyConditions: {
@@ -486,6 +468,7 @@ var myDB_getInterest = function (username, callback) {
   });
 }
 
+//get all the available user ids
 var myDB_getAllUsername = (function (callback) {
   var params = {
     TableName: "users",
@@ -559,7 +542,7 @@ var myDB_addFriend = function(user1, user2, callback) {
 	});
 }
 
-
+//add likes to the db with a string set of usernames (the size of the string set becomes the number of likes)
 var myDB_addLike = function(userID, likedUser, timepost, postType, callback) {
 	var userStringSet = {SS: [likedUser]};
   console.log(userID);
@@ -677,7 +660,6 @@ var myDB_addToAff = function(userID, updatedAffiliation, callback) {
 	    ExpressionAttributeValues : {
 	      ":new": newUserIDSet
 	    },
-	    //ConditionExpression: "attribute_exists(affiliations)",
 	}
 	db.updateItem(params, function(err, data) {
 	    if (err) {
