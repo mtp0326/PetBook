@@ -234,6 +234,8 @@ var myDB_createPost = function (userID, content, timepost, callback) {
   });
 }
 
+
+
 //adds comment in post using userID (partition key) and timepost (sort key)
 var myDB_addComment = function (userID, timepost, comment, table, callback) {
   var paramsGet;
@@ -315,11 +317,13 @@ var myDB_addComment = function (userID, timepost, comment, table, callback) {
   });
 }
 
+
+
 //outputs all walls from user into an array
 var myDB_allWalls = (function (receiver, callback) {
   var params = {
-    TableName: "walls",
-    KeyConditionExpression: "receiver = :a",
+    TableName: "posts",
+    KeyConditionExpression: "userID = :a",
     ExpressionAttributeValues: {
       ":a": { S: receiver }
     }
@@ -338,7 +342,7 @@ var myDB_allWalls = (function (receiver, callback) {
 //outputs all walls as sender from user into an array
 var myDB_allWallsAsSender = (function (receiver, sender, callback) {
   var params = {
-    TableName: "walls",
+    TableName: "posts",
     KeyConditionExpression: "receiver = :a",
     FilterExpression: 'contains (sender, :b)',
     ExpressionAttributeValues: {
@@ -741,6 +745,7 @@ var database = {
   updateAffiliation: myDB_addToAff,
   getAffiliations: myDB_getAffiliations,
   getUserAffiliation: myDB_getUserAffil,
+  
 
 };
 

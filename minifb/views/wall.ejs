@@ -323,7 +323,7 @@
         text-align: top;
         border: 0;
         box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
-        background-color: #04c74f;
+        background-color: #000000;
         color: #fff;
         border-radius: 5px;
         display: inline-block;
@@ -336,7 +336,7 @@
         text-align: top;
         border: 0;
         box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
-        background-color: #ca4230;
+        background-color: #000000;
         color: #fff;
         border-radius: 5px;
         display: inline-block;
@@ -519,7 +519,7 @@ setTimeout(refreshTime, 5000);
               
                   if(friend){
                     console.log("is friend");
-                     var test_el= '<button type = "removefriend" id = "removefriend"><img src="https://img.icons8.com/material/24/FFFFFF/delete-user-male.png"/> remove friend</button></div>'
+                     var test_el= '<button type = "removefriend" id = "removefriend"><img src="https://img.icons8.com/material/24/FFFFFF/delete-user-male.png"/> unfollow</button></div>'
          
                 var cardDiv = document.getElementById('friendBoolButton').innerHTML = test_el;
                
@@ -528,7 +528,7 @@ setTimeout(refreshTime, 5000);
                   else{
                     console.log("is not friend");
                     var test_el =
-                '<button type = "addfriend" id = "addfriend"><img src="https://img.icons8.com/material-sharp/24/FFFFFF/add-user-male.png"/>add friend</button></div>'
+                '<button type = "addfriend" id = "addfriend"><img src="https://img.icons8.com/material-sharp/24/FFFFFF/add-user-male.png"/>follow</button></div>'
              
                 var cardDiv = document.getElementById('friendBoolButton').innerHTML = test_el;
                 addFriendButtons();
@@ -553,12 +553,31 @@ setTimeout(refreshTime, 5000);
                       },
 
                     success: function(result) {
-                    alert('friend request sent');
+                    alert('following user');
+                    getBoolFriend();
 
                     },
                 error: function(result) {
                     alert('friend request error');
                 }
+            });
+
+            $.ajax({
+              type: "POST",
+              url: "/acceptFriendRequest",
+              data: {
+                
+                sender : wallOwner
+              },
+
+              success: function (result) {
+                alert('following user');
+                    getBoolFriend();
+
+              },
+              error: function (result) {
+                alert('accept friend error');
+              }
             });
     
 
@@ -583,7 +602,7 @@ setTimeout(refreshTime, 5000);
                       },
 
                     success: function(result) {
-                    alert('friend deleted');
+                    alert('unfollowed');
                     getBoolFriend();
 
                     },
