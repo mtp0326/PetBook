@@ -1,5 +1,3 @@
-Group Members: Cindy Wei, Matt Park, Alex Park, Sarah Zhang
-SEAS login: weicindy, mtp0326, 
 
 Which features did you implement? 
   (list features, or write 'Entire assignment')
@@ -23,7 +21,6 @@ news recommendation
 news search
 interfacing with the web application
 hashing password for security
-extra credit:
 users can accept or deny friend requests
 Profile picture
 notifications
@@ -41,17 +38,3 @@ to start the website:
 - cd git
 - cd minifb
 - node app.js
-
-
-Did you personally write _all_ the code you are submitting
-(other than code from the course web page)?
-  [*] Yes
-  [ ] No
-
-Did you copy any code from the Internet, or from classmates?
-  [ ] Yes
-  [*] No
-
-Did you collaborate with anyone on this assignment?
-  [ ] Yes
-  [*] No
