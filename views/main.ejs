@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PennBook</title>
+    <link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    body {
+    
+      
+    height: 100%;
+
+    padding-top: 200px;
+    padding-bottom: 200px;
+    background-color: #ebebeb;
+    align-items: center;
+    text-align: center;
+    margin: 100;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+  
+  }
+
+  input[type=submit] {
+    appearance:none;
+  -webkit-appearance:none;
+    padding:10px;
+    margin:10px 0; 
+    border:0;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    background-color:#0668E1;
+    color:#fff;
+    border-radius:5px;
+}
+
+button[type=submit] {
+    appearance:none;
+  -webkit-appearance:none;
+    padding:10px;
+    margin:10px 0; 
+    border:0;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    background-color:#0b994d;
+    color:#fff;
+    border-radius:5px;
+}
+
+input[type=text] {
+
+    padding:10px;
+    margin:10px 0; 
+    border:0;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    border-radius:5px;
+    
+}
+input[type=password] {
+
+padding:10px;
+margin:10px 0; 
+border:0;
+box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+border-radius:5px;
+
+}
+
+  h1{
+    color:#0668E1;
+   
+    font-weight: bold;
+    font-size:100px ;
+  }
+  h5{
+    color: rgb(39, 31, 31);
+   
+    font-size:20px ;
+  }
+
+  h4{
+    color: rgb(39, 31, 31);
+
+    font-size:15px ;
+  }
+  p{
+    color: rgb(39, 31, 31);
+
+    font-size:20px ;
+  }
+  span.info{
+    display: inline-block;
+    width: 350px;
+    height: 350px;
+    padding: 20px;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+  border-radius:5px;
+    background-color: rgb(255, 255, 255);
+
+  }
+  span.title{
+    display: inline-block;
+    padding: 50px;
+ 
+  }
+    
+  
+</style>  
+    </head>
+    
+<body>
+<span class ="title">
+  <h1>pennbook</h1>
+  <h5>
+    Connect with your friends around Penn on Pennbook.
+  </h5>
+</span>
+<span class = "info">
+  <form action="/checklogin" method="post">
+    <p>
+      <input id = "floatingPassword" type="text" placeholder="Username" name="username">
+    </p>
+    <p>
+      <input id="floatingPassword" type="password" placeholder="Password" name="password">
+    </p>
+    <input type = "submit" value="Log In">
+  </form>
+  <form action = "/signup">
+    <button type = "submit">Create Account</button>
+  </form>
+</span>
+</body>
+</html>

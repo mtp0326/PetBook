@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Wall</title>
+  <% if (check) { %>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+      body {
+        height: 100%;
+        background-color: #eeeeee;
+        margin: 100;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 600;
+      }
+
+      
+
+      .card {
+        border-radius: 10px;
+        width: 500px;
+        padding: 20px;
+        margin-left: 80px;
+        margin-right: auto;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        
+        background-color: #ffffff;
+      }
+
+      .profile {
+        text-align: center;
+        border-radius: 10px;
+        width: 300px;
+        height: 400px;
+        padding: 20px;
+        top: 20px;
+        left: 20px;
+        margin-top: 30px;
+        margin-left: 50px;
+        background-color: #ffffff;
+      }
+      .whole{
+        display:flex;
+      }
+      .wallPic {
+        width: 150px;
+        height: 150px;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
+      }
+
+      .post {
+        border-radius: 10px;
+        width: 500px;
+        padding: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-top: 30px;
+        background-color: #5e97dc;
+      }
+
+      .comments {
+        border-radius: 10px;
+        width: 500px;
+        padding: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 5px;
+        margin-top: 5px;
+        border-color: #3681de;
+        border-width: 10px;
+        background-color: #ffffff;
+      }
+
+      /* post */
+      .user {
+        font-size: 20px;
+        padding-right: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        display: inline-block;
+        color: white;
+      }
+
+      .time {
+        font-size: 10px;
+        display: inline-block;
+        color: white;
+      }
+
+      .content {
+        border-radius: 10px;
+        width: 100%;
+        padding: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        background-color: #ffffff;
+      }
+
+      .profile-pic {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
+      }
+
+      .profile-pic-nav {
+        float: left;
+        width: 40px;
+        height: 40px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        border-radius: 50%;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
+      }
+
+      h3 {
+        display: inline-block;
+        padding-bottom: 0px;
+        padding-left: 20px;
+      }
+
+      textarea.posttext {
+        padding: 10px 10px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        color: #000000;
+        border: 1px solid #F5F5F5;
+        font-size: 16px;
+        letter-spacing: 1px;
+        height: 200px;
+        width: 100%;
+      }
+
+      textarea.comment {
+        padding: 10px 0px;
+        margin-left: 450px;
+        margin-top: 10px;
+        margin-right: 0px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        color: #585858;
+        border: 1px solid #F5F5F5;
+        font-size: 16px;
+        letter-spacing: 1px;
+        height: 40px !important;
+        width: 420px;
+        display: inline-block;
+      }
+
+      textarea:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        border: 1px solid #ffffff !important;
+        outline-width: 0 !important;
+      }
+
+      select {
+        border: none;
+        font-size: 15px;
+        background-color: #fff !important;
+      }
+
+      select:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        outline-width: 0 !important;
+      }
+
+      ::placeholder {
+        color: #BDBDBD;
+      }
+
+      :-ms-input-placeholder {
+        color: #BDBDBD;
+      }
+
+      ::-ms-input-placeholder {
+        color: #BDBDBD;
+      }
+
+      .btn-success {
+        border-radius: 50px;
+        padding: 4px 40px;
+      }
+
+      .options {
+        font-size: 23px;
+        color: #757575;
+        cursor: pointer;
+      }
+
+      .options:hover {
+        color: #000;
+      }
+
+      .topnav {
+        overflow: hidden;
+        background-color: #ffffff;
+      }
+
+      .topnav a {
+        float: left;
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+
+      .topnav a:hover {
+        background-color: #d1d1d1;
+        color: black;
+      }
+
+      .topnav a.active {
+        background-color: #0668E1;
+        color: rgb(255, 255, 255);
+      }
+
+      .topnav .search-container {
+        float: right;
+      }
+
+      .topnav input[type=text] {
+        padding: 6px;
+        margin-top: 8px;
+        font-size: 17px;
+        border: none;
+      }
+
+      .topnav .search-container button {
+        float: right;
+        padding: 6px 10px;
+        margin-top: 8px;
+        margin-right: 16px;
+        background: rgb(166, 166, 167);
+        font-size: 17px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .topnav .search-container button:hover {
+        background: rgb(148, 147, 147);
+      }
+
+      @media screen and (max-width: 600px) {
+        .topnav .search-container {
+          float: none;
+        }
+
+        .topnav a,
+        .topnav input[type=text],
+        .topnav .search-container button {
+          float: none;
+          display: block;
+          text-align: left;
+          width: 100%;
+          margin: 0;
+          padding: 14px;
+        }
+
+        .topnav input[type=text] {
+          border: 1px solid #ccc;
+        }
+      }
+
+      button[type=comment] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 20px;
+        text-align: top;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0668E1;
+        color: #fff;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
+      button[type=post] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 10px;
+        margin: 10px 0;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0b994d;
+        color: #fff;
+        border-radius: 5px;
+      }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    </script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <% if (isOther) { %>
+
+      <script type="text/javascript">
+        var sessionCreator = "";
+        var wallOwner = "";
+       
+        window.onload = function () {
+
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const currWallUser = urlParams.get('search');
+          console.log("search results: ");
+          console.log(currWallUser);
+          wallOwner = currWallUser;
+
+          $(document).ready(function () {
+            $.ajax({
+              type: "POST",
+              url: "/postOtherWallPageAjax",
+              data: {
+                currWall: currWallUser
+              },
+              success: function (result) {
+
+                getwallownerinfo();
+                getBoolFriend();
+                var string = "post on " + currWallUser + " 's wall...";
+                document.getElementsByName('postcontent')[0].placeholder = string;
+                
+
+
+              },
+              error: function (result) {
+                alert('error');
+              }
+            });
+
+          });
+
+       
+        }
+     
+      </script>
+      <% } else { %>
+        <script>
+          window.onload = function () {
+            var string = "post something on your wall...";
+            document.getElementsByName('postcontent')[0].placeholder = string;
+           
+            getwallownerinfo();
+
+            // getUserInfo();
+          }
+        </script>
+        <% } %>
+          <script>
+
+var globalPostList = [];
+
+$(document).ready(function () {
+         
+         $.getJSON('/getUserInfo', function (data) {
+
+         
+             var pfp= data.pfpURL.S
+            
+         
+            pfpFinalnav = 
+            '<img class="profile-pic-nav"src='+ pfp+'>';
+            pfpFinalpro = 
+            '<img class="profile-pic"src='+ pfp+'>';
+           
+   
+
+             document.getElementById("navpicdiv").innerHTML = pfpFinalnav;
+
+             document.getElementById("profilepicurl").innerHTML = pfpFinalpro;
+
+            
+
+         
+
+
+         });
+       });
+
+var refreshTime = function () {
+getFriendsPosts();
+setTimeout(refreshTime, 5000);
+};
+$(document).ready(function () {
+setTimeout(refreshTime, 5000);
+});
+            function redirectHome() {
+              console.log("redirect homepage");
+              window.location.replace('/homepage');
+
+            }
+
+            function getwallownerinfo() {
+              $(document).ready(function () {
+
+                $.getJSON('/getDetermineWallOwner', function (data) {
+                  console.log(data);
+                  console.log("get determine wall owner")
+                  if (data === null) {
+                    alert("user does not exist");
+                    redirectHome();
+                  } else {
+                    console.log("success");
+                    console.log(data);
+                    var fullnameP = data.fullname.S
+                    var usernameP = data.username.S
+                    var emailP = data.email.S
+                    var interestArray = data.interest.L
+                    var pfp = data.pfpURL.S
+                    var interestP = "";
+                    for(let i = 0; i < interestArray.length; i++){
+                      
+                      interestP +=interestArray[i].S;
+                      interestP+=" "
+                    }
+                    var affiliationP = data.affiliation.S
+                    var string = "";
+                    string = "<b>name: </b>"+fullnameP;
+                    document.getElementById("wallName").innerHTML = string;
+                    string = "<b>username: </b> @"+usernameP;
+                    document.getElementById("wallUsername").innerHTML = string;
+                    string = "<b>email: </b>"+emailP;
+                    document.getElementById("wallGmail").innerHTML = string;
+                    string = "<b>affiliation: </b>"+affiliationP;
+                    document.getElementById("wallAffiliation").innerHTML = string;
+                    string = "<b>interest: </b>"+interestP;
+                    document.getElementById("wallInterest").innerHTML = string;
+
+                    var pfpUser = '<img class="wallPic" src='+ pfp+'>';
+                    document.getElementById("userpicurl").innerHTML = pfpUser;
+
+           
+                    
+                    getFriendsPosts();
+                    
+                  }
+                });
+              });
+            }
+
+            function getBoolFriend() {
+              $(document).ready(function () {
+                $.getJSON('/getIsWallAFriend', function (friendBool) {
+                  console.log("check if user is a friend: ");
+                  friend = friendBool.BOOL;
+
+                  console.log(friend);
+                  test_el = document.createElement('div');
+              
+                  if(friend){
+                    console.log("is friend");
+                    test_el.innerHTML +=
+                '<div class = "isfriend" id = isfriend>friend</div>'
+                document.body.appendChild(test_el);
+                var cardDiv = document.getElementById('wallInterest');
+                cardDiv.after(test_el);
+                  }
+                  else{
+                    console.log("is not friend");
+                    test_el.innerHTML +=
+                '<button type = "addfriend" id = "addfriend">add friend</button></div>'
+                document.body.appendChild(test_el);
+                var cardDiv = document.getElementById('wallInterest');
+                cardDiv.after(test_el);
+                addFriendButtons();
+                  }
+                });
+              });
+            }
+
+      function addFriendButtons() {
+      $(document).ready(function () {
+        $("#addfriend").click(function (e) {
+      
+            console.log("request clicked!");
+            console.log(wallOwner);
+           
+            e.preventDefault();
+                    $.ajax({
+                      type: "POST",
+                      url: "/sendFriendRequest",
+                      data:{ 
+                          receiver : wallOwner
+                      },
+
+                    success: function(result) {
+                    alert('friend request sent');
+
+                    },
+                error: function(result) {
+                    alert('error');
+                }
+            });
+    
+
+        });
+
+      });
+    }
+
+            //calls ajax with /getList that retreives restaraut data from db
+            function getFriendsPosts() {
+              var friendposts = [];
+              console.log("here!");
+              $(document).ready(function () {
+                console.log("here!!");
+                $.getJSON('/getWallAjax', function (elementsArr) { // EDIT THIS PART
+                  console.log("here!!!");
+                  console.log(elementsArr);
+
+                  for (let i = 0; i < elementsArr.length; i++) {
+                    var contentN = elementsArr[i].content;
+                    var userIDN = elementsArr[i].userID;
+                    var timepostN = elementsArr[i].timepost;
+                    var likesN = elementsArr[i].likes;
+                    var commentsN = elementsArr[i].comments;
+                    var postTypeN = elementsArr[i].postType;
+                    var Item =
+                    {
+                      "content": contentN,
+                      "comments": commentsN,
+                      "likes": likesN,
+                      "userID": userIDN,
+                      "timepost": timepostN,
+                      "postType":postTypeN
+                    };
+                    friendposts.push(Item);
+                  }
+                  // A comparer used to determine if two entries are equal.
+            const isSame = (a, b) =>
+            a.userID === b.userID 
+            && a.timepost === b.timepost;
+
+            // Get items that only occur in the left array,
+            // using the compareFunction to determine equality.
+            const onlyInLeft = (left, right, compareFunction) =>
+              left.filter(leftValue =>
+                !right.some(rightValue =>
+                  compareFunction(leftValue, rightValue)));
+
+            var difference = onlyInLeft(friendposts, globalPostList, isSame);
+           console.log(difference);
+
+          
+
+            for (let i = difference.length - 1; i >= 0; i--) {
+              createPostDiv(difference[i]);
+            };
+            globalPostList = friendposts;
+
+                });
+              });
+            }
+            function tagUsernames(availableTags) {
+              $(function () {
+                $("#search").autocomplete({
+                  source: availableTags
+                });
+              });
+            }
+
+            function createPostDiv(friendpost) {
+              test_el = document.createElement('div');
+              var test = new Date(parseInt(friendpost.timepost));
+              var time = (new Date(test)).toLocaleDateString()
+                +
+                " "
+                +
+                (new Date(test)).toLocaleTimeString();
+              test_el.innerHTML =
+                '<div class="post"><div class= "user">'
+                + friendpost.userID +
+                '</div>' +
+                '<div class="time" >'
+                + time +
+                '</div>' +
+                '<div class="content" >'
+                + friendpost.content +
+                '</div></div>'
+                ;
+              var commentsArr = (friendpost.comments).map(obj => obj.S);
+              for (let i = 0; i < commentsArr.length; i++) {
+                test_el.innerHTML +=
+                  '<div class="comments" >'
+                  + commentsArr[i] +
+                  '</div>';
+              }
+              var commentID = "comment-button-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+              var commentContent = "commentcontent-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+              test_el.innerHTML +=
+                '<div class="row px-3 form-group"><textarea class="comment" placeholder="say something..." name=' + commentContent + '></textarea>'
+                +
+                '<button type = "comment" id = ' + commentID + '>Comment</button></div>'
+              document.body.appendChild(test_el);
+              var cardDiv = document.getElementById('whole');
+              cardDiv.after(test_el);
+              var commentIDWithHash = "#" + commentID;
+              commentButtons(commentIDWithHash, commentContent, friendpost.postType);
+            }
+            function commentButtons(commentID, commentCon, postType) {
+              $(document).ready(function () {
+                $(commentID).click(function (e) {
+                  console.log("comment clicked!");
+                  e.preventDefault();
+                  var contentUpd = document.getElementsByName(commentCon)[0].value;
+                  document.getElementsByName(commentCon)[0].value = "";
+
+                  console.log(contentUpd);
+                  var contentWithUser = sessionCreator + ": " + contentUpd;
+                  console.log(contentWithUser);
+                  $.ajax({
+                    type: "POST",
+                    url: "/createcomment",
+                    data: {
+                      comment: contentWithUser,
+                      userID: sessionCreator,
+                      timepost: new Date().getTime(),
+                      table: postType
+                    },
+                    success: function (result) {
+
+                      console.log(result);
+
+                      test_el = document.createElement('div');
+                      test_el.innerHTML +=
+                        '<div class="comments" >'
+                        + contentWithUser +
+                        '</div>';
+                      document.body.appendChild(test_el);
+                      console.log(commentBarID);
+                      var cardDiv = document.getElementById(commentBarID);
+                      cardDiv.before(test_el);
+                      var commentBarWithHash = "#" + commentBarID;
+                      console.log(commentBarWithHash)
+                      $(commentBarWithHash).val('');
+                    },
+                    error: function (result) {
+                      alert('error');
+                    }
+                  });
+                });
+              });
+            }
+            $(document).ready(function () {
+              $.getJSON('/getCreator', function (creator) {
+                sessionCreator = creator;
+                console.log(sessionCreator);
+                $("#currUser").html(sessionCreator);
+              });
+            });
+
+            $(document).ready(function () {
+              $.getJSON('/getAllUsername', function (usernameArr) { // EDIT THIS PART
+                var tagArr = usernameArr.map(obj => obj.username.S);
+                tagUsernames(tagArr);
+              });
+            });
+          </script>
+          <script>
+            $(document).ready(function () {
+              $("#post-button").click(function (e) {
+                console.log("post clicked!");
+                e.preventDefault();
+                var contentUpd = document.getElementsByName("postcontent")[0].value;
+                document.getElementsByName("postcontent")[0].value = "";
+                $.ajax({
+                  type: "POST",
+                  url: "/createwall",
+                  data: {
+                    content: contentUpd,
+                    userID: sessionCreator,
+                    timepost: new Date().getTime()
+                  },
+                  success: function (result) {
+                    console.log(result);
+                    var Item =
+                    {
+                      "content": result.content,
+                      "comments": [],
+                      "likes": [],
+                      "userID": result.userID,
+                      "timepost": result.timepost,
+                    };
+                   
+                  },
+                  error: function (result) {
+                    console.log(data);
+                    alert('error');
+                  }
+                });
+              });
+            });
+          </script>
+
+          <% } else { %>
+            <script>
+              alert("login required")
+            </script>
+            <% } %>
+</head>
+
+<body>
+  <div class="topnav">
+    <div id = "navpicdiv">
+    </div>
+    <a href="/homepage">Home</a>
+    <a class="active" href="/wall">Wall</a>
+    <a href="/news">News</a>
+    <a href="/visualizer">Visualizer</a>
+    <a href="/edit">Edit</a>
+    <a href="/logout">Logout</a>
+
+    <div class="search-container">
+      <div class="ui-widget">
+        <form action="/otherwall" method="get">
+          <input type="text" placeholder="Search.." name="search" id="search">
+          <button type="submit" id="search-btn">
+            <i class="fa fa-search"></i>
+          </button>
+      </div>
+    </div>
+  </div>
+  <div id = "whole" class = "whole">
+    <div class="profile" id = "profileID">
+  
+      <div class="userInfo">
+        <div id = userpicurl>
+        </div>
+       
+        <h4>
+          
+          <div id="wallName"></div>
+        </h4>
+        <h4>
+          <div id="wallUsername"></div>
+        </h4>
+        <h4>
+          <div id="wallGmail"></div>
+        </h4>
+        <h4>
+          <div id="wallAffiliation"></div>
+        </h4>
+  
+        <h4>
+          <div id="wallInterest"></div>
+        </h4>
+  
+      </div>
+     
+    </div>
+  <div class="card" id="cardID">
+
+    <div class="userInfo">
+      <div id="profilepicurl">
+      </div>
+       <h3>
+        <div id="currUser"></div>
+      </h3>
+    </div>
+    <div class="row px-3 form-group">
+      <textarea class="posttext" placeholder="" name="postcontent"></textarea>
+    </div>
+    <button type="post" id="post-button">Post</button>
+  </div>
+</div>
+</body>
+
+</html>

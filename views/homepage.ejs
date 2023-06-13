@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HomePage</title>
+  <% if (check) { %>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+      body {
+        height: 100%;
+        background-color: #eeeeee;
+        margin: 100;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 600;
+      }
+
+      .friendRequest {
+        text-align: center;
+        border-radius: 10px;
+        width: 300px;
+        height: 400px;
+        padding: 20px;
+        top: 20px;
+        left: 20px;
+        margin-top: 30px;
+        margin-left: 50px;
+        background-color: #ffffff;
+      }
+
+      .wholeHome {
+        display: flex;
+      }
+
+      .card {
+        border-radius: 10px;
+        width: 500px;
+        padding: 20px;
+        margin-left: 80px;
+        margin-right: auto;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        background-color: #ffffff;
+      }
+
+
+
+      .post {
+        border-radius: 10px;
+        width: 500px;
+        padding: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-top: 30px;
+        background-color: #5e97dc;
+      }
+
+      .comments {
+        border-radius: 10px;
+        width: 500px;
+        padding: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 5px;
+        margin-top: 5px;
+        border-color: #3681de;
+        border-width: 10px;
+        background-color: #ffffff;
+      }
+
+      /* post */
+      .userPost {
+        font-size: 20px;
+        padding-right: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        display: inline-block;
+        color: white;
+      }
+
+      .time {
+        font-size: 10px;
+        display: inline-block;
+        color: white;
+      }
+
+      .content {
+        border-radius: 10px;
+        width: 100%;
+        padding: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        background-color: #ffffff;
+      }
+
+      .profile-pic {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        object-fit: contain;
+        background-color: #E0E0E0;
+
+      }
+
+
+
+      .profile-pic-nav {
+        float: left;
+        width: 40px;
+        height: 40px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        border-radius: 50%;
+        object-fit: contain;
+        background-color: #E0E0E0;
+        display: inline-block;
+      }
+
+      h3 {
+        display: inline-block;
+        padding-bottom: 0px;
+        padding-left: 20px;
+      }
+
+      textarea.posttext {
+        padding: 10px 10px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        color: #000000;
+        border: 1px solid #F5F5F5;
+        font-size: 16px;
+        letter-spacing: 1px;
+        height: 200px;
+        width: 100%;
+      }
+
+      textarea.comment {
+        padding: 10px 0px;
+        margin-left: 450px;
+        margin-top: 10px;
+        margin-right: 0px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        color: #585858;
+        border: 1px solid #F5F5F5;
+        font-size: 16px;
+        letter-spacing: 1px;
+        height: 40px !important;
+        width: 420px;
+        display: inline-block;
+      }
+
+      textarea:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        border: 1px solid #ffffff !important;
+        outline-width: 0 !important;
+      }
+
+      select {
+        border: none;
+        font-size: 15px;
+        background-color: #fff !important;
+      }
+
+      select:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        outline-width: 0 !important;
+      }
+
+      ::placeholder {
+        color: #BDBDBD;
+      }
+
+      :-ms-input-placeholder {
+        color: #BDBDBD;
+      }
+
+      ::-ms-input-placeholder {
+        color: #BDBDBD;
+      }
+
+      .btn-success {
+        border-radius: 50px;
+        padding: 4px 40px;
+      }
+
+      .options {
+        font-size: 23px;
+        color: #757575;
+        cursor: pointer;
+      }
+
+      .options:hover {
+        color: #000;
+      }
+
+      .topnav {
+        overflow: hidden;
+        background-color: #ffffff;
+      }
+
+      .topnav a {
+        float: left;
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+
+      .topnav a:hover {
+        background-color: #d1d1d1;
+        color: black;
+      }
+
+      .topnav a.active {
+        background-color: #0668E1;
+        color: rgb(255, 255, 255);
+      }
+
+      .topnav .search-container {
+        float: right;
+      }
+
+      .topnav input[type=text] {
+        padding: 6px;
+        margin-top: 8px;
+        font-size: 17px;
+        border: none;
+      }
+
+      .topnav .search-container button {
+        float: right;
+        padding: 6px 10px;
+        margin-top: 8px;
+        margin-right: 16px;
+        background: rgb(166, 166, 167);
+        font-size: 17px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .topnav .search-container button:hover {
+        background: rgb(148, 147, 147);
+      }
+
+      @media screen and (max-width: 600px) {
+        .topnav .search-container {
+          float: none;
+        }
+
+        .topnav a,
+        .topnav input[type=text],
+        .topnav .search-container button {
+          float: none;
+          display: block;
+          text-align: left;
+          width: 100%;
+          margin: 0;
+          padding: 14px;
+        }
+
+        .topnav input[type=text] {
+          border: 1px solid #ccc;
+        }
+      }
+
+      button[type=comment] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 20px;
+        text-align: top;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0668E1;
+        color: #fff;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
+      button[type=post] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 10px;
+        margin: 10px 0;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0b994d;
+        color: #fff;
+        border-radius: 5px;
+      }
+
+      /* CHAT */
+
+
+      #chat-circle {
+        position: fixed;
+        bottom: 50px;
+        right: 50px;
+        background: #0668E1;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        color: white;
+        padding: 28px;
+        cursor: pointer;
+        box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.6), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      .btn#my-btn {
+        background: white;
+        padding-top: 13px;
+        padding-bottom: 12px;
+        border-radius: 45px;
+        padding-right: 40px;
+        padding-left: 40px;
+        color: #0668E1;
+      }
+
+      #chat-overlay {
+        background: rgba(255, 255, 255, 0.1);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        display: none;
+      }
+
+
+
+
+      .chat-box {
+        display: none;
+        background: #efefef;
+        position: fixed;
+        right: 30px;
+        bottom: 50px;
+        width: 800px;
+        max-width: 85vw;
+        max-height: 100vh;
+        border-radius: 5px;
+        box-shadow: 0px 5px 35px 9px #0668E1;
+        box-shadow: 0px 5px 35px 9px #ccc;
+      }
+
+      #chatname {
+        display: inline-block;
+      }
+
+      .chat-box-toggle {
+
+        float: right;
+        margin-right: 15px;
+        cursor: pointer;
+      }
+
+      .right {
+        flex: 1;
+        background: #efefef;
+
+      }
+
+      .chat-box-header {
+
+        background: #0668E1;
+        height: 70px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        color: white;
+        text-align: center;
+        font-size: 20px;
+        padding-top: 17px;
+        opacity: 1;
+      }
+
+      .chat-box-body {
+
+        height: 370px;
+        height: auto;
+        border: 1px solid #ccc;
+        overflow: hidden;
+
+      }
+
+      .whole {
+        display: flex;
+
+      }
+
+      .left {
+
+        width: 200px;
+
+      }
+
+
+      .chat-box-body:after {
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        content: "";
+        position: absolute;
+        z-index: -1;
+        opacity: 0.1;
+
+      }
+
+      #chat-input {
+        background: #f4f7f9;
+        width: 100%;
+        position: relative;
+        height: 47px;
+        padding-top: 10px;
+        padding-right: 50px;
+        padding-bottom: 10px;
+        padding-left: 15px;
+        border: none;
+        resize: none;
+        outline: none;
+        border: 1px solid #ccc;
+        color: #888;
+        border-top: none;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        overflow: hidden;
+      }
+
+      .chat-input>form {
+        margin-bottom: 0;
+      }
+
+      .chat-submit {
+        position: absolute;
+        bottom: 3px;
+        right: 10px;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+        border-radius: 50%;
+        color: #0668E1;
+        width: 35px;
+        height: 35px;
+      }
+
+      .chat-logs {
+        padding: 15px;
+        height: 370px;
+        overflow-y: scroll;
+      }
+
+      .chat-logs::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        background-color: #F5F5F5;
+      }
+
+      .chat-logs::-webkit-scrollbar {
+        width: 5px;
+        background-color: #F5F5F5;
+      }
+
+      .chat-logs::-webkit-scrollbar-thumb {
+        background-color: #0668E1;
+      }
+
+
+
+      @media only screen and (max-width: 500px) {
+        .chat-logs {
+          height: 40vh;
+        }
+      }
+
+      .chat-msg.user>.msg-avatar img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        float: left;
+        width: 15%;
+      }
+
+      .chat-msg.self>.msg-avatar img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        float: right;
+        width: 15%;
+      }
+
+      .cm-msg-text {
+        background: white;
+        padding: 10px 15px 10px 15px;
+        color: #666;
+        max-width: 75%;
+        float: left;
+        margin-left: 10px;
+        position: relative;
+        margin-bottom: 20px;
+        border-radius: 30px;
+      }
+
+      .chat-msg {
+        clear: both;
+      }
+
+      .chat-msg.self>.cm-msg-text {
+        float: right;
+
+        background: #0668E1;
+        color: white;
+      }
+
+      .cm-msg-button>ul>li {
+        list-style: none;
+        float: left;
+        width: 50%;
+      }
+
+      .cm-msg-button {
+        clear: both;
+        margin-bottom: 70px;
+      }
+
+      button[type=chatroom-submit] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 10px;
+        margin: 10px 50px;
+        border: 0;
+        box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+        background-color: #0b994d;
+        color: #fff;
+        border-radius: 5px;
+        position: absolute;
+
+        bottom: 0;
+        left: 0;
+
+      }
+
+      h1 {
+        font-size: 20px;
+        font-weight: 600;
+
+      }
+    </style>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    </script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script type="text/javascript">
+      var sessionCreator = "";
+      var socket = io();
+      var id = "";
+      var activegc = [];
+      var globalPostList = [];
+      var globalRequestList = [];
+      var globalOnlineList = [];
+      var globalRoomList = [];
+      var globalInviteList = [];
+      var roomID;
+      console.log(roomID);
+      var INDEX = 0;
+      window.onload = function () {
+
+        $(document).ready(function () {
+         
+         $.getJSON('/getUserInfo', function (data) {
+
+         
+             var pfp= data.pfpURL.S
+            
+            var pfpFinal = "";
+            pfpFinalnav = 
+            '<img class="profile-pic-nav"src='+ pfp+'>';
+            pfpFinalpro = 
+            '<img class="profile-pic"src='+ pfp+'>';
+           
+   
+
+             document.getElementById("navpicdiv").innerHTML = pfpFinalnav;
+
+             document.getElementById("profilepicurl").innerHTML = pfpFinalpro;
+
+            
+;
+
+
+           
+
+
+         });
+       });
+
+       
+        online();
+        getFriendsPosts();
+        getFriendRequest();
+        getFriendsOnline();
+        getChatRooms();
+        getChatInvites();
+      }
+
+      var refreshTime = function () {
+        getFriendsPosts();
+        getFriendRequest();
+        getFriendsOnline();
+        getChatRooms();
+        getChatInvites();
+        setTimeout(refreshTime, 5000);
+      };
+      $(document).ready(function () {
+        setTimeout(refreshTime, 5000);
+      });
+      //newly added
+      function online() {
+        $(document).ready(function () {
+       
+          $.ajax({
+            type: "POST",
+            url: "/addonlineuser",
+            data: {
+              username: sessionCreator
+            },
+            success: function (result) {
+            },
+            error: function (result) {
+            }
+          });
+        });
+      }
+
+      function getFriendRequest() {
+        $(document).ready(function () {
+         
+          $.getJSON('/getUserInfo', function (data) {
+            if (data.requests == undefined) {
+              console.log("no requests")
+            }
+            else {
+              var requestsSet = data.requests.SS
+              console.log(requestsSet);
+              var friendRequestList = [];
+              requestsSet.forEach(re => friendRequestList.push(re));
+
+
+               
+
+            var difference = $.grep(friendRequestList, (item) => $.inArray(item, globalRequestList) === -1);
+           console.log(difference);
+
+          
+
+            for (let i = difference.length - 1; i >= 0; i--) {
+              createFriendReqDiv(difference[i]);
+            };
+            globalRequestList = friendRequestList;
+
+
+            }
+
+
+          });
+        });
+      }
+
+      function createFriendReqDiv(friendReq) {
+        test_el = document.createElement('div');
+
+        test_el.innerHTML =
+          '<div class="friendReq"><div class= "friendReq">'
+          + friendReq +
+          '</div>';
+
+        var acceptID = "accept-invite-button-" + friendReq
+        test_el.innerHTML +=
+          '<button type = "accept" id = ' + acceptID + '>accept</button></div>'
+
+        var rejectID = "reject-invite-button-" + friendReq
+        test_el.innerHTML +=
+          '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+        document.body.appendChild(test_el);
+
+        var onlineFriendsDiv = document.getElementById('frTitle');
+        onlineFriendsDiv.after(test_el);
+        var acceptIDWithHash = "#" + acceptID;
+        var rejectIDWithHash = "#" + rejectID;
+        acceptButtonsReq(acceptIDWithHash, friendReq);
+        rejectButtonsReq(rejectIDWithHash, friendReq);
+      }
+
+      function acceptButtonsReq(acceptID, friendReq) {
+        $(document).ready(function () {
+          $(acceptID).click(function (e) {
+            console.log("accept clicked!");
+            e.preventDefault();
+
+            $.ajax({
+              type: "POST",
+              url: "/acceptFriendRequest",
+              data: {
+                sender: friendReq
+              },
+
+              success: function (result) {
+                alert('acceptedInvite');
+                console.log(result);
+
+              },
+              error: function (result) {
+                alert('accept friend error');
+              }
+            });
+
+
+
+          });
+
+        });
+      }
+
+      function rejectButtonsReq(rejectID, friendReq) {
+        $(document).ready(function () {
+          $(rejectID).click(function (e) {
+            console.log("reject clicked!");
+            e.preventDefault();
+
+            $.ajax({
+              type: "POST",
+              url: "/rejectFriendRequest",
+              data: {
+                sender: friendReq
+              },
+
+              success: function (result) {
+                alert('rejectedInvite');
+                console.log(result);
+
+              },
+              error: function (result) {
+                alert('reject invite error');
+              }
+            });
+
+
+
+          });
+
+        });
+      }
+
+
+
+      //calls ajax with /getList that retreives restaraut data from db
+      function getFriendsPosts() {
+        var friendposts = [];
+
+        $(document).ready(function () {
+       
+          $.getJSON('/getPostAjax', function (elementsArr) {
+            for (let i = 0; i < elementsArr.length; i++) {
+              var contentN = elementsArr[i].content;
+              var userIDN = elementsArr[i].userID;
+              var timepostN = elementsArr[i].timepost;
+              var likesN = elementsArr[i].likes;
+              var commentsN = elementsArr[i].comments;
+              var postTypeN = elementsArr[i].postType;
+              var Item =
+              {
+                "content": contentN,
+                "comments": commentsN,
+                "likes": likesN,
+                "userID": userIDN,
+                "timepost": timepostN,
+                "postType": postTypeN
+              };
+              friendposts.push(Item);
+          
+            }
+           
+
+
+
+            // A comparer used to determine if two entries are equal.
+            const isSame = (a, b) =>
+            a.userID === b.userID 
+            && a.timepost === b.timepost;
+
+            // Get items that only occur in the left array,
+            // using the compareFunction to determine equality.
+            const onlyInLeft = (left, right, compareFunction) =>
+              left.filter(leftValue =>
+                !right.some(rightValue =>
+                  compareFunction(leftValue, rightValue)));
+
+            var difference = onlyInLeft(friendposts, globalPostList, isSame);
+           console.log(difference);
+
+          
+
+            for (let i = difference.length - 1; i >= 0; i--) {
+              createPostDiv(difference[i]);
+            };
+            globalPostList = friendposts;
+          });
+        });
+      }
+
+
+      function tagUsernames(availableTags) {
+        $(function () {
+          $("#search").autocomplete({
+            source: availableTags
+          });
+        });
+      }
+      function createPostDiv(friendpost) {
+
+        test_el = document.createElement('div');
+        var test = new Date(parseInt(friendpost.timepost));
+        var time = (new Date(test)).toLocaleDateString()
+          +
+          " "
+          +
+          (new Date(test)).toLocaleTimeString();
+        test_el.innerHTML =
+          '<div class="post"><div class= "userPost">'
+          + friendpost.userID +
+          '</div>' +
+          '<div class="time" >'
+          + time +
+          '</div>' +
+          '<div class="content" >'
+          + friendpost.content +
+          '</div></div>'
+          ;
+        var commentsArr = (friendpost.comments).map(obj => obj.S);
+        for (let i = 0; i < commentsArr.length; i++) {
+          test_el.innerHTML +=
+            '<div class="comments" >'
+            + commentsArr[i] +
+            '</div>';
+        }
+        var commentID = "comment-button-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+        var commentBarID = "comment-bar-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+        var commentContent = "commentcontent-" + friendpost.userID.split(" ").join("") + "-" + friendpost.timepost
+        test_el.innerHTML +=
+          '<div class=' + commentBarID + ' id = ' + commentBarID + '><textarea class="comment" placeholder="say something..." name=' + commentContent + '></textarea>'
+          +
+          '<button type = "comment" id = ' + commentID + '>Comment</button></div>'
+        document.body.appendChild(test_el);
+        var cardDiv = document.getElementById('wholeHome');
+        cardDiv.after(test_el);
+        commentButtons(commentID, commentContent, friendpost.timepost, friendpost.userID, commentBarID, friendpost.postType);
+      }
+      function commentButtons(commentIDBefore, commentCon, time, postUserID, commentBarID, postType) {
+        $(document).ready(function () {
+          commentID = "#" + commentIDBefore;
+          $(commentID).click(function (e) {
+            console.log("comment clicked!");
+            e.preventDefault();
+            var contentUpd = document.getElementsByName(commentCon)[0].value;
+            document.getElementsByName(commentCon)[0].value = "";
+           
+            var contentWithUser = sessionCreator + ": " + contentUpd;
+        
+            $.ajax({
+              type: "POST",
+              url: "/createcomment",
+              data: {
+                comment: contentWithUser,
+                userID: postUserID,
+                timepost: time, // EDIT THIS PART
+                table: postType
+              },
+              success: function (result) {
+
+
+                console.log(result);
+
+                test_el = document.createElement('div');
+                test_el.innerHTML +=
+                  '<div class="comments" >'
+                  + contentWithUser +
+                  '</div>';
+                document.body.appendChild(test_el);
+              
+                var cardDiv = document.getElementById(commentBarID);
+                cardDiv.before(test_el);
+                var commentBarWithHash = "#" + commentBarID;
+            
+                $(commentBarWithHash).val('');
+              },
+              error: function (result) {
+                alert('create comment error');
+              }
+            });
+          });
+        });
+      }
+      $(document).ready(function () {
+        $.getJSON('/getCreator', function (creator) {
+          sessionCreator = creator;
+          console.log(sessionCreator);
+          $("#currUser").html(sessionCreator);
+          online();
+        });
+      });
+
+      $(document).ready(function () {
+        $.getJSON('/getAllUsername', function (usernameArr) { // EDIT THIS PART
+          var tagArr = usernameArr.map(obj => obj.username.S);
+          tagUsernames(tagArr);
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function () {
+        $("#post-button").click(function (e) {
+          console.log("post clicked!");
+          e.preventDefault();
+          var contentUpd = document.getElementsByName("postcontent")[0].value;
+          document.getElementsByName("postcontent")[0].value = "";
+          $.ajax({
+            type: "POST",
+            url: "/createpost",
+            data: {
+              content: contentUpd,
+              userID: sessionCreator,
+              timepost: new Date().getTime()
+            },
+            success: function (result) {
+              console.log(result);
+              var Item =
+              {
+                "content": result.content,
+                "comments": [],
+                "likes": [],
+                "userID": result.userID,
+                "timepost": result.timepost,
+              };
+              
+            },
+            error: function (result) {
+            
+              alert('create post error');
+            }
+          });
+        });
+      });
+    </script>
+    <!-- CHAT -->
+    <script>
+      function getChatRooms() {
+
+        $(document).ready(function () {
+
+   
+          $.getJSON('/getchatrooms', function (elementsArr) {
+            activegc = [];
+       
+
+            for (let i = 0; i < elementsArr.length; i++) {
+              var Item =
+              {
+                "content": elementsArr[i].content,
+                "chatID": elementsArr[i].chatID,
+                "users": elementsArr[i].userIDs
+              };
+        
+              activegc.push(Item);
+       
+            }
+      
+
+            const isSame = (a, b) =>
+              a.chatID.S === b.chatID.S ;
+
+            
+
+            // Get items that only occur in the left array,
+            // using the compareFunction to determine equality.
+            const onlyInLeft = (left, right, compareFunction) =>
+              left.filter(leftValue =>
+                !right.some(rightValue =>
+                  compareFunction(leftValue, rightValue)));
+
+              var difference = onlyInLeft(activegc, globalRoomList, isSame);
+
+          
+            for (let i = difference.length - 1; i >= 0; i--) {
+              createChatRoomButton(difference[i]);
+            };
+
+            globalRoomList = activegc;
+
+
+           
+
+
+          });
+        });
+      }
+
+      function getFriendsOnline() {
+        var onlinefriends = [];
+        $(document).ready(function () {
+       
+          $.getJSON('/getonlineusers', function (elementsArr) {
+   ;
+
+            for (let i = 0; i < elementsArr.length; i++) {
+              var Item =
+              {
+                "name": elementsArr[i]
+              };
+        
+              onlinefriends.push(Item);
+    
+            }
+           
+
+              // A comparer used to determine if two entries are equal.
+              const isSame = (a, b) =>
+              a.name.S === b.name.S ;
+
+            // Get items that only occur in the left array,
+            // using the compareFunction to determine equality.
+            const onlyInLeft = (left, right, compareFunction) =>
+              left.filter(leftValue =>
+                !right.some(rightValue =>
+                  compareFunction(leftValue, rightValue)));
+
+            var difference = onlyInLeft(onlinefriends, globalOnlineList, isSame);
+         
+
+          
+            for (let i = difference.length - 1; i >= 0; i--) {
+              createOnlineFriendDiv(difference[i]);
+            };
+            globalOnlineList = onlinefriends;
+
+
+
+
+          });
+        });
+      }
+
+      function getChatInvites() {
+        $(document).ready(function () {
+    
+          $.getJSON('/getUserInfo', function (data) {
+
+            if (data.invites == undefined) {
+              console.log("no invites");
+            } else {
+              var invitesSet = data.invites.SS
+              console.log(invitesSet);
+              var chatInviteList = [];
+
+              invitesSet.forEach(inv => chatInviteList.push(inv));
+
+
+            var difference = $.grep(chatInviteList, (item) => $.inArray(item, globalInviteList) === -1);
+         
+
+          
+
+            for (let i = difference.length - 1; i >= 0; i--) {
+              createChatInviteDiv(difference[i]);
+            };
+            globalInviteList = chatInviteList;
+
+
+             
+            }
+
+
+
+
+          });
+        });
+      }
+
+      function createChatInviteDiv(chatinvite) {
+        test_el = document.createElement('div');
+
+        test_el.innerHTML =
+          '<div class="onlinefriend"><div class= "chatInviteID">'
+          + chatinvite +
+          '</div>';
+
+        var acceptID = "accept-invite-button-" + chatinvite
+        test_el.innerHTML +=
+          '<button type = "accept" id = ' + acceptID + '>accept</button></div>'
+
+        var rejectID = "reject-invite-button-" + chatinvite
+        test_el.innerHTML +=
+          '<button type = "reject" id = ' + rejectID + '>reject</button></div>'
+        document.body.appendChild(test_el);
+
+        var onlineFriendsDiv = document.getElementById('chatinvites');
+        onlineFriendsDiv.after(test_el);
+        var acceptIDWithHash = "#" + acceptID;
+        var rejectIDWithHash = "#" + rejectID;
+        acceptButtonsChat(acceptIDWithHash, chatinvite);
+        rejectButtonsChat(rejectIDWithHash, chatinvite);
+      }
+
+      function rejectButtonsChat(acceptID, chatInvite) {
+        $(document).ready(function () {
+          $(acceptID).click(function (e) {
+            console.log("reject clicked!");
+            e.preventDefault();
+
+            $.ajax({
+              type: "POST",
+              url: "/rejectinvite",
+              data: {
+                chatID: chatInvite
+              },
+
+              success: function (result) {
+                alert('rejectedInvite');
+                console.log(result);
+
+              },
+              error: function (result) {
+                alert('reject invite error');
+              }
+            });
+
+
+
+          });
+
+        });
+      }
+
+      function acceptButtonsChat(acceptID, chatInvite) {
+        $(document).ready(function () {
+          $(acceptID).click(function (e) {
+            console.log("accept clicked!");
+            e.preventDefault();
+
+            $.ajax({
+              type: "POST",
+              url: "/acceptinvite",
+              data: {
+                chatID: chatInvite
+              },
+
+              success: function (result) {
+                alert('acceptedInvite');
+                console.log(result);
+
+              },
+              error: function (result) {
+                alert('accept invite error');
+              }
+            });
+
+
+
+          });
+
+        });
+      }
+
+
+      function createOnlineFriendDiv(onlinefriend) {
+        test_el = document.createElement('div');
+
+    
+
+        var onlinefriendname = onlinefriend.name.S;
+        test_el.innerHTML =
+          '<div class="onlinefriend"><div class= "user">'
+          + onlinefriendname +
+          '</div>';
+    
+        var inviteID = "invite-button-" + onlinefriendname
+        test_el.innerHTML +=
+          '<button type = "invite" id = ' + inviteID + '>invite</button></div>'
+        document.body.appendChild(test_el);
+        var onlineFriendsDiv = document.getElementById('online-friends');
+        onlineFriendsDiv.after(test_el);
+        var inviteIDWithHash = "#" + inviteID;
+        inviteButtons(inviteIDWithHash, onlinefriendname);
+      }
+
+      function inviteButtons(inviteID, onlinefriend) {
+        $(document).ready(function () {
+          $(inviteID).click(function (e) {
+            if (roomID != undefined) {
+              console.log("invite clicked!");
+              console.log(roomID);
+              console.log(onlinefriend);
+              e.preventDefault();
+
+              $.ajax({
+                type: "POST",
+                url: "/inviteuser",
+                data: {
+                  chatID: roomID,
+                  invitedUser: onlinefriend,
+                },
+
+                success: function (result) {
+                  alert('added');
+                  console.log(result);
+
+                },
+                error: function (result) {
+                  alert('invite user error');
+                }
+              });
+            }
+            else {
+              alert("select a chatroom first");
+            }
+
+
+          });
+
+        });
+      }
+
+
+
+
+
+
+      function sendChat() {
+        console.log("send chat");
+        console.log(roomID);
+        if ($('#chat-input').val().trim() !== '') {
+          console.log(roomID);
+          var mes = $('#chat-input').val().trim()
+          var messageItem = {
+            text: mes,
+            sender: id,
+            room: roomID,
+
+          }
+
+          socket.emit("chat message", messageItem);
+
+
+          $('#chat-input').val('');
+          $('#chat-input').focus();
+
+          $.ajax({
+            type: "POST",
+            url: "/addmessage",
+            data: {
+              chatID: roomID,
+              message: mes
+            },
+            success: function (result) {
+            
+            },
+            error: function (result) {
+              console.log(result);
+              alert('add message error');
+            }
+          });
+        }
+      }
+
+      $(document).ready(function () {
+        $.getJSON('/getCreator', function (creator) {
+          id = creator;
+          console.log(id);
+          $("#currUser").html(id);
+        });
+
+      });
+
+      $(document).ready(function () {
+        socket.emit("join room", {
+          sender: id,
+          room: roomID
+        });
+      });
+
+      function generate_message(msg, type, sender) {
+
+  
+        INDEX++;
+        var str = "";
+        if (id == sender) {
+          str += "<div id='cm-msg-" + INDEX + "' class=\"chat-msg " + type + "\">";
+          str += "          <div class=\"cm-msg-text\">";
+          str += msg;
+          str += "          <\/div>";
+          str += "        <\/div>";
+        }
+        else {
+          str += "<div id='cm-msg-" + INDEX + "' class=\"chat-msg " + type + "\">";
+          str += "          <span class=\"sender\">";
+          str += "          <div class=\"cm-msg-sender\">";
+          str += sender;
+          str += "          <\/div>";
+          str += "          <\/span>";
+          str += "          <div class=\"cm-msg-text\">";
+          str += msg;
+          str += "          <\/div>";
+          str += "        <\/div>";
+        }
+
+        $(".chat-logs").append(str);
+        $("#cm-msg-" + INDEX).hide().fadeIn(300);
+        if (type == 'self') {
+          $("#chat-input").val('');
+        }
+        $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight }, 1000);
+      }
+
+
+
+
+
+
+
+      // Called whenever a chat is sent, emits to socket and posts to the database
+      $(document).ready(function () {
+ 
+        console.log(roomID);
+
+        socket.on("chat message", function (msg) {
+
+          var message_temp = document.createElement("li");
+          var text = msg.text;
+
+          if (id == msg.sender) {
+            generate_message(text, 'self', id);
+
+          } else {
+            generate_message(text, 'user', msg.sender);
+
+          }
+
+        });
+
+        $("#chat-circle").click(function () {
+          $("#chat-circle").toggle('scale');
+          $(".chat-box").toggle('scale');
+        })
+
+        $(".chat-box-toggle").click(function () {
+          $("#chat-circle").toggle('scale');
+          $(".chat-box").toggle('scale');
+        })
+
+
+
+      })
+    </script>
+    </script>
+
+    <script>
+
+      $(document).ready(function () {
+        var input = document.getElementById("chat-input");
+        input.addEventListener("keypress", function (e) {
+          if (e.keyCode === 13) {
+            event.preventDefault();  //checks whether the pressed key is "Enter"
+            sendChat();
+          }
+        });
+      })
+
+    </script>
+
+    <script>
+      $(document).ready(function () {
+        $("#chatroom-submit").click(function (e) {
+          console.log("chatroom create!");
+          e.preventDefault();
+
+          $.ajax({
+            type: "POST",
+            url: "/addchatroom",
+            data: {
+              username: id
+            },
+            success: function (result) {
+        
+              var Item =
+              {
+                "content": result.content,
+                "chatID": result.chatID,
+                "users": result.userIDs
+              };
+        
+              createChatRoomButton(Item);
+            },
+            error: function (result) {
+              console.log(result);
+              alert('add chatroom error');
+            }
+          });
+
+
+
+
+
+        });
+
+      });
+
+
+
+      function createChatRoomButton(chatroom) {
+        console.log("create chatroom button")
+        test_el = document.createElement('div');
+        var chatName = "";
+        var usersArr1 = [];
+        var usersArr = [];
+  
+        var usersArr = (chatroom.users).SS;
+  
+        for (let i = 0; i < usersArr.length; i++) {
+
+          chatName += usersArr[i] + " ";
+        }
+       
+
+
+        var gcID = "gc-button-" + chatroom.chatID.S
+        test_el.innerHTML +=
+          '<button type = "gc" id = ' + gcID + '>' + chatName + '</button></div>'
+        document.body.appendChild(test_el);
+        var gcDiv = document.getElementById('chatrooms');
+        gcDiv.after(test_el);
+        gcButtons(gcID, chatName, chatroom.chatID.S);
+      }
+
+      function updateChatMessages(gcID, chatName, chatID) {
+        $(document).ready(function () {
+          activegc = [];
+         
+          $.getJSON('/getchatrooms', function (elementsArr) {
+         
+
+            for (let i = 0; i < elementsArr.length; i++) {
+              var Item =
+              {
+                "content": elementsArr[i].content,
+                "chatID": elementsArr[i].chatID,
+                "users": elementsArr[i].userIDs
+              };
+            
+              activegc.push(Item);
+        
+            }
+            console.log(activegc);
+            gcButtonFunction(gcID, chatName, chatID);
+
+          });
+        });
+      }
+      function gcButtons(gcID, chatName, chatID) {
+        INDEX = 0;
+        var gcIDWithHash = "#" + gcID;
+
+        $(document).ready(function () {
+
+          $(gcIDWithHash).click(function (e) {
+            updateChatMessages(gcID, chatName, chatID);
+
+            console.log("gc clicked!");
+            document.getElementById("chat-logs").innerHTML = "";
+            e.preventDefault();
+
+
+          });
+
+        });
+
+
+      }
+
+      function gcButtonFunction(gcID, chatName, chatID) {
+        socket.emit("leave room", {
+          sender: id,
+          room: roomID
+        });
+
+        $("#chatname").html(chatID);
+        roomID = chatID;
+        console.log("room id is now: ")
+        console.log(roomID);
+        socket.emit("join room", {
+          sender: id,
+          room: roomID
+        });
+   
+
+        var roomSelected;
+        for (let i = 0; i < activegc.length; i++) {
+          if (activegc[i].chatID.S == roomID) {
+            roomSelected = activegc[i];
+          }
+        }
+     
+        var contentArray = [];
+    
+        contentArray = roomSelected.content.L
+       
+        for (let i = 0; i < contentArray.length; i++) {
+          var user = contentArray[i].L[0].S;
+          var text = contentArray[i].L[1].S;
+          if (user == id) {
+            generate_message(text, 'self', id);
+          }
+          else {
+            generate_message(text, 'user', user);
+          }
+
+
+        }
+      }
+    </script>
+
+
+    <% } else { %>
+      <script>
+        alert("login required")
+      </script>
+      <meta http-equiv="refresh" content="1; url='/'" />
+      <% } %>
+</head>
+
+<body>
+  <div class="topnav">
+    <div id = "navpicdiv">
+    </div>
+    <a class="active" href="/homepage">Home</a>
+    <a href="/wall">Wall</a>
+    <a href="/news">News</a>
+    <a href="/visualizer">Visualizer</a>
+    <a href="/edit">Edit</a>
+    <a href="/logout">Logout</a>
+
+    <div class="search-container">
+      <div class="ui-widget">
+        <form action="/otherwall" method="get">
+          <input type="text" placeholder="Search.." name="search" id="search">
+          <button type="submit" id="search-btn">
+            <i class="fa fa-search"></i>
+          </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="wholeHome" class="wholeHome">
+    <div class="friendRequest">
+      <div id="frTitle">
+        <h2>Friend Requests</h2>
+      </div>
+      <div class="friendRequestLog">
+      </div>
+    </div>
+
+    <div class="card" id="cardID">
+
+      <div class="userInfo">
+        <div id="profilepicurl">
+        </div>
+          <h3>
+          <div id="currUser"></div>
+        </h3>
+      </div>
+      <div class="row px-3 form-group">
+        <textarea class="posttext" placeholder="what's on your mind today?" name="postcontent"></textarea>
+      </div>
+      <button type="post" id="post-button">Post</button>
+    </div>
+  </div>
+
+
+
+
+  <div id="chat-circle" class="btn btn-raised">
+    <div id="chat-overlay"></div>
+    <img src="https://img.icons8.com/material-rounded/24/FFFFFF/communication.png" />
+  </div>
+
+  <div class="chat-box">
+
+
+    <div class="whole">
+      <div class="left">
+        <div id="online-friends">
+          <h1> online friends</h1>
+        </div>
+
+        <div id="chatrooms">
+          <h1> active chatrooms</h1>
+        </div>
+
+        <div id="chatinvites">
+          <h1> chat invites</h1>
+        </div>
+
+        <button type="chatroom-submit" class="chatroom-submit" id="chatroom-submit">
+          add new chat
+        </button>
+      </div>
+
+      <div class="right">
+        <div class="chat-box-header">
+          <div id="chatname">
+            chat
+          </div>
+          <span class="chat-box-toggle">
+            <img src="https://img.icons8.com/material-outlined/24/FFFFFF/cancel--v1.png" />
+          </span>
+        </div>
+        <div class=right-chatbox>
+          <div class="chat-box-body">
+            <div class="chat-box-overlay">
+            </div>
+            <div class="chat-logs" id="chat-logs">
+
+            </div>
+          </div>
+
+        </div>
+        <div class="chat-input">
+
+          <div>
+            <ul id="messages">
+            </ul>
+          </div>
+
+        </div>
+        <input class="text" id="chat-input" autocomplete="off" placeholder="type a message..."
+          onfocus="this.placeholder=''" onblur="this.placeholder='type a message...'">
+
+
+        <button type="submit" class="chat-submit" id="chat-submit" onclick=sendChat()>
+          <img src="https://img.icons8.com/material/24/0668E1/filled-sent.png" />
+        </button>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  </div>
+
+
+</html>
